@@ -1,0 +1,9 @@
+__pycache__
+.pytest_cache
+*.db
+example_images/
+docker/secrets/
+backend/tests/images/
+frontend/node_modules/
+*.LICENSE.txt
+.coverage

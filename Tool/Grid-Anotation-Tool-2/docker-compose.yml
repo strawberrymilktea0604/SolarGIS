@@ -1,0 +1,130 @@
+version: "3.8"
+
+services:
+
+  reverse-proxy:
+    user: root
+    image: traefik:latest
+    container_name: gat2_traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=gat2_network"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - gat2_network
+
+  db:
+    image: postgres:14.3
+    container_name: gat2_postgres
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/db_postgres_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_postgres_password
+      - POSTGRES_DB_FILE=/run/secrets/db_postgres_db
+    secrets:
+      - db_postgres_user
+      - db_postgres_password
+      - db_postgres_db
+    networks:
+      - gat2_network
+
+  adminer:
+    image: adminer
+    container_name: gat2_adminer
+    restart: always
+    ports:
+      - 8888:8080
+    networks:
+      - gat2_network
+
+  backend:
+    build: docker
+    container_name: gat2_backend
+    expose:
+      - "8000"
+    volumes:
+      - ./backend:/backend/backend
+      - media:/images
+    working_dir: /backend/
+    entrypoint: /entrypoint.sh
+    depends_on:
+      - db
+    environment:
+      - PORT=8000
+      - PYTHONPATH=/backend
+      - APP_MODULE=backend.main:app
+      - PRE_START_PATH=/backend/prestart.sh
+      - BACKEND_ACCESS_TOKEN_SECRET_KEY_FILE=/run/secrets/backend_access_token_secret_key
+      - BACKEND_DATABASE_URL_FILE=/run/secrets/backend_database_url
+      - BACKEND_MEDIA_ROOT=/images
+      - BACKEND_CORS_ORIGINS=["http://127.0.0.1"]
+      - BACKEND_ACCESS_TOKEN_EXPIRE_MINUTES=10080
+      - BACKEND_DOCS_URL_PREFIX=/api
+    secrets:
+      - backend_access_token_secret_key
+      - backend_database_url
+    command: /start-reload.sh  # production: /start.sh
+    restart: always
+    networks:
+      - gat2_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`127.0.0.1`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+
+  frontend:
+    build: docker
+    container_name: gat2_frontend
+    expose:
+      - "9999"
+    volumes:
+      - ./frontend:/frontend/frontend
+    working_dir: /frontend/
+    depends_on:
+      - db
+      - backend
+    environment:
+      - PORT=9999
+      - PYTHONPATH=/frontend
+      - APP_MODULE=frontend.main:app
+      - PRE_START_PATH=/frontend/prestart.sh
+      - API_URL=http://127.0.0.1/api
+    command: /start-reload.sh  # production: /start.sh
+    restart: always
+    networks:
+      - gat2_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`127.0.0.1`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+
+secrets:
+  db_postgres_user:
+    file: ./docker/secrets/db_postgres_user.txt
+  db_postgres_db:
+    file: ./docker/secrets/db_postgres_db.txt
+  db_postgres_password:
+    file: ./docker/secrets/db_postgres_password.txt
+  backend_database_url:
+    file: ./docker/secrets/backend_database_url.txt
+  backend_access_token_secret_key:
+    file: ./docker/secrets/backend_access_token_secret_key.txt
+
+volumes:
+  # postgres DB data
+  pgdata: 
+  # uplaoded images
+  media:
+
+networks:
+  gat2_network:
+    name: gat2_network
