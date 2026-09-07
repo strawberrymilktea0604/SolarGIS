@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css?v=3">
+  <link rel="stylesheet" href="/css/style.css?v=4">
 </head>
 <body>
   <!-- Header -->
@@ -240,11 +240,28 @@
             </button>
           </div>
           <div class="card-body list-body">
+            <!-- Ô tìm kiếm theo mã tấm PV -->
+            <div class="pv-search-box" id="pvSearchBox" style="display: none;">
+              <div class="input-with-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="pvSearchInput" placeholder="Tìm kiếm theo mã (ví dụ: PV_001)..." />
+                <button class="btn-clear-search" id="btnClearPVSearch" style="display: none;" title="Xóa tìm kiếm">&times;</button>
+              </div>
+            </div>
+
+            <!-- Danh sách các tấm PV -->
             <div class="pv-list-container" id="pvListContainer">
               <div class="empty-hint">
                 <i class="fa-regular fa-clone"></i>
                 <span>Chưa có tấm PV nào. Bấm <b>"Bật Đánh Tấm PV"</b> ở trên rồi click vào ảnh để dập tấm pin.</span>
               </div>
+            </div>
+
+            <!-- Thanh phân trang cho danh sách tấm PV -->
+            <div class="pv-pagination" id="pvPagination" style="display: none;">
+              <button class="btn-page" id="btnPVPrevPage" title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>
+              <span class="page-info" id="pvPageInfo">1 / 1</span>
+              <button class="btn-page" id="btnPVNextPage" title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
           </div>
         </div>
@@ -589,9 +606,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <!-- App JS Modules -->
-  <script src="/js/orthoReader.js?v=3"></script>
-  <script src="/js/orthoViewer.js?v=3"></script>
-  <script src="/js/pvAnnotator.js?v=3"></script>
-  <script src="/js/app.js?v=3"></script>
+  <script src="/js/orthoReader.js?v=4"></script>
+  <script src="/js/orthoViewer.js?v=4"></script>
+  <script src="/js/pvAnnotator.js?v=4"></script>
+  <script src="/js/app.js?v=4"></script>
 </body>
 </html>

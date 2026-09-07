@@ -25,6 +25,7 @@ class OrthoViewer {
   initMap() {
     this.map = L.map(this.containerId, {
       crs: L.CRS.Simple,
+      preferCanvas: true,
       minZoom: -5,
       maxZoom: 6,
       zoomSnap: 0.25,
