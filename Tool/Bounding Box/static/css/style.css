@@ -675,7 +675,6 @@ body {
   background-color: #070a14;
 }
 
-/* Floating Toolbar */
 .viewer-toolbar {
   position: absolute;
   top: 16px;
@@ -685,12 +684,18 @@ body {
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 30px;
-  padding: 6px 18px;
+  padding: 6px 14px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   z-index: 800;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  max-width: calc(100% - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.viewer-toolbar::-webkit-scrollbar {
+  display: none;
 }
 
 .tool-group {
@@ -1042,6 +1047,48 @@ body {
 @keyframes bounceGuide {
   from { transform: translate(-50%, 0); }
   to { transform: translate(-50%, -4px); }
+}
+
+.badge-mini-btn {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  color: #0b0f19;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-mini-btn:hover {
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.badge-mini-btn.primary {
+  background: #0f172a;
+  color: #38bdf8;
+  border-color: #38bdf8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.badge-mini-btn.primary:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+.badge-mini-btn.active {
+  background: #064e3b;
+  color: #34d399;
+  border-color: #34d399;
+}
+
+#btnToggleChain.active {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: #10b981;
+  color: #34d399;
 }
 
 /* Leaflet Markers for PV (Corners & Centroid) */
@@ -1883,4 +1930,455 @@ body {
   border-color: var(--text-secondary);
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* ========================================================
+   Chấm 5 Điểm (EPSG:32649 & GPS WGS84) Styling
+   ======================================================== */
+.pv-badge-5p {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: rgba(6, 182, 212, 0.15);
+  color: #06b6d4;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.point5-handle-icon {
+  background: transparent;
+  border: none;
+}
+
+.point5-handle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #06b6d4;
+  color: #042f2e;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.8), 0 2px 4px rgba(0,0,0,0.5);
+  cursor: grab;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.point5-handle:hover {
+  transform: scale(1.2);
+  background: #38bdf8;
+  cursor: grabbing;
+}
+
+.points-5-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.point-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border-left: 2px solid #06b6d4;
+}
+
+.point-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #06b6d4;
+  color: #042f2e;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.point-coords-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.3;
+  width: 100%;
+}
+
+.coord-line {
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.coord-tag {
+  font-weight: 600;
+  color: #38bdf8;
+  margin-right: 3px;
+}
+
+.coord-line:nth-child(2) .coord-tag {
+  color: #06b6d4;
+}
+
+.coord-line:nth-child(3) .coord-tag {
+  color: #10b981;
+}
+
+/* Đa giác hiển thị 5 điểm */
+.five-point-polygon {
+  stroke-dasharray: none;
+  transition: fill-opacity 0.2s, stroke 0.2s;
+}
+
+.five-point-polygon:hover {
+  fill-opacity: 0.35 !important;
+  stroke: #38bdf8 !important;
+  stroke-width: 3px !important;
+}
+
+.five-point-polygon.active-set {
+  stroke: #06b6d4 !important;
+  stroke-width: 3px !important;
+  fill-opacity: 0.3 !important;
+}
+
+/* Bộ chọn ảnh làm việc: Ortho To vs Ortho Vùng */
+.target-ortho-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.target-ortho-toggle label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.target-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-target {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-target:hover:not(:disabled) {
+  background: rgba(6, 182, 212, 0.15);
+  color: #38bdf8;
+  border-color: #06b6d4;
+}
+
+.btn-target.active {
+  background: #06b6d4;
+  color: #042f2e;
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+}
+
+.btn-target:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pv-target-badge {
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.pv-target-badge.sub {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.pv-target-badge.big {
+  background: rgba(6, 182, 212, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+/* ========================================================
+   Chấm 4 Góc PV Tự Tính Tâm Centroid Styling
+   ======================================================== */
+.pv-panel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.centroid-section-card {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.08);
+}
+
+.centroid-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.centroid-title-badge {
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.centroid-coords-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.corners-section-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.corners-section-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 2px;
+}
+
+.corner-row {
+  border-left: 2px solid #f59e0b;
+}
+
+.corner-badge {
+  background: #f59e0b;
+  color: #451a03;
+}
+
+.pv-item-card.active-selected .corner-row {
+  border-left-color: #38bdf8;
+}
+
+.pv-item-card.active-selected .corner-badge {
+  background: #38bdf8;
+  color: #0c4a6e;
+}
+
+/* Centroid Icon trên bản đồ khi vi chỉnh */
+.centroid-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.centroid-marker {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.9), 0 2px 5px rgba(0, 0, 0, 0.6);
+  cursor: grab;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.centroid-marker:hover {
+  transform: scale(1.25);
+  background: #dc2626;
+  cursor: grabbing;
+}
+
+.corner-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.corner-handle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #451a03;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.8), 0 2px 4px rgba(0, 0, 0, 0.5);
+  cursor: grab;
+  transition: transform 0.15s;
+}
+
+.corner-handle:hover {
+  transform: scale(1.25);
+  background: #fbbf24;
+  cursor: grabbing;
+}
+
+/* Khi đang ở chế độ vẽ: các tấm pin và tâm cũ không chặn click chuột */
+.drawing-active .pv-panel-polygon,
+.drawing-active .pv-centroid-dot {
+  pointer-events: none !important;
+}
+
+/* HD Viewport Overlay: Sắc nét từng pixel của tấm pin khi phóng to */
+.hd-viewport-overlay {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* --- DUAL SUB-ORTHO & COMPARISON STYLES --- */
+.sub-actions-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-warning-subtle {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.neon-bbox-amber {
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+  stroke-dasharray: 6, 3;
+  animation: neonAmberPulse 2.5s infinite alternate;
+}
+
+@keyframes neonAmberPulse {
+  0% { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6)); }
+  100% { filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.95)); }
+}
+
+.neon-bbox-green {
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8));
+}
+
+/* Dual Comparison Specs Table */
+.dual-compare-panel {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.dual-compare-header {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.specs-table th,
+.specs-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.specs-table th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 10.5px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.specs-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+
+
+
+
 

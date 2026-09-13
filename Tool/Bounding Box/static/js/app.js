@@ -13,9 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Dữ liệu trạng thái
   let loadedBigData = null;
   let loadedSubData = null;
+  let loadedSub2Data = null;
   let loadedMatchData = null;
+  let loadedDualMatchData = null;
   let currentBigPath = '';
   let currentSubPath = '';
+  let currentSub2Path = '';
+  let matchMode = 'single'; // 'single' | 'two_subs' | 'two_subs_on_big'
 
   // Đường dẫn mẫu sẵn có trên máy
   const SAMPLE_BIG = 'C:\\Users\\minhk\\Downloads\\Kho làm việc riêng\\Ghép 2.1\\ortho.tif';
@@ -35,6 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const globalStatus = document.getElementById('globalStatus');
   const actionHint = document.getElementById('actionHint');
 
+  // Sub-Ortho 2 DOM Elements
+  const btnToggleSub2 = document.getElementById('btnToggleSub2');
+  const sub2CardSection = document.getElementById('sub2CardSection');
+  const btnCloseSub2 = document.getElementById('btnCloseSub2');
+  const sub2PathInput = document.getElementById('sub2PathInput');
+  const sub2FileInput = document.getElementById('sub2FileInput');
+  const btnLoadSub2 = document.getElementById('btnLoadSub2');
+  const btnClearSub2Path = document.getElementById('btnClearSub2Path');
+  const btnOpenSub2View = document.getElementById('btnOpenSub2View');
+  const btnMatchTwoSubs = document.getElementById('btnMatchTwoSubs');
+  const btnMatchTwoSubsOnBig = document.getElementById('btnMatchTwoSubsOnBig');
+  const btnViewSub2 = document.getElementById('btnViewSub2');
+
   const opacitySlider = document.getElementById('opacitySlider');
   const opacityVal = document.getElementById('opacityVal');
   const btnToggleBBox = document.getElementById('btnToggleBBox');
@@ -42,6 +59,116 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnZoomFit = document.getElementById('btnZoomFit');
   const btnZoomRegion = document.getElementById('btnZoomRegion');
   const btnSplitView = document.getElementById('btnSplitView');
+
+  // Điều hướng & Chuyển đổi giữa Ortho To, Ortho Vùng 1 và Ortho Vùng 2
+  const btnViewBig = document.getElementById('btnViewBig');
+  const btnViewSub = document.getElementById('btnViewSub');
+  const btnTargetBig = document.getElementById('btnTargetBig');
+  const btnTargetSub = document.getElementById('btnTargetSub');
+  const btnOpenSubView = document.getElementById('btnOpenSubView');
+  const tabNavPV = document.getElementById('tabNavPV');
+  const tabNavBBox = document.getElementById('tabNavBBox');
+  const tabContentPV = document.getElementById('tabContentPV');
+  const tabContentBBox = document.getElementById('tabContentBBox');
+  const btnModePan = document.getElementById('btnModePan');
+  const btnModeDrawPV = document.getElementById('btnModeDrawPV');
+  const btnStartDrawPV = document.getElementById('btnStartDrawPV');
+  const btnUndoPV = document.getElementById('btnUndoPV');
+
+  function enableSubOrthoFeatures(subData) {
+    viewer.subInfo = subData;
+    if (btnViewSub) {
+      btnViewSub.disabled = false;
+      btnViewSub.title = `Xem ảnh Ortho Vùng 1: ${subData.file_name}`;
+    }
+    if (btnTargetSub) {
+      btnTargetSub.disabled = false;
+      btnTargetSub.title = `Làm việc trên Ortho Vùng 1: ${subData.file_name}`;
+    }
+    checkReadiness();
+  }
+
+  function enableSub2OrthoFeatures(sub2Data) {
+    viewer.sub2Info = sub2Data;
+    if (btnViewSub2) {
+      btnViewSub2.style.display = 'inline-flex';
+      btnViewSub2.disabled = false;
+      btnViewSub2.title = `Xem ảnh Ortho Vùng 2: ${sub2Data.file_name}`;
+    }
+    checkReadiness();
+  }
+
+  function switchToSubOrtho() {
+    if (!loadedSubData) {
+      alert('Vui lòng nạp Ortho Vùng 1 trước!');
+      return;
+    }
+    viewer.switchToSubView();
+    annotator.setTarget('sub');
+    if (btnViewBig) btnViewBig.classList.remove('active');
+    if (btnViewSub2) btnViewSub2.classList.remove('active');
+    if (btnViewSub) btnViewSub.classList.add('active');
+    if (btnTargetBig) btnTargetBig.classList.remove('active');
+    if (btnTargetSub) btnTargetSub.classList.add('active');
+    setStatus(`Đang xem & làm việc trên Ortho Vùng 1: ${loadedSubData.file_name}`, 'success');
+  }
+
+  function switchToSub2Ortho() {
+    if (!loadedSub2Data) {
+      alert('Vui lòng nạp Ortho Vùng 2 trước!');
+      return;
+    }
+    viewer.switchToSub2View();
+    if (btnViewBig) btnViewBig.classList.remove('active');
+    if (btnViewSub) btnViewSub.classList.remove('active');
+    if (btnViewSub2) btnViewSub2.classList.add('active');
+    setStatus(`Đang xem Ortho Vùng 2: ${loadedSub2Data.file_name}`, 'success');
+  }
+
+  function switchToBigOrtho() {
+    if (!loadedBigData) {
+      alert('Vui lòng nạp Ortho To trước!');
+      return;
+    }
+    viewer.switchToBigView();
+    annotator.setTarget('big');
+    if (btnViewBig) btnViewBig.classList.add('active');
+    if (btnViewSub) btnViewSub.classList.remove('active');
+    if (btnViewSub2) btnViewSub2.classList.remove('active');
+    if (btnTargetBig) btnTargetBig.classList.add('active');
+    if (btnTargetSub) btnTargetSub.classList.remove('active');
+    setStatus(`Đang xem & làm việc trên Ortho To: ${loadedBigData.file_name}`, 'success');
+  }
+
+  function switchSidebarTab(tabName) {
+    if (tabName === 'pv') {
+      if (tabNavPV) tabNavPV.classList.add('active');
+      if (tabNavBBox) tabNavBBox.classList.remove('active');
+      if (tabContentPV) tabContentPV.style.display = 'flex';
+      if (tabContentBBox) tabContentBBox.style.display = 'none';
+    } else {
+      if (tabNavBBox) tabNavBBox.classList.add('active');
+      if (tabNavPV) tabNavPV.classList.remove('active');
+      if (tabContentBBox) tabContentBBox.style.display = 'flex';
+      if (tabContentPV) tabContentPV.style.display = 'none';
+    }
+  }
+
+  function setPVDrawMode(drawMode) {
+    annotator.setMode(drawMode);
+    if (btnModeDrawPV) btnModeDrawPV.classList.toggle('active', drawMode);
+    if (btnModePan) btnModePan.classList.toggle('active', !drawMode);
+    if (drawMode) {
+      switchSidebarTab('pv');
+      if (annotator.subMode === 'stamp') {
+        setStatus(`Chế độ Dập Khuôn: Click chuột để đặt tấm PV ${annotator.stampConfig.width}x${annotator.stampConfig.height}px`, 'loading');
+      } else {
+        setStatus('Chế độ Chấm 4 Góc PV: Click lần lượt 4 góc trên ảnh để tự tính tâm centroid', 'loading');
+      }
+    } else {
+      setStatus('Chế độ di chuyển bản đồ (Pan/Zoom)', 'ready');
+    }
+  }
 
   // Khởi tạo các sự kiện
   initEventListeners();
@@ -120,6 +247,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
       executeMatch(bigP, subP, subFile);
     });
+
+    // 2b. Tùy chọn Thêm Ortho 2
+    if (btnToggleSub2) {
+      btnToggleSub2.addEventListener('click', () => {
+        if (!sub2CardSection) return;
+        const isHidden = sub2CardSection.style.display === 'none';
+        sub2CardSection.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+          sub2CardSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    }
+
+    if (btnCloseSub2) {
+      btnCloseSub2.addEventListener('click', () => {
+        if (sub2CardSection) sub2CardSection.style.display = 'none';
+      });
+    }
+
+    if (btnLoadSub2) {
+      btnLoadSub2.addEventListener('click', () => {
+        const path = sub2PathInput.value.trim();
+        if (sub2FileInput.files && sub2FileInput.files[0]) {
+          uploadAndLoadSub2(sub2FileInput.files[0]);
+        } else if (path) {
+          loadSub2ByPath(path);
+        } else {
+          alert('Vui lòng nhập đường dẫn hoặc chọn file Ortho Vùng 2');
+        }
+      });
+    }
+
+    if (sub2FileInput) {
+      sub2FileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          uploadAndLoadSub2(e.target.files[0]);
+        }
+      });
+    }
+
+    if (sub2PathInput) {
+      sub2PathInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          btnLoadSub2.click();
+        }
+      });
+    }
+
+    if (btnClearSub2Path) {
+      btnClearSub2Path.addEventListener('click', () => {
+        sub2PathInput.value = '';
+      });
+    }
+
+    // Nút Xác Định Vị Trí 2 Ortho Vùng
+    if (btnMatchTwoSubs) {
+      btnMatchTwoSubs.addEventListener('click', () => {
+        executeMatchTwoSubs();
+      });
+    }
+
+    // Nút Xác Định Vị Trí 2 Ortho trên Ortho To
+    if (btnMatchTwoSubsOnBig) {
+      btnMatchTwoSubsOnBig.addEventListener('click', () => {
+        executeMatchTwoSubsOnBig();
+      });
+    }
 
     // Xóa nhanh input
     document.getElementById('btnClearBigPath').addEventListener('click', () => {
@@ -206,7 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
         btn.classList.add('active');
         const targetId = btn.getAttribute('data-tab');
-        document.getElementById(targetId).style.display = 'block';
+        const contentEl = document.getElementById(targetId);
+        if (contentEl) contentEl.style.display = 'block';
       });
     });
 
@@ -223,26 +418,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Xuất file YOLO
     document.getElementById('btnExportYOLO').addEventListener('click', () => {
-      if (loadedMatchData && loadedMatchData.yolo_format) {
-        const name = (loadedMatchData.sub_ortho.file_name || 'bbox').replace(/\.[^/.]+$/, "") + ".txt";
+      if (loadedDualMatchData) {
+        const yolo1 = loadedDualMatchData.sub1_match.yolo_format;
+        const yolo2 = loadedDualMatchData.sub2_match.yolo_format;
+        const combinedYOLO = `# Sub-Ortho 1: ${loadedDualMatchData.sub1_ortho.file_name}\n${yolo1}\n# Sub-Ortho 2: ${loadedDualMatchData.sub2_ortho.file_name}\n${yolo2}`;
+        OrthoReader.downloadFile(combinedYOLO, "dual_sub_bboxes_yolo.txt");
+      } else if (loadedMatchData && loadedMatchData.yolo_format) {
+        const name = (loadedMatchData.sub_ortho ? loadedMatchData.sub_ortho.file_name : 'bbox').replace(/\.[^/.]+$/, "") + ".txt";
         OrthoReader.downloadFile(loadedMatchData.yolo_format, name);
       }
     });
 
     // Xuất GeoJSON
     document.getElementById('btnExportGeoJSON').addEventListener('click', () => {
-      if (loadedMatchData && loadedMatchData.geojson) {
-        const name = (loadedMatchData.sub_ortho.file_name || 'region').replace(/\.[^/.]+$/, "") + ".geojson";
+      if (loadedDualMatchData && loadedDualMatchData.geojson) {
+        OrthoReader.downloadFile(JSON.stringify(loadedDualMatchData.geojson, null, 2), "dual_sub_bboxes.geojson", 'application/geo+json');
+      } else if (loadedMatchData && loadedMatchData.geojson) {
+        const name = (loadedMatchData.sub_ortho ? loadedMatchData.sub_ortho.file_name : 'region').replace(/\.[^/.]+$/, "") + ".geojson";
         OrthoReader.downloadFile(JSON.stringify(loadedMatchData.geojson, null, 2), name, 'application/geo+json');
       }
     });
 
     // Cắt trích xuất GeoTIFF
     document.getElementById('btnCropGeoTIFF').addEventListener('click', () => {
-      if (loadedMatchData && currentBigPath) {
-        const box = loadedMatchData.pixel_box;
-        const url = `/api/crop-download?big_path=${encodeURIComponent(currentBigPath)}&xmin=${box.xmin}&ymin=${box.ymin}&width=${box.width}&height=${box.height}&format=GTiff`;
-        window.open(url, '_blank');
+      if (currentBigPath) {
+        let box = null;
+        if (loadedDualMatchData) {
+          box = loadedDualMatchData.sub1_match.pixel_box;
+        } else if (loadedMatchData && loadedMatchData.pixel_box) {
+          box = loadedMatchData.pixel_box;
+        }
+        if (box) {
+          const url = `/api/crop-download?big_path=${encodeURIComponent(currentBigPath)}&xmin=${box.xmin}&ymin=${box.ymin}&width=${box.width}&height=${box.height}&format=GTiff`;
+          window.open(url, '_blank');
+        }
       }
     });
 
@@ -297,27 +506,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbBtnIncSize = document.getElementById('tbBtnIncSize');
 
     // --- Sidebar Tabs Navigation (Đánh Tấm PV vs Định Vị BBox) ---
-    const tabNavPV = document.getElementById('tabNavPV');
-    const tabNavBBox = document.getElementById('tabNavBBox');
-    const tabContentPV = document.getElementById('tabContentPV');
-    const tabContentBBox = document.getElementById('tabContentBBox');
-
-    function switchSidebarTab(tabName) {
-      if (tabName === 'pv') {
-        if (tabNavPV) tabNavPV.classList.add('active');
-        if (tabNavBBox) tabNavBBox.classList.remove('active');
-        if (tabContentPV) tabContentPV.style.display = 'flex';
-        if (tabContentBBox) tabContentBBox.style.display = 'none';
-      } else {
-        if (tabNavBBox) tabNavBBox.classList.add('active');
-        if (tabNavPV) tabNavPV.classList.remove('active');
-        if (tabContentBBox) tabContentBBox.style.display = 'flex';
-        if (tabContentPV) tabContentPV.style.display = 'none';
-      }
-    }
-
+    // Gắn sự kiện chuyển tab Sidebar
     if (tabNavPV) tabNavPV.addEventListener('click', () => switchSidebarTab('pv'));
     if (tabNavBBox) tabNavBBox.addEventListener('click', () => switchSidebarTab('bbox'));
+
+    // Gắn sự kiện chuyển đổi Ortho To / Ortho Vùng
+    if (btnViewBig) btnViewBig.addEventListener('click', switchToBigOrtho);
+    if (btnViewSub) btnViewSub.addEventListener('click', switchToSubOrtho);
+    if (btnViewSub2) btnViewSub2.addEventListener('click', switchToSub2Ortho);
+    if (btnTargetBig) btnTargetBig.addEventListener('click', switchToBigOrtho);
+    if (btnTargetSub) btnTargetSub.addEventListener('click', switchToSubOrtho);
+    if (btnOpenSubView) {
+      btnOpenSubView.addEventListener('click', () => {
+        switchToSubOrtho();
+        switchSidebarTab('pv');
+        setPVDrawMode(true);
+      });
+    }
+    if (btnOpenSub2View) {
+      btnOpenSub2View.addEventListener('click', () => {
+        switchToSub2Ortho();
+        switchSidebarTab('pv');
+        setPVDrawMode(true);
+      });
+    }
 
     // Collapsible Card Headers (Click header để thu gọn / mở rộng)
     document.querySelectorAll('.card-collapsible-header').forEach(header => {
@@ -330,22 +542,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    function setPVDrawMode(drawMode) {
-      annotator.setMode(drawMode);
-      if (btnModeDrawPV) btnModeDrawPV.classList.toggle('active', drawMode);
-      if (btnModePan) btnModePan.classList.toggle('active', !drawMode);
-      if (drawMode) {
-        switchSidebarTab('pv'); // Tự động mở tab PV khi bắt đầu đánh
-        if (annotator.subMode === 'stamp') {
-          setStatus(`Chế độ Dập 1-Click: Click chuột để đặt ngay tấm PV ${annotator.stampConfig.width}x${annotator.stampConfig.height}px`, 'loading');
-        } else {
-          setStatus('Chế độ đánh dấu tấm PV: Click lần lượt 4 góc trên ảnh Ortho To', 'loading');
-        }
-      } else {
-        setStatus('Chế độ di chuyển bản đồ (Pan/Zoom)', 'ready');
-      }
-    }
-
     if (btnModePan) btnModePan.addEventListener('click', () => setPVDrawMode(false));
     if (btnModeDrawPV) btnModeDrawPV.addEventListener('click', () => {
       const isDrawing = btnModeDrawPV.classList.contains('active');
@@ -354,7 +550,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnStartDrawPV) btnStartDrawPV.addEventListener('click', () => setPVDrawMode(!annotator.isDrawMode));
     if (btnUndoPV) btnUndoPV.addEventListener('click', () => annotator.undo());
 
-    // Chuyển chế độ 1-Click vs Manual 4-Point
+    // Chuyển chế độ: Chấm 4 góc vs Dải pin vs Dập khuôn
+    const btnSubModeStrip = document.getElementById('btnSubModeStrip');
+    if (btnSubModeStrip) btnSubModeStrip.addEventListener('click', (e) => {
+      e.preventDefault();
+      annotator.setSubMode('strip');
+    });
     if (btnSubModeStamp) btnSubModeStamp.addEventListener('click', (e) => {
       e.preventDefault();
       annotator.setSubMode('stamp');
@@ -364,12 +565,20 @@ document.addEventListener('DOMContentLoaded', () => {
       annotator.setSubMode('manual');
     });
 
+    const btnToggleChain = document.getElementById('btnToggleChain');
+    if (btnToggleChain) btnToggleChain.addEventListener('click', (e) => {
+      e.preventDefault();
+      annotator.toggleAutoChain();
+    });
+
     annotator.onSubModeChange = (mode) => {
       if (annotator.isDrawMode) {
         if (mode === 'stamp') {
-          setStatus(`Chế độ Dập 1-Click: Click chuột để đặt ngay tấm PV ${annotator.stampConfig.width}x${annotator.stampConfig.height}px`, 'loading');
+          setStatus(`Chế độ Dập Khuôn: Click chuột để đặt tấm PV ${annotator.stampConfig.width}x${annotator.stampConfig.height}px`, 'loading');
+        } else if (mode === 'strip') {
+          setStatus('Chế độ Dải Pin: Chấm các điểm hàng trên, ấn Space sang hàng dưới, ấn Enter để hợp lực tạo toàn bộ dải pin', 'loading');
         } else {
-          setStatus('Chế độ đánh dấu tấm PV: Click lần lượt 4 góc trên ảnh Ortho To', 'loading');
+          setStatus('Chế độ Chấm 4 Góc PV: Click 4 góc tự tính tâm, hoặc chấm 2 góc để tự bắt tấm liền kề', 'loading');
         }
       }
     };
@@ -428,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnPickStampSize) {
       btnPickStampSize.addEventListener('click', () => {
         if (annotator.panels.length === 0) {
-          alert('Chưa có tấm PV nào trên bản đồ để lấy mẫu. Vui lòng vẽ ít nhất 1 tấm trước!');
+          alert('Chưa có bộ điểm nào trên bản đồ để lấy mẫu.');
           return;
         }
         const lastPanel = annotator.panels[annotator.panels.length - 1];
@@ -455,7 +664,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnClearAllPV) {
       btnClearAllPV.addEventListener('click', () => {
-        if (confirm('Bạn có chắc chắn muốn xóa tất cả các tấm PV đã đánh dấu?')) {
+        if (confirm('Bạn có chắc chắn muốn xóa tất cả các bộ điểm đã đánh dấu?')) {
           annotator.clearAll();
         }
       });
@@ -476,12 +685,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function checkReadiness() {
-    if (loadedBigData && (loadedSubData || currentSubPath)) {
+    const hasBig = !!loadedBigData;
+    const hasSub1 = !!(loadedSubData || currentSubPath);
+    const hasSub2 = !!(loadedSub2Data || currentSub2Path);
+
+    // 1 Sub + Big (Định vị 1 Sub)
+    if (hasBig && hasSub1) {
       btnMatchRegion.classList.add('ready-pulse');
-      actionHint.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Đã sẵn sàng cả 2 ảnh! Nhấn nút trên để xác định Bounding Box.';
     } else {
       btnMatchRegion.classList.remove('ready-pulse');
-      actionHint.innerHTML = '<i class="fa-solid fa-circle-info"></i> Sau khi nạp Ortho To và Ortho Vùng, nhấn nút trên để định vị Bounding Box.';
+    }
+
+    // 2 Subs (So sánh 2 Ortho Vùng)
+    if (hasSub1 && hasSub2) {
+      if (btnMatchTwoSubs) {
+        btnMatchTwoSubs.style.display = 'block';
+        btnMatchTwoSubs.classList.add('ready-pulse');
+      }
+    } else {
+      if (btnMatchTwoSubs) {
+        btnMatchTwoSubs.style.display = 'none';
+        btnMatchTwoSubs.classList.remove('ready-pulse');
+      }
+    }
+
+    // 2 Subs + Big (Định vị 2 Sub trên Ortho To)
+    if (hasBig && hasSub1 && hasSub2) {
+      if (btnMatchTwoSubsOnBig) {
+        btnMatchTwoSubsOnBig.style.display = 'block';
+        btnMatchTwoSubsOnBig.classList.add('ready-pulse');
+      }
+      actionHint.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Đã nạp đủ cả 3 ảnh (Ortho To, Vùng 1, Vùng 2)! Sẵn sàng xác định 2 Ortho trên Ortho To.';
+    } else if (hasSub1 && hasSub2) {
+      if (btnMatchTwoSubsOnBig) btnMatchTwoSubsOnBig.style.display = 'none';
+      actionHint.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Đã nạp 2 Ortho vùng! Bạn có thể bấm "Xác định vị trí 2 Ortho vùng" để so sánh.';
+    } else if (hasBig && hasSub1) {
+      if (btnMatchTwoSubsOnBig) btnMatchTwoSubsOnBig.style.display = 'none';
+      actionHint.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i> Đã sẵn sàng Ortho To và Ortho Vùng 1! Nhấn nút để định vị Bounding Box.';
+    } else {
+      if (btnMatchTwoSubsOnBig) btnMatchTwoSubsOnBig.style.display = 'none';
+      actionHint.innerHTML = '<i class="fa-solid fa-circle-info"></i> Sau khi nạp ảnh, các nút chức năng định vị sẽ tự động kích hoạt.';
     }
   }
 
@@ -591,8 +834,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Cập nhật thông tin và thumbnail xem trước của Ortho Vùng
       updateSubMetaUI(loadedSubData);
+      enableSubOrthoFeatures(loadedSubData);
 
-      setStatus('Đã nạp Ortho Vùng. Nhấn "Xác Định Vị Trí" để định vị!', 'success');
+      setStatus('Đã nạp Ortho Vùng. Có thể bấm "Xem & Đánh Dấu Trên Ortho Vùng" hoặc "Xác Định Vị Trí"!', 'success');
       checkReadiness();
     } catch (err) {
       alert(`Lỗi: ${err.message}`);
@@ -625,8 +869,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Cập nhật thông tin và thumbnail xem trước của Ortho Vùng
       updateSubMetaUI(loadedSubData);
+      enableSubOrthoFeatures(loadedSubData);
 
-      setStatus('Đã nạp Ortho Vùng. Nhấn "Xác Định Vị Trí" để định vị!', 'success');
+      setStatus('Đã nạp Ortho Vùng. Có thể bấm "Xem & Đánh Dấu Trên Ortho Vùng" hoặc "Xác Định Vị Trí"!', 'success');
       checkReadiness();
     } catch (err) {
       alert(`Lỗi: ${err.message}`);
@@ -634,6 +879,75 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       btnLoadSub.disabled = false;
       btnLoadSub.innerHTML = '<i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng';
+    }
+  }
+
+  // --- BƯỚC 2b: XỬ LÝ NẠP & XEM TRƯỚC ORTHO VÙNG 2 ---
+  async function loadSub2ByPath(filePath) {
+    setStatus('Đang đọc Ortho Vùng 2...', 'loading');
+    btnLoadSub2.disabled = true;
+    btnLoadSub2.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang đọc file...';
+
+    const formData = new FormData();
+    formData.append('file_path', filePath);
+
+    try {
+      const res = await fetch('/api/load-ortho', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Không thể đọc Ortho Vùng 2');
+
+      currentSub2Path = filePath;
+      loadedSub2Data = data.data;
+      sub2PathInput.value = filePath;
+
+      updateSub2MetaUI(loadedSub2Data);
+      enableSub2OrthoFeatures(loadedSub2Data);
+
+      setStatus('Đã nạp Ortho Vùng 2 thành công!', 'success');
+      checkReadiness();
+    } catch (err) {
+      alert(`Lỗi: ${err.message}`);
+      setStatus('Lỗi tải file', 'ready');
+    } finally {
+      btnLoadSub2.disabled = false;
+      btnLoadSub2.innerHTML = '<i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 2';
+    }
+  }
+
+  async function uploadAndLoadSub2(fileObj) {
+    setStatus('Đang tải lên & đọc Ortho Vùng 2...', 'loading');
+    btnLoadSub2.disabled = true;
+    btnLoadSub2.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải lên...';
+    sub2PathInput.value = `[File Upload] ${fileObj.name}`;
+
+    const formData = new FormData();
+    formData.append('file', fileObj);
+
+    try {
+      const res = await fetch('/api/load-ortho', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Lỗi khi tải file Ortho Vùng 2 lên');
+
+      currentSub2Path = data.data.file_path;
+      loadedSub2Data = data.data;
+
+      updateSub2MetaUI(loadedSub2Data);
+      enableSub2OrthoFeatures(loadedSub2Data);
+
+      setStatus('Đã nạp Ortho Vùng 2 thành công!', 'success');
+      checkReadiness();
+    } catch (err) {
+      alert(`Lỗi: ${err.message}`);
+      setStatus('Lỗi tải file', 'ready');
+    } finally {
+      btnLoadSub2.disabled = false;
+      btnLoadSub2.innerHTML = '<i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 2';
     }
   }
 
@@ -660,11 +974,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error(data.detail || 'Lỗi khi xác định vùng');
 
       loadedMatchData = data.data;
+      loadedDualMatchData = null;
+      matchMode = 'single';
       currentSubPath = subPath || loadedMatchData.sub_ortho.file_path;
 
-      // Cập nhật giao diện kết quả
+      // Cập nhật giao diện kết quả (English)
       updateSubMetaUI(loadedMatchData.sub_ortho);
-      updateResultsUI(loadedMatchData);
+      updateResultsUI(loadedMatchData, 'single');
+      loadedSubData = loadedMatchData.sub_ortho;
+      enableSubOrthoFeatures(loadedSubData);
 
       // Bây giờ mới vẽ Bounding Box và xếp lớp phủ lên Ortho To
       const subPreviewUrl = `/api/preview-image?filename=${loadedMatchData.sub_ortho.preview_filename}`;
@@ -681,7 +999,127 @@ document.addEventListener('DOMContentLoaded', () => {
       setStatus('Lỗi xử lý', 'ready');
     } finally {
       btnMatchRegion.disabled = false;
-      btnMatchRegion.innerHTML = '<i class="fa-solid fa-crosshairs"></i> Xác Định Vị Trí Trên Ortho To';
+      btnMatchRegion.innerHTML = '<i class="fa-solid fa-crosshairs"></i> Xác Định Vị Trí Bounding Box';
+    }
+  }
+
+  async function executeMatchTwoSubs() {
+    const s1P = currentSubPath || subPathInput.value.trim();
+    const s2P = currentSub2Path || sub2PathInput.value.trim();
+    const s1File = subFileInput.files ? subFileInput.files[0] : null;
+    const s2File = sub2FileInput.files ? sub2FileInput.files[0] : null;
+
+    if (!s1P && !s1File) {
+      alert('Vui lòng nạp Ortho Vùng 1 trước!');
+      return;
+    }
+    if (!s2P && !s2File) {
+      alert('Vui lòng nạp Ortho Vùng 2 trước!');
+      return;
+    }
+
+    setStatus('Đang tính toán so sánh & vị trí tương quan giữa 2 Ortho vùng...', 'loading');
+    btnMatchTwoSubs.disabled = true;
+    btnMatchTwoSubs.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang so sánh...';
+
+    const formData = new FormData();
+    if (s1File && !currentSubPath) formData.append('sub1_file', s1File);
+    else formData.append('sub1_path', s1P || currentSubPath);
+
+    if (s2File && !currentSub2Path) formData.append('sub2_file', s2File);
+    else formData.append('sub2_path', s2P || currentSub2Path);
+
+    try {
+      const res = await fetch('/api/match-two-subs', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Lỗi khi so sánh 2 Ortho vùng');
+
+      loadedMatchData = data.data;
+      loadedDualMatchData = null;
+      matchMode = 'two_subs';
+
+      // Cập nhật kết quả Tiếng Anh
+      updateResultsUI(loadedMatchData, 'two_subs');
+
+      // Vẽ lên viewer: canvas là Sub 1, Bbox là Sub 2
+      const s1Url = `/api/preview-image?filename=${loadedMatchData.sub1_ortho.preview_filename}`;
+      const s2Url = `/api/preview-image?filename=${loadedMatchData.sub2_ortho.preview_filename}`;
+      viewer.displayTwoSubMatch(loadedMatchData, s1Url, s2Url);
+
+      setStatus('Đã xác định vị trí tương quan & so sánh 2 Ortho vùng thành công!', 'success');
+      actionHint.innerHTML = '<i class="fa-solid fa-check-double" style="color:#10b981;"></i> Đã so sánh & định vị 2 Ortho vùng!';
+    } catch (err) {
+      alert(`Lỗi so sánh: ${err.message}`);
+      setStatus('Lỗi xử lý', 'ready');
+    } finally {
+      btnMatchTwoSubs.disabled = false;
+      btnMatchTwoSubs.innerHTML = '<i class="fa-solid fa-object-ungroup"></i> Xác định vị trí 2 Ortho vùng';
+    }
+  }
+
+  async function executeMatchTwoSubsOnBig() {
+    const bigP = currentBigPath || bigPathInput.value.trim();
+    const s1P = currentSubPath || subPathInput.value.trim();
+    const s2P = currentSub2Path || sub2PathInput.value.trim();
+    const s1File = subFileInput.files ? subFileInput.files[0] : null;
+    const s2File = sub2FileInput.files ? sub2FileInput.files[0] : null;
+
+    if (!bigP) {
+      alert('Vui lòng nạp Ortho To trước!');
+      return;
+    }
+    if (!s1P && !s1File) {
+      alert('Vui lòng nạp Ortho Vùng 1 trước!');
+      return;
+    }
+    if (!s2P && !s2File) {
+      alert('Vui lòng nạp Ortho Vùng 2 trước!');
+      return;
+    }
+
+    setStatus('Đang xác định vị trí 2 Ortho trên Ortho To...', 'loading');
+    btnMatchTwoSubsOnBig.disabled = true;
+    btnMatchTwoSubsOnBig.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xác định vị trí...';
+
+    const formData = new FormData();
+    formData.append('big_path', bigP);
+    if (s1File && !currentSubPath) formData.append('sub1_file', s1File);
+    else formData.append('sub1_path', s1P || currentSubPath);
+
+    if (s2File && !currentSub2Path) formData.append('sub2_file', s2File);
+    else formData.append('sub2_path', s2P || currentSub2Path);
+
+    try {
+      const res = await fetch('/api/match-two-subs-on-big', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Lỗi khi định vị 2 Ortho trên Ortho To');
+
+      loadedDualMatchData = data.data;
+      matchMode = 'two_subs_on_big';
+
+      // Cập nhật kết quả Tiếng Anh
+      updateResultsUI(loadedDualMatchData, 'two_subs_on_big');
+
+      // Vẽ cả 2 Bounding Box lên Ortho To
+      const s1Url = `/api/preview-image?filename=${loadedDualMatchData.sub1_ortho.preview_filename}`;
+      const s2Url = `/api/preview-image?filename=${loadedDualMatchData.sub2_ortho.preview_filename}`;
+      viewer.displayTwoSubsOnBig(loadedDualMatchData, s1Url, s2Url);
+
+      setStatus('Đã xác định vị trí 2 Ortho trên Ortho To thành công!', 'success');
+      btnMatchTwoSubsOnBig.classList.remove('ready-pulse');
+      actionHint.innerHTML = '<i class="fa-solid fa-check-double" style="color:#10b981;"></i> Đã định vị thành công 2 Ortho trên Ortho To!';
+    } catch (err) {
+      alert(`Lỗi xác định vị trí: ${err.message}`);
+      setStatus('Lỗi xử lý', 'ready');
+    } finally {
+      btnMatchTwoSubsOnBig.disabled = false;
+      btnMatchTwoSubsOnBig.innerHTML = '<i class="fa-solid fa-layer-group"></i> Xác định vị trí 2 Ortho trên Ortho To';
     }
   }
 
@@ -716,37 +1154,232 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('subAreaVal').innerText = info.area_ha ? `${info.area_ha.toLocaleString()} ha (${info.area_m2.toLocaleString()} m²)` : 'N/A';
   }
 
-  function updateResultsUI(data) {
+  function updateSub2MetaUI(info) {
+    document.getElementById('sub2Badge').innerText = info.file_name;
+    document.getElementById('sub2Badge').className = 'badge badge-success';
+    document.getElementById('sub2MetaBox').style.display = 'flex';
+
+    if (info.preview_filename) {
+      const sub2ThumbWrapper = document.getElementById('sub2ThumbWrapper');
+      const sub2Thumbnail = document.getElementById('sub2Thumbnail');
+      sub2ThumbWrapper.style.display = 'block';
+      sub2Thumbnail.src = `/api/preview-image?filename=${info.preview_filename}`;
+    }
+
+    document.getElementById('sub2DimVal').innerText = `${info.width.toLocaleString()} x ${info.height.toLocaleString()} px`;
+    document.getElementById('sub2CrsVal').innerText = info.crs || 'Không có CRS';
+    document.getElementById('sub2GsdVal').innerText = info.gsd_cm ? `${info.gsd_cm} cm/px` : 'N/A';
+    document.getElementById('sub2AreaVal').innerText = info.area_ha ? `${info.area_ha.toLocaleString()} ha (${info.area_m2.toLocaleString()} m²)` : 'N/A';
+  }
+
+  function updateResultsUI(data, mode = 'single') {
     const card = document.getElementById('resultCard');
     card.style.display = 'block';
 
-    // Badge Overlap
+    const cardTitle = document.getElementById('resultCardTitle');
     const badge = document.getElementById('overlapBadge');
-    badge.innerText = `${data.overlap_pct}% Trùng khớp (${data.method})`;
+    const dualPanel = document.getElementById('dualComparePanel');
+    const tableBody = document.getElementById('dualCompareTableBody');
 
-    // Metrics
-    const box = data.pixel_box;
-    document.getElementById('pixelBoxVal').innerText = `X: ${box.xmin.toLocaleString()}, Y: ${box.ymin.toLocaleString()}`;
-    document.getElementById('pixelDimVal').innerText = `W: ${box.width.toLocaleString()} px, H: ${box.height.toLocaleString()} px`;
+    const mTitle1 = document.getElementById('metricTitle1');
+    const mTitle2 = document.getElementById('metricTitle2');
+    const mSub2 = document.getElementById('metricSub2');
+    const pixelBoxVal = document.getElementById('pixelBoxVal');
+    const pixelDimVal = document.getElementById('pixelDimVal');
+    const gsdRatioVal = document.getElementById('gsdRatioVal');
 
-    if (data.gsd_ratio) {
-      document.getElementById('gsdRatioVal').innerText = `1 : ${data.gsd_ratio}`;
-    } else {
-      document.getElementById('gsdRatioVal').innerText = 'Tương đương';
-    }
+    if (mode === 'two_subs_on_big') {
+      if (cardTitle) cardTitle.innerText = "Dual Sub-Ortho Master Alignment Results";
+      const b1 = data.sub1_match.pixel_box;
+      const b2 = data.sub2_match.pixel_box;
 
-    // Tabs content
-    document.getElementById('codePixel').innerText = OrthoReader.formatPixelJSON(data.pixel_box);
-    document.getElementById('codeNorm').innerText = OrthoReader.formatNormJSON(data.norm_box);
-    document.getElementById('codeYOLO').innerText = data.yolo_format;
-    
-    if (data.wgs84_polygon) {
-      document.getElementById('codeGeo').innerText = JSON.stringify({
-        wgs84_corners: data.wgs84_polygon,
-        geo_box: data.geo_box
+      badge.innerText = `Sub 1: ${data.sub1_match.overlap_pct}% | Sub 2: ${data.sub2_match.overlap_pct}% Overlap`;
+      badge.className = 'badge badge-success';
+
+      if (mTitle1) mTitle1.innerText = "Dual Sub-Ortho Origins (Pixel)";
+      if (pixelBoxVal) pixelBoxVal.innerText = `S1: (${b1.xmin.toLocaleString()}, ${b1.ymin.toLocaleString()}) | S2: (${b2.xmin.toLocaleString()}, ${b2.ymin.toLocaleString()})`;
+      if (pixelDimVal) pixelDimVal.innerText = `S1: ${b1.width.toLocaleString()}x${b1.height.toLocaleString()} px | S2: ${b2.width.toLocaleString()}x${b2.height.toLocaleString()} px`;
+
+      if (mTitle2) mTitle2.innerText = "Mutual Overlap & Separation";
+      if (gsdRatioVal) gsdRatioVal.innerText = `Mutual IoU: ${data.mutual_overlap.iou_pct}%`;
+      if (mSub2) mSub2.innerText = `Center Distance: ${data.comparison.center_distance_m ? data.comparison.center_distance_m + ' m' : data.comparison.center_distance_px + ' px'}`;
+
+      // Render Comparative Specs Table in English
+      if (dualPanel) dualPanel.style.display = 'block';
+      if (tableBody) {
+        const s1 = data.sub1_ortho;
+        const s2 = data.sub2_ortho;
+        const comp = data.comparison;
+        tableBody.innerHTML = `
+          <tr>
+            <td><strong>Image Filename</strong></td>
+            <td style="color: #06b6d4;">${s1.file_name}</td>
+            <td style="color: #f59e0b;">${s2.file_name}</td>
+            <td>Master: ${data.big_ortho.file_name}</td>
+          </tr>
+          <tr>
+            <td><strong>Dimensions (W x H)</strong></td>
+            <td>${s1.width.toLocaleString()} x ${s1.height.toLocaleString()} px</td>
+            <td>${s2.width.toLocaleString()} x ${s2.height.toLocaleString()} px</td>
+            <td>Diff: ${(s2.width - s1.width)} x ${(s2.height - s1.height)} px</td>
+          </tr>
+          <tr>
+            <td><strong>Ground Resolution (GSD)</strong></td>
+            <td>${s1.gsd_cm ? s1.gsd_cm + ' cm/px' : 'N/A'}</td>
+            <td>${s2.gsd_cm ? s2.gsd_cm + ' cm/px' : 'N/A'}</td>
+            <td>${comp.gsd_cm.ratio ? 'Ratio: 1 : ' + comp.gsd_cm.ratio : 'Equivalent'}</td>
+          </tr>
+          <tr>
+            <td><strong>Surface Area Coverage</strong></td>
+            <td>${s1.area_ha ? s1.area_ha + ' ha (' + s1.area_m2.toLocaleString() + ' m²)' : 'N/A'}</td>
+            <td>${s2.area_ha ? s2.area_ha + ' ha (' + s2.area_m2.toLocaleString() + ' m²)' : 'N/A'}</td>
+            <td>${comp.area_m2.area_diff_m2 ? 'Diff: ' + (comp.area_m2.area_diff_m2 / 10000).toFixed(3) + ' ha' : 'N/A'}</td>
+          </tr>
+          <tr>
+            <td><strong>Spatial Overlap on Master</strong></td>
+            <td>${data.sub1_match.overlap_pct}% coverage</td>
+            <td>${data.sub2_match.overlap_pct}% coverage</td>
+            <td>Mutual IoU: <strong>${data.mutual_overlap.iou_pct}%</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Center-to-Center Distance</strong></td>
+            <td colspan="2" style="text-align: center;">${data.comparison.center_distance_px.toLocaleString()} px on master</td>
+            <td><strong>${data.comparison.center_distance_m ? data.comparison.center_distance_m + ' m' : 'N/A'}</strong></td>
+          </tr>
+        `;
+      }
+
+      // Code blocks
+      document.getElementById('codePixel').innerText = JSON.stringify({
+        sub_ortho_1: data.sub1_match.pixel_box,
+        sub_ortho_2: data.sub2_match.pixel_box,
+        mutual_intersection: data.mutual_overlap.pixel_box
       }, null, 2);
+
+      document.getElementById('codeNorm').innerText = JSON.stringify({
+        sub_ortho_1: data.sub1_match.norm_box,
+        sub_ortho_2: data.sub2_match.norm_box
+      }, null, 2);
+
+      document.getElementById('codeYOLO').innerText = `# Sub-Ortho 1:\n${data.sub1_match.yolo_format}\n# Sub-Ortho 2:\n${data.sub2_match.yolo_format}`;
+
+      document.getElementById('codeGeo').innerText = JSON.stringify(data.geojson || {
+        sub1_wgs84: data.sub1_match.wgs84_polygon,
+        sub2_wgs84: data.sub2_match.wgs84_polygon
+      }, null, 2);
+
+    } else if (mode === 'two_subs') {
+      if (cardTitle) cardTitle.innerText = "Sub-Ortho Relative Alignment Results";
+      badge.innerText = `${data.overlap_pct}% Mutual Overlap (${data.method || 'Geospatial'})`;
+      badge.className = data.is_overlapping ? 'badge badge-success' : 'badge badge-warning';
+
+      const box = data.sub2_on_sub1_pixel_box || { xmin: 0, ymin: 0, width: 0, height: 0 };
+      if (mTitle1) mTitle1.innerText = "Relative Placement on Sub 1 (Pixel)";
+      if (pixelBoxVal) pixelBoxVal.innerText = `X: ${box.xmin.toLocaleString()}, Y: ${box.ymin.toLocaleString()}`;
+      if (pixelDimVal) pixelDimVal.innerText = `W: ${box.width.toLocaleString()} px, H: ${box.height.toLocaleString()} px`;
+
+      if (mTitle2) mTitle2.innerText = "Physical Center Distance";
+      if (gsdRatioVal) gsdRatioVal.innerText = data.center_distance_m ? `${data.center_distance_m} m` : 'N/A';
+      if (mSub2) mSub2.innerText = `Overlap Area: ${data.overlap_m2.toLocaleString()} m² (${data.overlap_pct}%)`;
+
+      // Render Comparative Specs Table in English
+      if (dualPanel) dualPanel.style.display = 'block';
+      if (tableBody) {
+        const s1 = data.sub1_ortho;
+        const s2 = data.sub2_ortho;
+        const comp = data.comparison;
+        tableBody.innerHTML = `
+          <tr>
+            <td><strong>Image Filename</strong></td>
+            <td style="color: #06b6d4;">${s1.file_name}</td>
+            <td style="color: #f59e0b;">${s2.file_name}</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td><strong>Dimensions (W x H)</strong></td>
+            <td>${s1.width.toLocaleString()} x ${s1.height.toLocaleString()} px</td>
+            <td>${s2.width.toLocaleString()} x ${s2.height.toLocaleString()} px</td>
+            <td>Diff: ${(s2.width - s1.width)} x ${(s2.height - s1.height)} px</td>
+          </tr>
+          <tr>
+            <td><strong>Ground Resolution (GSD)</strong></td>
+            <td>${s1.gsd_cm ? s1.gsd_cm + ' cm/px' : 'N/A'}</td>
+            <td>${s2.gsd_cm ? s2.gsd_cm + ' cm/px' : 'N/A'}</td>
+            <td>${comp.gsd_cm.ratio ? 'Ratio: 1 : ' + comp.gsd_cm.ratio : 'Equivalent'}</td>
+          </tr>
+          <tr>
+            <td><strong>Surface Area Coverage</strong></td>
+            <td>${s1.area_ha ? s1.area_ha + ' ha (' + s1.area_m2.toLocaleString() + ' m²)' : 'N/A'}</td>
+            <td>${s2.area_ha ? s2.area_ha + ' ha (' + s2.area_m2.toLocaleString() + ' m²)' : 'N/A'}</td>
+            <td>${comp.area_m2.area_diff_m2 ? 'Diff: ' + (comp.area_m2.area_diff_m2 / 10000).toFixed(3) + ' ha' : 'N/A'}</td>
+          </tr>
+          <tr>
+            <td><strong>Coordinate Reference System (CRS)</strong></td>
+            <td>${s1.crs || 'None'}</td>
+            <td>${s2.crs || 'None'}</td>
+            <td>${comp.crs.is_matching ? '<span style="color:#10b981;">Matching CRS</span>' : '<span style="color:#f59e0b;">Re-projected</span>'}</td>
+          </tr>
+          <tr>
+            <td><strong>Mutual Overlap</strong></td>
+            <td>${data.overlap_pct}% of Sub 1</td>
+            <td>Overlap Area: ${data.overlap_m2.toLocaleString()} m²</td>
+            <td><strong>${data.is_overlapping ? 'Overlapping' : 'Non-overlapping'}</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Center-to-Center Distance</strong></td>
+            <td colspan="2" style="text-align: center;">Ground geodesic distance</td>
+            <td><strong>${data.center_distance_m ? data.center_distance_m + ' m' : 'N/A'}</strong></td>
+          </tr>
+        `;
+      }
+
+      // Code blocks
+      document.getElementById('codePixel').innerText = JSON.stringify({
+        sub2_on_sub1_pixel_box: data.sub2_on_sub1_pixel_box,
+        sub2_on_sub1_polygon: data.sub2_on_sub1_polygon
+      }, null, 2);
+
+      document.getElementById('codeNorm').innerText = JSON.stringify(data.comparison, null, 2);
+      document.getElementById('codeYOLO').innerText = `# Sub-Ortho 2 on Sub 1 canvas:\n# Overlap: ${data.overlap_pct}%\n# Center Distance: ${data.center_distance_m}m`;
+      document.getElementById('codeGeo').innerText = JSON.stringify({
+        sub1_wgs84: data.sub1_ortho.wgs84_bounds,
+        sub2_wgs84: data.sub2_ortho.wgs84_bounds,
+        center_distance_m: data.center_distance_m
+      }, null, 2);
+
     } else {
-      document.getElementById('codeGeo').innerText = 'Không có thông tin WGS84';
+      // Single sub on Big (Original mode)
+      if (cardTitle) cardTitle.innerText = "Bounding Box Results";
+      badge.innerText = `${data.overlap_pct}% Overlap (${data.method || 'Geospatial CRS'})`;
+      badge.className = 'badge badge-success';
+
+      if (dualPanel) dualPanel.style.display = 'none';
+
+      const box = data.pixel_box;
+      if (mTitle1) mTitle1.innerText = "Origin Coordinates (Pixel)";
+      if (pixelBoxVal) pixelBoxVal.innerText = `X: ${box.xmin.toLocaleString()}, Y: ${box.ymin.toLocaleString()}`;
+      if (pixelDimVal) pixelDimVal.innerText = `W: ${box.width.toLocaleString()} px, H: ${box.height.toLocaleString()} px`;
+
+      if (mTitle2) mTitle2.innerText = "GSD Resolution Ratio";
+      if (data.gsd_ratio) {
+        if (gsdRatioVal) gsdRatioVal.innerText = `1 : ${data.gsd_ratio}`;
+      } else {
+        if (gsdRatioVal) gsdRatioVal.innerText = 'Equivalent (1 : 1)';
+      }
+      if (mSub2) mSub2.innerText = "Master / Sub ground resolution";
+
+      document.getElementById('codePixel').innerText = OrthoReader.formatPixelJSON(data.pixel_box);
+      document.getElementById('codeNorm').innerText = OrthoReader.formatNormJSON(data.norm_box);
+      document.getElementById('codeYOLO').innerText = data.yolo_format;
+
+      if (data.wgs84_polygon) {
+        document.getElementById('codeGeo').innerText = JSON.stringify({
+          wgs84_corners: data.wgs84_polygon,
+          geo_box: data.geo_box
+        }, null, 2);
+      } else {
+        document.getElementById('codeGeo').innerText = 'No WGS84 coordinates available';
+      }
     }
   }
 
@@ -789,7 +1422,8 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="file-actions">
             <button class="btn btn-secondary btn-sm select-big-btn">Chọn làm Ortho To</button>
-            <button class="btn btn-outline btn-sm select-sub-btn">Chọn làm Vùng</button>
+            <button class="btn btn-outline btn-sm select-sub-btn">Chọn làm Vùng 1</button>
+            <button class="btn btn-warning btn-sm select-sub2-btn">Chọn làm Vùng 2</button>
           </div>
         `;
 
@@ -803,6 +1437,13 @@ document.addEventListener('DOMContentLoaded', () => {
           subPathInput.value = f.path;
           modal.style.display = 'none';
           loadSubByPath(f.path);
+        });
+
+        item.querySelector('.select-sub2-btn').addEventListener('click', () => {
+          sub2PathInput.value = f.path;
+          if (sub2CardSection) sub2CardSection.style.display = 'block';
+          modal.style.display = 'none';
+          loadSub2ByPath(f.path);
         });
 
         container.appendChild(item);

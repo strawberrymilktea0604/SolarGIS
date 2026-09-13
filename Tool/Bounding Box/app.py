@@ -98,7 +98,7 @@ async def load_ortho(
 
     try:
         info = processor.get_info(target_path)
-        preview_path = processor.generate_preview(target_path, max_size=2048)
+        preview_path = processor.generate_preview(target_path, max_size=3072)
         info["preview_filename"] = os.path.basename(preview_path)
         return {"status": "success", "data": info}
     except Exception as e:
@@ -113,7 +113,7 @@ async def match_region(
     """Xác định Bounding Box của Ortho vùng trên Ortho lớn"""
     big_target = os.path.normpath(big_path.strip().strip('"').strip("'"))
     if not os.path.exists(big_target):
-        raise HTTPException(status_code=404, detail=f"Không tìm thấy file Ortho to: {big_target}")
+        raise HTTPException(status_code=404, detail=f"Không tìm thấy file Ortho lớn: {big_target}")
 
     sub_target = None
     if sub_path and sub_path.strip():
@@ -130,13 +130,90 @@ async def match_region(
     try:
         result = processor.calculate_bounding_box(big_target, sub_target)
         # Sinh preview cho cả 2
-        big_prev = processor.generate_preview(big_target, max_size=2048)
-        sub_prev = processor.generate_preview(sub_target, max_size=1024)
+        big_prev = processor.generate_preview(big_target, max_size=3072)
+        sub_prev = processor.generate_preview(sub_target, max_size=3072)
         result["big_ortho"]["preview_filename"] = os.path.basename(big_prev)
         result["sub_ortho"]["preview_filename"] = os.path.basename(sub_prev)
         return {"status": "success", "data": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi tính toán Bounding Box: {str(e)}")
+
+@app.post("/api/match-two-subs")
+async def match_two_subs(
+    sub1_path: Optional[str] = Form(None),
+    sub1_file: Optional[UploadFile] = File(None),
+    sub2_path: Optional[str] = Form(None),
+    sub2_file: Optional[UploadFile] = File(None),
+):
+    """So sánh và xác định vị trí tương quan giữa 2 ảnh Ortho vùng"""
+    def resolve_target(path_val, file_val, label):
+        if path_val and path_val.strip():
+            p = os.path.normpath(path_val.strip().strip('"').strip("'"))
+            if not os.path.exists(p):
+                raise HTTPException(status_code=404, detail=f"Không tìm thấy file {label}: {p}")
+            return p
+        elif file_val:
+            dest = os.path.join(UPLOAD_DIR, file_val.filename)
+            with open(dest, "wb") as buffer:
+                shutil.copyfileobj(file_val.file, buffer)
+            return dest
+        else:
+            raise HTTPException(status_code=400, detail=f"Vui lòng cung cấp file hoặc đường dẫn cho {label}")
+
+    s1_target = resolve_target(sub1_path, sub1_file, "Ortho Vùng 1")
+    s2_target = resolve_target(sub2_path, sub2_file, "Ortho Vùng 2")
+
+    try:
+        result = processor.calculate_two_sub_orthos(s1_target, s2_target)
+        s1_prev = processor.generate_preview(s1_target, max_size=3072)
+        s2_prev = processor.generate_preview(s2_target, max_size=3072)
+        result["sub1_ortho"]["preview_filename"] = os.path.basename(s1_prev)
+        result["sub2_ortho"]["preview_filename"] = os.path.basename(s2_prev)
+        return {"status": "success", "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi so sánh 2 Ortho vùng: {str(e)}")
+
+@app.post("/api/match-two-subs-on-big")
+async def match_two_subs_on_big(
+    big_path: str = Form(...),
+    sub1_path: Optional[str] = Form(None),
+    sub1_file: Optional[UploadFile] = File(None),
+    sub2_path: Optional[str] = Form(None),
+    sub2_file: Optional[UploadFile] = File(None),
+):
+    """Xác định đồng thời vị trí của cả 2 Ortho vùng trên Ortho lớn"""
+    big_target = os.path.normpath(big_path.strip().strip('"').strip("'"))
+    if not os.path.exists(big_target):
+        raise HTTPException(status_code=404, detail=f"Không tìm thấy file Ortho lớn: {big_target}")
+
+    def resolve_target(path_val, file_val, label):
+        if path_val and path_val.strip():
+            p = os.path.normpath(path_val.strip().strip('"').strip("'"))
+            if not os.path.exists(p):
+                raise HTTPException(status_code=404, detail=f"Không tìm thấy file {label}: {p}")
+            return p
+        elif file_val:
+            dest = os.path.join(UPLOAD_DIR, file_val.filename)
+            with open(dest, "wb") as buffer:
+                shutil.copyfileobj(file_val.file, buffer)
+            return dest
+        else:
+            raise HTTPException(status_code=400, detail=f"Vui lòng cung cấp file hoặc đường dẫn cho {label}")
+
+    s1_target = resolve_target(sub1_path, sub1_file, "Ortho Vùng 1")
+    s2_target = resolve_target(sub2_path, sub2_file, "Ortho Vùng 2")
+
+    try:
+        result = processor.calculate_two_subs_on_big(big_target, s1_target, s2_target)
+        big_prev = processor.generate_preview(big_target, max_size=3072)
+        s1_prev = processor.generate_preview(s1_target, max_size=3072)
+        s2_prev = processor.generate_preview(s2_target, max_size=3072)
+        result["big_ortho"]["preview_filename"] = os.path.basename(big_prev)
+        result["sub1_ortho"]["preview_filename"] = os.path.basename(s1_prev)
+        result["sub2_ortho"]["preview_filename"] = os.path.basename(s2_prev)
+        return {"status": "success", "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi khi xác định 2 Ortho trên Ortho lớn: {str(e)}")
 
 @app.get("/api/preview-image")
 def get_preview_image(filename: str = Query(...)):

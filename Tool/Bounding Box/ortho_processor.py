@@ -196,7 +196,7 @@ class OrthoProcessor:
                 img_data = np.transpose(arr[:3], (1, 2, 0))
                 img = Image.fromarray(img_data, mode="RGB")
 
-            img.save(out_path, format="JPEG", quality=88)
+            img.save(out_path, format="JPEG", quality=95)
             return out_path
 
     def calculate_bounding_box(self, big_path: str, sub_path: str):
@@ -449,3 +449,256 @@ class OrthoProcessor:
                 img.save(output_path, format="PNG")
 
             return output_path
+
+    def calculate_two_sub_orthos(self, sub1_path: str, sub2_path: str):
+        """So sánh và tính toán vị trí tương quan giữa 2 ảnh Ortho vùng (Sub-Ortho 1 & Sub-Ortho 2)"""
+        info_sub1 = self.get_info(sub1_path)
+        info_sub2 = self.get_info(sub2_path)
+
+        with rasterio.open(sub1_path) as s1_src, rasterio.open(sub2_path) as s2_src:
+            has_geo = (s1_src.crs is not None) and (s2_src.crs is not None)
+
+            # Tính toán so sánh cơ bản
+            gsd1 = info_sub1.get("gsd_cm")
+            gsd2 = info_sub2.get("gsd_cm")
+            gsd_ratio = round(gsd1 / gsd2, 2) if (gsd1 and gsd2 and gsd2 > 0) else None
+
+            dim_comparison = {
+                "sub1": {"width": info_sub1["width"], "height": info_sub1["height"]},
+                "sub2": {"width": info_sub2["width"], "height": info_sub2["height"]},
+                "w_diff": info_sub2["width"] - info_sub1["width"],
+                "h_diff": info_sub2["height"] - info_sub1["height"],
+            }
+
+            sub2_on_sub1_pixel_box = None
+            sub2_on_sub1_polygon = None
+            overlap_pct = 0.0
+            overlap_m2 = 0.0
+            is_overlapping = False
+            center_distance_m = None
+            geo_intersection = None
+
+            if has_geo:
+                # Chuyển 4 góc của sub2 sang CRS của sub1
+                sub2_bounds = s2_src.bounds
+                corners_sub2_geo = [
+                    (sub2_bounds.left, sub2_bounds.top),
+                    (sub2_bounds.right, sub2_bounds.top),
+                    (sub2_bounds.right, sub2_bounds.bottom),
+                    (sub2_bounds.left, sub2_bounds.bottom),
+                ]
+
+                if s2_src.crs != s1_src.crs:
+                    transformer = Transformer.from_crs(s2_src.crs, s1_src.crs, always_xy=True)
+                    corners_sub2_in_s1 = [transformer.transform(x, y) for x, y in corners_sub2_geo]
+                else:
+                    corners_sub2_in_s1 = corners_sub2_geo
+
+                # Tọa độ pixel của sub2 trên canvas của sub1
+                inv_trans1 = ~s1_src.transform
+                pixel_polygon = []
+                for x_geo, y_geo in corners_sub2_in_s1:
+                    col, row = inv_trans1 * (x_geo, y_geo)
+                    pixel_polygon.append({"col": round(col, 2), "row": round(row, 2)})
+
+                cols = [p["col"] for p in pixel_polygon]
+                rows = [p["row"] for p in pixel_polygon]
+                min_col, max_col = min(cols), max(cols)
+                min_row, max_row = min(rows), max(rows)
+
+                sub2_on_sub1_pixel_box = {
+                    "xmin": round(min_col),
+                    "ymin": round(min_row),
+                    "xmax": round(max_col),
+                    "ymax": round(max_row),
+                    "width": round(max_col - min_col),
+                    "height": round(max_row - min_row),
+                    "center_x": round((min_col + max_col) / 2),
+                    "center_y": round((min_row + max_row) / 2),
+                }
+                sub2_on_sub1_polygon = pixel_polygon
+
+                # Tính giao nhau (overlap) giữa sub1 và sub2
+                # Giới hạn trong kích thước sub1
+                c_min_col = max(0, min(s1_src.width, min_col))
+                c_max_col = max(0, min(s1_src.width, max_col))
+                c_min_row = max(0, min(s1_src.height, min_row))
+                c_max_row = max(0, min(s1_src.height, max_row))
+
+                if c_max_col > c_min_col and c_max_row > c_min_row:
+                    is_overlapping = True
+                    inter_px = (c_max_col - c_min_col) * (c_max_row - c_min_row)
+                    total_px_sub1 = s1_src.width * s1_src.height
+                    overlap_pct = round((inter_px / total_px_sub1) * 100.0, 2)
+
+                    # Diện tích thực tế giao nhau (m²)
+                    avg_gsd = (gsd1 or 5.0) / 100.0
+                    overlap_m2 = round(inter_px * (avg_gsd ** 2), 2)
+
+                # Khoảng cách tâm giữa 2 ảnh (meters)
+                c1_x = (s1_src.bounds.left + s1_src.bounds.right) / 2
+                c1_y = (s1_src.bounds.bottom + s1_src.bounds.top) / 2
+                c2_x = (sub2_bounds.left + sub2_bounds.right) / 2
+                c2_y = (sub2_bounds.bottom + sub2_bounds.top) / 2
+
+                if s2_src.crs != s1_src.crs:
+                    c2_x, c2_y = transformer.transform(c2_x, c2_y)
+
+                if s1_src.crs.is_projected:
+                    center_distance_m = round(math.sqrt((c2_x - c1_x)**2 + (c2_y - c1_y)**2), 2)
+                else:
+                    # Haversine distance cho tọa độ lat/lon
+                    lat1, lon1 = c1_y, c1_x
+                    lat2, lon2 = c2_y, c2_x
+                    r = 6371000  # radius of Earth in meters
+                    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+                    dphi = math.radians(lat2 - lat1)
+                    dlambda = math.radians(lon2 - lon1)
+                    a = math.sin(dphi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2)**2
+                    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+                    center_distance_m = round(r * c, 2)
+
+                method = "geospatial_crs"
+            else:
+                method = "geometric_only"
+
+            comparison = {
+                "dimensions": dim_comparison,
+                "gsd_cm": {"sub1": gsd1, "sub2": gsd2, "ratio": gsd_ratio},
+                "area_m2": {
+                    "sub1": info_sub1.get("area_m2"),
+                    "sub2": info_sub2.get("area_m2"),
+                    "area_diff_m2": round((info_sub2.get("area_m2") or 0) - (info_sub1.get("area_m2") or 0), 2)
+                },
+                "file_size_mb": {
+                    "sub1": info_sub1.get("file_size_mb"),
+                    "sub2": info_sub2.get("file_size_mb")
+                },
+                "crs": {
+                    "sub1": info_sub1.get("crs"),
+                    "sub2": info_sub2.get("crs"),
+                    "is_matching": info_sub1.get("crs") == info_sub2.get("crs")
+                },
+                "center_distance_m": center_distance_m,
+                "overlap_m2": overlap_m2,
+                "overlap_pct": overlap_pct,
+                "is_overlapping": is_overlapping
+            }
+
+            return {
+                "sub1_ortho": info_sub1,
+                "sub2_ortho": info_sub2,
+                "method": method,
+                "is_overlapping": is_overlapping,
+                "overlap_pct": overlap_pct,
+                "overlap_m2": overlap_m2,
+                "center_distance_m": center_distance_m,
+                "sub2_on_sub1_pixel_box": sub2_on_sub1_pixel_box,
+                "sub2_on_sub1_polygon": sub2_on_sub1_polygon,
+                "comparison": comparison,
+            }
+
+    def calculate_two_subs_on_big(self, big_path: str, sub1_path: str, sub2_path: str):
+        """Xác định đồng thời vị trí của cả 2 Ortho vùng trên Ortho lớn"""
+        match1 = self.calculate_bounding_box(big_path, sub1_path)
+        match2 = self.calculate_bounding_box(big_path, sub2_path)
+
+        box1 = match1["pixel_box"]
+        box2 = match2["pixel_box"]
+
+        # Tính giao nhau giữa 2 Bounding Box trên Ortho lớn
+        ixmin = max(box1["xmin"], box2["xmin"])
+        iymin = max(box1["ymin"], box2["ymin"])
+        ixmax = min(box1["xmax"], box2["xmax"])
+        iymax = min(box1["ymax"], box2["ymax"])
+
+        mutual_overlap = None
+        is_mutually_overlapping = (ixmax > ixmin) and (iymax > iymin)
+
+        if is_mutually_overlapping:
+            inter_w = ixmax - ixmin
+            inter_h = iymax - iymin
+            inter_area = inter_w * inter_h
+            area1 = box1["width"] * box1["height"]
+            area2 = box2["width"] * box2["height"]
+            union_area = area1 + area2 - inter_area
+            iou_pct = round((inter_area / max(1, union_area)) * 100.0, 2)
+            sub1_inter_pct = round((inter_area / max(1, area1)) * 100.0, 2)
+            sub2_inter_pct = round((inter_area / max(1, area2)) * 100.0, 2)
+
+            mutual_overlap = {
+                "is_overlapping": True,
+                "pixel_box": {
+                    "xmin": ixmin, "ymin": iymin, "xmax": ixmax, "ymax": iymax,
+                    "width": inter_w, "height": inter_h
+                },
+                "iou_pct": iou_pct,
+                "overlap_pct_sub1": sub1_inter_pct,
+                "overlap_pct_sub2": sub2_inter_pct,
+            }
+        else:
+            mutual_overlap = {
+                "is_overlapping": False,
+                "iou_pct": 0.0,
+                "pixel_box": None
+            }
+
+        # Khoảng cách giữa 2 tâm trên Ortho to (Pixel & Mét)
+        dx = box2["center_x"] - box1["center_x"]
+        dy = box2["center_y"] - box1["center_y"]
+        center_dist_px = round(math.sqrt(dx**2 + dy**2), 1)
+
+        big_gsd = match1["big_ortho"].get("gsd_cm")
+        center_dist_m = round(center_dist_px * (big_gsd / 100.0), 2) if big_gsd else None
+
+        # Tổng hợp đối tượng GeoJSON chứa cả 2 vùng và phần giao
+        features = []
+        if match1.get("geojson"):
+            f1 = match1["geojson"]
+            f1["properties"]["label"] = "Sub-Ortho 1"
+            f1["properties"]["color"] = "#06b6d4"
+            features.append(f1)
+        if match2.get("geojson"):
+            f2 = match2["geojson"]
+            f2["properties"]["label"] = "Sub-Ortho 2"
+            f2["properties"]["color"] = "#f59e0b"
+            features.append(f2)
+
+        geojson_collection = {
+            "type": "FeatureCollection",
+            "features": features
+        }
+
+        # So sánh giữa 2 ảnh vùng
+        sub1_info = match1["sub_ortho"]
+        sub2_info = match2["sub_ortho"]
+        comparison = {
+            "dimensions": {
+                "sub1": f"{sub1_info['width']} x {sub1_info['height']} px",
+                "sub2": f"{sub2_info['width']} x {sub2_info['height']} px",
+            },
+            "gsd_cm": {
+                "sub1": sub1_info.get("gsd_cm"),
+                "sub2": sub2_info.get("gsd_cm"),
+                "ratio": round(sub1_info["gsd_cm"] / sub2_info["gsd_cm"], 2) if (sub1_info.get("gsd_cm") and sub2_info.get("gsd_cm")) else None
+            },
+            "area_m2": {
+                "sub1": sub1_info.get("area_m2"),
+                "sub2": sub2_info.get("area_m2"),
+                "area_diff_m2": round((sub2_info.get("area_m2") or 0) - (sub1_info.get("area_m2") or 0), 2)
+            },
+            "center_distance_px": center_dist_px,
+            "center_distance_m": center_dist_m,
+            "mutual_overlap": mutual_overlap,
+        }
+
+        return {
+            "big_ortho": match1["big_ortho"],
+            "sub1_ortho": sub1_info,
+            "sub2_ortho": sub2_info,
+            "sub1_match": match1,
+            "sub2_match": match2,
+            "mutual_overlap": mutual_overlap,
+            "comparison": comparison,
+            "geojson": geojson_collection,
+        }

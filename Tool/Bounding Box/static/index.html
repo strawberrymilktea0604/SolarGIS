@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css?v=4">
+  <link rel="stylesheet" href="/css/style.css?v=6">
 </head>
 <body>
   <!-- Header -->
@@ -95,7 +95,7 @@
       
       <!-- Thanh chuyển Tab chính của Sidebar -->
       <div class="sidebar-tabs">
-        <button class="sidebar-tab active" id="tabNavPV" data-tab="tabContentPV" title="Công cụ đánh dấu & quản lý tấm pin PV">
+        <button class="sidebar-tab active" id="tabNavPV" data-tab="tabContentPV" title="Công cụ đánh dấu PV (Chấm 4 góc tự tính Centroid)">
           <i class="fa-solid fa-solar-panel"></i>
           <span>Đánh Tấm PV</span>
           <span class="tab-badge" id="tabPVBadge">0</span>
@@ -106,15 +106,15 @@
         </button>
       </div>
 
-      <!-- ================= TAB 1: ĐÁNH DẤU & QUẢN LÝ PV ================= -->
+      <!-- ================= TAB 1: CHẤM 5 ĐIỂM (EPSG:32649 & GPS) ================= -->
       <div class="sidebar-tab-content active" id="tabContentPV">
         
-        <!-- Card Khuôn Mẫu PV -->
+        <!-- Card Công Cụ Đánh Dấu PV -->
         <div class="card pv-card">
           <div class="card-header card-collapsible-header">
             <div class="card-title">
-              <i class="fa-solid fa-stamp" style="color: #f59e0b;"></i>
-              <span>Khuôn Mẫu & Thao Tác</span>
+              <i class="fa-solid fa-solar-panel" style="color: #f59e0b;"></i>
+              <span>Đánh Dấu PV (4 Góc + Centroid)</span>
             </div>
             <div class="header-right-tools">
               <span class="badge badge-warning" id="pvCountBadge">0 tấm</span>
@@ -122,13 +122,29 @@
             </div>
           </div>
           <div class="card-body">
+            <!-- Chọn ảnh làm việc: Ortho To vs Ortho Vùng -->
+            <div class="target-ortho-toggle">
+              <label><i class="fa-solid fa-satellite"></i> Chọn ảnh làm việc:</label>
+              <div class="target-buttons">
+                <button type="button" class="btn-target active" id="btnTargetBig" title="Làm việc và đánh dấu trên Ortho To">
+                  <i class="fa-solid fa-mountain-sun"></i> Ortho To
+                </button>
+                <button type="button" class="btn-target" id="btnTargetSub" disabled title="Làm việc và đánh dấu trên Ortho Vùng (Cần nạp Ortho Vùng)">
+                  <i class="fa-solid fa-crosshairs"></i> Ortho Vùng
+                </button>
+              </div>
+            </div>
+
             <!-- Chuyển chế độ đánh dấu -->
             <div class="pv-mode-toggle">
-              <button type="button" class="pv-mode-btn active" id="btnSubModeStamp" title="Click 1 lần để dập ngay 4 góc và centroid theo mẫu (Phím Tab để chuyển)">
-                <i class="fa-solid fa-stamp"></i> Dập 1-Click (Nhanh)
+              <button type="button" class="pv-mode-btn active" id="btnSubModeManual" title="Click lần lượt 4 góc trên ảnh để tự tính tâm centroid (Phím Tab để chuyển)">
+                <i class="fa-solid fa-draw-polygon"></i> Chấm 4 góc PV (Tự tính tâm)
               </button>
-              <button type="button" class="pv-mode-btn" id="btnSubModeManual" title="Click lần lượt từng điểm 1, 2, 3, 4 (Phím Tab để chuyển)">
-                <i class="fa-solid fa-draw-polygon"></i> Chấm 4 góc
+              <button type="button" class="pv-mode-btn" id="btnSubModeStrip" title="Chấm hàng điểm dải pin (Hàng Trên - Hàng Dưới) rồi tự động hợp lực thành các tấm PV">
+                <i class="fa-solid fa-grip"></i> Dải Pin (Hàng Trên - Dưới)
+              </button>
+              <button type="button" class="pv-mode-btn" id="btnSubModeStamp" title="Khuôn mẫu dập nhanh">
+                <i class="fa-solid fa-stamp"></i> Dập Khuôn
               </button>
             </div>
 
@@ -213,10 +229,10 @@
             <!-- Các nút hành động chính -->
             <div class="pv-primary-actions">
               <button class="btn btn-warning btn-block" id="btnStartDrawPV">
-                <i class="fa-solid fa-stamp"></i> Bật Đánh Tấm PV (1-Click)
+                <i class="fa-solid fa-draw-polygon"></i> Bật Chấm 4 Góc PV (Tự tính Centroid)
               </button>
               <div class="btn-pair mt-1">
-                <button class="btn btn-outline btn-sm btn-flex" id="btnExportPVJSON" title="Xuất toàn bộ tọa độ 4 góc và centroid ra file JSON">
+                <button class="btn btn-outline btn-sm btn-flex" id="btnExportPVJSON" title="Xuất toàn bộ tấm PV (4 góc + tâm Centroid) ra file JSON">
                   <i class="fa-solid fa-file-export"></i> Xuất JSON
                 </button>
                 <button class="btn btn-outline btn-sm btn-flex" id="btnImportPVJSON" title="Nhập lại danh sách từ file JSON đã lưu">
@@ -228,12 +244,12 @@
           </div>
         </div>
 
-        <!-- Card Danh Sách Tấm Pin PV Đã Đánh Dấu -->
+        <!-- Card Danh Sách Tấm PV Đã Đánh Dấu -->
         <div class="card pv-list-card">
           <div class="card-header">
             <div class="card-title">
               <i class="fa-solid fa-list-check" style="color: #06b6d4;"></i>
-              <span>Danh Sách Tấm Đã Đánh</span>
+              <span>Danh Sách Tấm PV</span>
             </div>
             <button class="btn-text-danger" id="btnClearAllPV" style="display: none;" title="Xóa toàn bộ">
               <i class="fa-solid fa-trash-can"></i> Xóa hết
@@ -331,7 +347,7 @@
           <div class="card-header card-collapsible-header">
             <div class="card-title">
               <span class="step-badge">2</span>
-              <span>Ortho Vùng Cần Định Vị</span>
+              <span>Ortho Vùng 1 Cần Định Vị</span>
             </div>
             <div class="header-right-tools">
               <span class="badge badge-subtle" id="subBadge">Chưa nạp</span>
@@ -352,7 +368,7 @@
               <input type="file" id="subFileInput" accept=".tif,.tiff,.TIF,.TIFF" />
             </div>
             <button class="btn btn-secondary btn-block mt-2" id="btnLoadSub">
-              <i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng
+              <i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 1
             </button>
           </div>
 
@@ -360,10 +376,10 @@
           <div class="meta-box" id="subMetaBox" style="display: none;">
             <div class="sub-thumb-wrapper" id="subThumbWrapper" style="display: none;">
               <div class="sub-thumb-header">
-                <span><i class="fa-regular fa-image"></i> Ảnh xem trước Ortho Vùng:</span>
+                <span><i class="fa-regular fa-image"></i> Ảnh xem trước Ortho Vùng 1:</span>
               </div>
               <div class="sub-thumb-box">
-                <img id="subThumbnail" src="" alt="Xem trước Ortho Vùng" />
+                <img id="subThumbnail" src="" alt="Xem trước Ortho Vùng 1" />
               </div>
             </div>
             <div class="meta-item">
@@ -382,105 +398,206 @@
               <span class="meta-label">Diện tích vùng:</span>
               <span class="meta-val" id="subAreaVal">-</span>
             </div>
+            <button class="btn btn-outline btn-sm btn-block mt-2" id="btnOpenSubView" title="Xem trực tiếp ảnh con Ortho Vùng 1 và đánh dấu điểm">
+              <i class="fa-solid fa-expand"></i> Mở Xem & Đánh Dấu Trên Ortho Vùng 1
+            </button>
+          </div>
+
+          <!-- Nút Tùy chọn Thêm Ortho 2 & Nút Xác Định 2 Vùng -->
+          <div class="sub-actions-bar mt-2">
+            <button type="button" class="btn btn-outline btn-sm btn-block" id="btnToggleSub2" title="Thêm một ảnh Ortho vùng thứ 2 để đối chiếu / so sánh">
+              <i class="fa-solid fa-plus"></i> Thêm 1 ảnh ortho
+            </button>
+            <button type="button" class="btn btn-accent btn-block mt-2" id="btnMatchTwoSubs" style="display: none;" title="So sánh thông số và xác định vị trí tương quan giữa 2 ảnh Ortho vùng">
+              <i class="fa-solid fa-object-ungroup"></i> Xác định vị trí 2 Ortho vùng
+            </button>
           </div>
         </div>
 
-        <!-- Action Button: Xác Định Vị Trí -->
+        <!-- Section 2b: Ortho Vùng 2 (Tùy chọn) -->
+        <div class="card control-card mt-3" id="sub2CardSection" style="display: none;">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <span class="step-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">2b</span>
+              <span>Ortho Vùng 2</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-subtle" id="sub2Badge">Chưa nạp</span>
+              <button type="button" class="btn-icon-xs" id="btnCloseSub2" title="Ẩn khung Ortho Vùng 2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="input-group">
+              <label for="sub2PathInput">Đường dẫn file Ortho 2 trên máy:</label>
+              <div class="input-with-action">
+                <input type="text" id="sub2PathInput" placeholder="Ví dụ: C:\...\sub_ortho_2.tif" />
+                <button class="btn-icon" id="btnClearSub2Path" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="upload-dropzone" id="sub2Dropzone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Hoặc kéo thả / chọn file tải lên</span>
+              <input type="file" id="sub2FileInput" accept=".tif,.tiff,.TIF,.TIFF" />
+            </div>
+            <button class="btn btn-warning btn-block mt-2" id="btnLoadSub2">
+              <i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 2
+            </button>
+          </div>
+
+          <!-- Sub 2 Meta Info & Thumbnail -->
+          <div class="meta-box" id="sub2MetaBox" style="display: none;">
+            <div class="sub-thumb-wrapper" id="sub2ThumbWrapper" style="display: none;">
+              <div class="sub-thumb-header">
+                <span><i class="fa-regular fa-image"></i> Ảnh xem trước Ortho Vùng 2:</span>
+              </div>
+              <div class="sub-thumb-box">
+                <img id="sub2Thumbnail" src="" alt="Xem trước Ortho Vùng 2" />
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Kích thước vùng:</span>
+              <span class="meta-val" id="sub2DimVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Hệ tọa độ CRS:</span>
+              <span class="meta-val highlight" id="sub2CrsVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Độ phân giải GSD:</span>
+              <span class="meta-val" id="sub2GsdVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Diện tích vùng:</span>
+              <span class="meta-val" id="sub2AreaVal">-</span>
+            </div>
+            <button class="btn btn-outline btn-sm btn-block mt-2" id="btnOpenSub2View" title="Xem trực tiếp ảnh Ortho Vùng 2 và đánh dấu điểm">
+              <i class="fa-solid fa-expand"></i> Mở Xem & Đánh Dấu Trên Ortho Vùng 2
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Button: Các thao tác xác định vị trí -->
         <div class="action-section">
           <button class="btn btn-action btn-block" id="btnMatchRegion">
             <i class="fa-solid fa-crosshairs"></i> Xác Định Vị Trí Bounding Box
           </button>
+          <button class="btn btn-warning btn-block mt-2" id="btnMatchTwoSubsOnBig" style="display: none;" title="Xác định và vẽ đồng thời cả 2 Bounding Box của 2 Ortho vùng lên Ortho To">
+            <i class="fa-solid fa-layer-group"></i> Xác định vị trí 2 Ortho trên Ortho To
+          </button>
           <p class="action-hint text-muted" id="actionHint"><i class="fa-solid fa-circle-info"></i> Nhấn nút trên để tìm khớp Bounding Box trên Ortho To.</p>
         </div>
 
-        <!-- Section 3: Bounding Box Results -->
+        <!-- Section 3: Bounding Box Results (English Information) -->
         <div class="card result-card" id="resultCard" style="display: none;">
           <div class="card-header card-collapsible-header">
             <div class="card-title">
               <i class="fa-solid fa-vector-square"></i>
-              <span>Kết Quả Bounding Box</span>
+              <span id="resultCardTitle">Bounding Box Results</span>
             </div>
             <div class="header-right-tools">
-              <span class="badge badge-success" id="overlapBadge">100% Khớp</span>
+              <span class="badge badge-success" id="overlapBadge">100% Match</span>
               <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
             </div>
           </div>
           <div class="card-body">
-            <!-- Chế độ hiển thị lớp phủ -->
+            <!-- Overlay Display Options -->
             <div class="overlay-display-mode">
               <div class="mode-header">
-                <span><i class="fa-solid fa-eye"></i> Tùy chọn hiển thị:</span>
+                <span><i class="fa-solid fa-eye"></i> Display Options:</span>
               </div>
               <div class="mode-buttons">
-                <button class="mode-btn active" id="btnModeBoth" title="Hiện cả Bounding Box và ảnh con đè lên">
-                  <i class="fa-solid fa-clone"></i> Hiện cả ảnh con
+                <button class="mode-btn active" id="btnModeBoth" title="Display sub-ortho overlay image on canvas">
+                  <i class="fa-solid fa-clone"></i> Show Overlay Image
                 </button>
-                <button class="mode-btn" id="btnModeOnlyBBox" title="Chỉ giữ lại khung Bounding Box">
-                  <i class="fa-solid fa-vector-square"></i> Chỉ hiện khung BBox
+                <button class="mode-btn" id="btnModeOnlyBBox" title="Display only neon bounding box outline">
+                  <i class="fa-solid fa-vector-square"></i> BBox Outlines Only
                 </button>
               </div>
             </div>
 
-            <!-- Metric Grid -->
-            <div class="metrics-grid">
+            <!-- Single BBox Metric Grid -->
+            <div class="metrics-grid" id="singleMetricsGrid">
               <div class="metric-card">
-                <div class="metric-title">Tọa độ gốc (Pixel)</div>
+                <div class="metric-title" id="metricTitle1">Origin Coordinates (Pixel)</div>
                 <div class="metric-value" id="pixelBoxVal">X: 0, Y: 0</div>
-                <div class="metric-sub" id="pixelDimVal">W: 0, H: 0</div>
+                <div class="metric-sub" id="pixelDimVal">W: 0, H: 0 px</div>
               </div>
               <div class="metric-card">
-                <div class="metric-title">Tỉ lệ GSD (To / Vùng)</div>
+                <div class="metric-title" id="metricTitle2">GSD Resolution Ratio</div>
                 <div class="metric-value" id="gsdRatioVal">-</div>
-                <div class="metric-sub">Tỉ lệ kích thước hạt ảnh</div>
+                <div class="metric-sub" id="metricSub2">Master / Sub resolution ratio</div>
               </div>
             </div>
 
-            <!-- Tab Bar for Formats -->
+            <!-- Dual Sub-Ortho Comparison Panel (English) -->
+            <div class="dual-compare-panel mt-2" id="dualComparePanel" style="display: none;">
+              <div class="dual-compare-header">
+                <i class="fa-solid fa-scale-balanced" style="color: #f59e0b;"></i>
+                <span>Sub-Ortho Comparative Analysis</span>
+              </div>
+              <div class="table-responsive">
+                <table class="specs-table" id="dualCompareTable">
+                  <thead>
+                    <tr>
+                      <th>Metric</th>
+                      <th style="color: #06b6d4;"><i class="fa-solid fa-square"></i> Sub-Ortho 1</th>
+                      <th style="color: #f59e0b;"><i class="fa-solid fa-square"></i> Sub-Ortho 2</th>
+                      <th>Comparison / Match</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dualCompareTableBody">
+                    <!-- Populated via JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Bar for Formats (English) -->
             <div class="format-tabs">
-              <button class="tab-btn active" data-tab="tab-pixel">Pixel</button>
-              <button class="tab-btn" data-tab="tab-norm">Chuẩn Hóa</button>
-              <button class="tab-btn" data-tab="tab-yolo">YOLO</button>
-              <button class="tab-btn" data-tab="tab-geo">WGS84</button>
+              <button class="tab-btn active" data-tab="tab-pixel">Pixel Coordinates</button>
+              <button class="tab-btn" data-tab="tab-norm">Normalized</button>
+              <button class="tab-btn" data-tab="tab-yolo">YOLO Format</button>
+              <button class="tab-btn" data-tab="tab-geo">WGS84 / Geo</button>
             </div>
 
             <div class="tab-content" id="tab-pixel">
               <div class="code-box">
                 <pre id="codePixel"></pre>
-                <button class="copy-btn" data-target="codePixel" title="Sao chép"><i class="fa-regular fa-copy"></i></button>
+                <button class="copy-btn" data-target="codePixel" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
               </div>
             </div>
 
             <div class="tab-content" id="tab-norm" style="display: none;">
               <div class="code-box">
                 <pre id="codeNorm"></pre>
-                <button class="copy-btn" data-target="codeNorm" title="Sao chép"><i class="fa-regular fa-copy"></i></button>
+                <button class="copy-btn" data-target="codeNorm" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
               </div>
             </div>
 
             <div class="tab-content" id="tab-yolo" style="display: none;">
               <div class="code-box">
                 <pre id="codeYOLO"></pre>
-                <button class="copy-btn" data-target="codeYOLO" title="Sao chép"><i class="fa-regular fa-copy"></i></button>
+                <button class="copy-btn" data-target="codeYOLO" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
               </div>
             </div>
 
             <div class="tab-content" id="tab-geo" style="display: none;">
               <div class="code-box">
                 <pre id="codeGeo"></pre>
-                <button class="copy-btn" data-target="codeGeo" title="Sao chép"><i class="fa-regular fa-copy"></i></button>
+                <button class="copy-btn" data-target="codeGeo" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
               </div>
             </div>
 
-            <!-- Export & Extraction Buttons -->
+            <!-- Export & Extraction Buttons (English) -->
             <div class="export-actions">
               <button class="btn btn-outline btn-sm btn-block" id="btnExportYOLO">
-                <i class="fa-solid fa-file-arrow-down"></i> Tải BBox YOLO (.txt)
+                <i class="fa-solid fa-file-arrow-down"></i> Export YOLO (.txt)
               </button>
               <button class="btn btn-outline btn-sm btn-block" id="btnExportGeoJSON">
-                <i class="fa-solid fa-map-location-dot"></i> Tải GeoJSON (.geojson)
+                <i class="fa-solid fa-map-location-dot"></i> Export GeoJSON (.geojson)
               </button>
               <button class="btn btn-success btn-sm btn-block" id="btnCropGeoTIFF">
-                <i class="fa-solid fa-scissors"></i> Cắt trích xuất GeoTIFF vùng
+                <i class="fa-solid fa-scissors"></i> Extract Cropped GeoTIFF
               </button>
             </div>
           </div>
@@ -495,15 +612,33 @@
       
       <!-- Top Viewer Floating Controls (Tinh Gọn & Không đè nút Zoom) -->
       <div class="viewer-toolbar">
+        <!-- Nhóm chuyển đổi ảnh xem: Ortho To vs Ortho Vùng -->
+        <div class="tool-group" id="viewImageGroup">
+          <button class="tool-btn active" id="btnViewBig" title="Xem ảnh Ortho To">
+            <i class="fa-solid fa-mountain-sun"></i> Ortho To
+          </button>
+          <button class="tool-btn" id="btnViewSub" disabled title="Xem ảnh Ortho Vùng 1">
+            <i class="fa-solid fa-crosshairs"></i> Vùng 1
+          </button>
+          <button class="tool-btn" id="btnViewSub2" disabled style="display: none;" title="Xem ảnh Ortho Vùng 2">
+            <i class="fa-solid fa-crosshairs" style="color: #f59e0b;"></i> Vùng 2
+          </button>
+        </div>
+
+        <div class="tool-separator"></div>
+
         <!-- Nhóm chế độ thao tác -->
         <div class="tool-group">
           <button class="tool-btn active" id="btnModePan" title="Chế độ di chuyển và phóng to thu nhỏ bản đồ (Pan)">
             <i class="fa-solid fa-hand"></i> Di chuyển
           </button>
-          <button class="tool-btn btn-highlight" id="btnModeDrawPV" title="Bật chế độ đánh dấu tấm pin PV">
-            <i class="fa-solid fa-stamp"></i> Đánh PV
+          <button class="tool-btn btn-highlight" id="btnModeDrawPV" title="Bật chế độ chấm 4 góc PV (tự tính tâm centroid)">
+            <i class="fa-solid fa-solar-panel"></i> Đánh Tấm PV
           </button>
-          <button class="tool-btn" id="btnUndoPV" title="Hoàn tác tấm vừa vẽ (Ctrl+Z)">
+          <button class="tool-btn" id="btnToggleChain" title="Bật/Tắt chế độ Nối Nhanh 2 Click (tự bắt 2 góc từ tấm pin liền kề)">
+            <i class="fa-solid fa-link"></i> Nối 2 Click
+          </button>
+          <button class="tool-btn" id="btnUndoPV" title="Hoàn tác điểm vừa chấm (Ctrl+Z)">
             <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
@@ -590,7 +725,11 @@
           <span class="hud-val" id="hudPixel">X: 0, Y: 0</span>
         </div>
         <div class="hud-item">
-          <span class="hud-label">Tọa độ Địa lý (WGS84):</span>
+          <span class="hud-label">UTM 49N (EPSG:32649):</span>
+          <span class="hud-val" id="hudUTM">E: --, N: --</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">GPS WGS84:</span>
           <span class="hud-val" id="hudGeo">Lat: --, Lon: --</span>
         </div>
         <div class="hud-item">
@@ -605,10 +744,14 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
+  <!-- Proj4js Coordinate Transformation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
+  
   <!-- App JS Modules -->
-  <script src="/js/orthoReader.js?v=4"></script>
-  <script src="/js/orthoViewer.js?v=4"></script>
-  <script src="/js/pvAnnotator.js?v=4"></script>
-  <script src="/js/app.js?v=4"></script>
+  <script src="/js/coordUtils.js?v=6"></script>
+  <script src="/js/orthoReader.js?v=6"></script>
+  <script src="/js/orthoViewer.js?v=6"></script>
+  <script src="/js/pvAnnotator.js?v=6"></script>
+  <script src="/js/app.js?v=6"></script>
 </body>
 </html>
