@@ -702,3 +702,36 @@ class OrthoProcessor:
             "comparison": comparison,
             "geojson": geojson_collection,
         }
+
+    def read_pixels_from_utm(self, file_path: str, points: list):
+        """
+        Đọc trực tiếp chỉ số pixel (Col, Row) của từng điểm tọa độ từ file ảnh GeoTIFF gốc
+        Sử dụng phương thức native src.index(X, Y) của rasterio/GDAL (KHÔNG dùng công thức tính thủ công)
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File không tồn tại: {file_path}")
+
+        with rasterio.open(file_path) as src:
+            results = []
+            for p in points:
+                name = p.get("name", "Point")
+                x = float(p.get("x", p.get("X", 0)))
+                y = float(p.get("y", p.get("Y", 0)))
+                z = float(p.get("z", p.get("Z", 0)))
+
+                # Đọc trực tiếp từ GeoTIFF rasterio index
+                row, col = src.index(x, y)
+                in_bounds = (0 <= col < src.width and 0 <= row < src.height)
+
+                results.append({
+                    "name": name,
+                    "x": x,
+                    "y": y,
+                    "z": z,
+                    "pixel_u": col,
+                    "pixel_v": row,
+                    "pixel_u_int": col,
+                    "pixel_v_int": row,
+                    "in_bounds": in_bounds
+                })
+            return results

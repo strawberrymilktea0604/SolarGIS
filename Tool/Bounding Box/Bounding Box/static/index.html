@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css?v=6">
+  <link rel="stylesheet" href="/css/style.css?v=7">
 </head>
 <body>
   <!-- Header -->
@@ -103,6 +103,11 @@
         <button class="sidebar-tab" id="tabNavBBox" data-tab="tabContentBBox" title="Nạp Ortho To, Ortho Vùng & Xác định Bounding Box">
           <i class="fa-solid fa-layer-group"></i>
           <span>Định Vị BBox</span>
+        </button>
+        <button class="sidebar-tab" id="tabNavUTMPixel" data-tab="tabContentUTMPixel" title="Nhập JSON tọa độ UTM, đánh dấu Points lên ảnh và đọc trực tiếp tọa độ pixel (u,v) để xuất CSV">
+          <i class="fa-solid fa-crosshairs"></i>
+          <span>Đọc Pixel (u, v)</span>
+          <span class="tab-badge" id="tabUTMBadge">0</span>
         </button>
       </div>
 
@@ -605,6 +610,127 @@
 
       </div>
 
+      <!-- ================= TAB 3: NHẬP JSON UTM -> ĐÁNH DẤU POINTS & ĐỌC PIXEL TRỰC TIẾP -> XUẤT CSV ================= -->
+      <div class="sidebar-tab-content" id="tabContentUTMPixel" style="display: none;">
+        
+        <div class="card control-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-crosshairs" style="color: #06b6d4;"></i>
+              <span>Nhập JSON & Đọc Tọa Độ Pixel</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-accent" id="utmPointCountBadge">0 điểm</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <!-- Chọn ảnh mục tiêu -->
+            <div class="input-group">
+              <label><i class="fa-solid fa-layer-group"></i> Ảnh trực giao mục tiêu:</label>
+              <div class="btn-group-toggle" id="utmTargetGroup">
+                <button type="button" class="btn-toggle active" id="btnUtmTargetBig" data-target="big">Ortho To</button>
+                <button type="button" class="btn-toggle" id="btnUtmTargetSub" data-target="sub">Vùng 1</button>
+                <button type="button" class="btn-toggle" id="btnUtmTargetSub2" data-target="sub2" style="display: none;">Vùng 2</button>
+              </div>
+            </div>
+
+            <!-- Upload File JSON -->
+            <div class="input-group mt-2">
+              <label><i class="fa-solid fa-file-code"></i> Tải file JSON tọa độ:</label>
+              <div class="upload-dropzone utm-dropzone" id="utmJsonDropzone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Chọn file .json hoặc kéo thả vào đây</span>
+                <input type="file" id="utmJsonFileInput" accept=".json,application/json" />
+              </div>
+            </div>
+
+            <!-- Dán JSON trực tiếp -->
+            <div class="input-group mt-2">
+              <div class="d-flex justify-between align-center mb-1">
+                <label for="utmJsonTextarea" class="mb-0"><i class="fa-solid fa-code"></i> Hoặc dán nội dung JSON:</label>
+                <button type="button" class="btn-link-xs" id="btnLoadSampleUTMJson" title="Nạp nhanh ví dụ JSON Thuận Nam 19">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Dùng mẫu Thuận Nam
+                </button>
+              </div>
+              <textarea id="utmJsonTextarea" rows="7" class="form-control code-textarea" placeholder='Dán JSON tọa độ UTM (Coordinates: { "Point1": { "X": ..., "Y": ..., "Z": ... } })'></textarea>
+            </div>
+
+            <!-- Thông tin CRS & Project Info nhận diện được -->
+            <div class="utm-meta-preview" id="utmMetaPreview" style="display: none;">
+              <div class="meta-item">
+                <span class="meta-label">CRS:</span>
+                <span class="meta-val highlight" id="utmCrsVal">WGS 84 / UTM zone 49N (EPSG:32649)</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Số điểm nhận diện:</span>
+                <span class="meta-val" id="utmDetectedPointsVal">0 điểm</span>
+              </div>
+            </div>
+
+            <!-- Nút hành động chính -->
+            <div class="action-buttons-stack mt-3">
+              <button type="button" class="btn btn-primary btn-block" id="btnPlotAndReadPixels">
+                <i class="fa-solid fa-location-crosshairs"></i> Đánh Dấu Points & Đọc Pixel (u, v)
+              </button>
+              <div class="d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-outline btn-sm flex-1" id="btnClearUTMPoints">
+                  <i class="fa-solid fa-trash-can"></i> Xóa điểm
+                </button>
+                <button type="button" class="btn btn-outline btn-sm flex-1" id="btnClearUTMText">
+                  <i class="fa-solid fa-eraser"></i> Xóa JSON
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảng Kết Quả Đọc Tọa Độ Điểm Ảnh Pixel (u, v) -->
+        <div class="card mt-3" id="utmResultsCard" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-table-list" style="color: #10b981;"></i>
+              <span>Tọa Độ Pixel Đọc Trực Tiếp</span>
+            </div>
+            <div class="header-right-tools">
+              <button class="btn-icon-xs" id="btnCopyUTMTable" title="Sao chép bảng kết quả"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="table-responsive utm-table-wrap">
+              <table class="data-table" id="utmPointsTable">
+                <thead>
+                  <tr>
+                    <th>Tên Điểm</th>
+                    <th title="Tọa độ pixel Col (ngang)">Pixel U</th>
+                    <th title="Tọa độ pixel Row (dọc)">Pixel V</th>
+                    <th title="Tọa độ thực địa X">UTM X</th>
+                    <th title="Tọa độ thực địa Y">UTM Y</th>
+                    <th>Z</th>
+                  </tr>
+                </thead>
+                <tbody id="utmPointsTableBody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-hint mt-2">
+              <i class="fa-solid fa-circle-info"></i> Tọa độ Pixel (u, v) được đọc trực tiếp từ marker cắm trên ảnh. Bấm vào từng dòng để bay tới điểm trên ảnh. Có thể kéo thả marker để vi chỉnh.
+            </p>
+
+            <!-- Nút xuất CSV -->
+            <div class="export-actions mt-3">
+              <button type="button" class="btn btn-success btn-block" id="btnExportUTMCSV">
+                <i class="fa-solid fa-file-csv"></i> Xuất File CSV Tọa Độ Pixel (u, v)
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </aside>
 
     <!-- Center: Interactive Viewer -->
@@ -748,10 +874,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
   
   <!-- App JS Modules -->
-  <script src="/js/coordUtils.js?v=6"></script>
-  <script src="/js/orthoReader.js?v=6"></script>
-  <script src="/js/orthoViewer.js?v=6"></script>
-  <script src="/js/pvAnnotator.js?v=6"></script>
-  <script src="/js/app.js?v=6"></script>
+  <script src="/js/coordUtils.js?v=7"></script>
+  <script src="/js/orthoReader.js?v=7"></script>
+  <script src="/js/orthoViewer.js?v=7"></script>
+  <script src="/js/pvAnnotator.js?v=7"></script>
+  <script src="/js/app.js?v=7"></script>
 </body>
 </html>

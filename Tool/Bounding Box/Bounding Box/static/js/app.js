@@ -68,8 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnOpenSubView = document.getElementById('btnOpenSubView');
   const tabNavPV = document.getElementById('tabNavPV');
   const tabNavBBox = document.getElementById('tabNavBBox');
+  const tabNavUTMPixel = document.getElementById('tabNavUTMPixel');
   const tabContentPV = document.getElementById('tabContentPV');
   const tabContentBBox = document.getElementById('tabContentBBox');
+  const tabContentUTMPixel = document.getElementById('tabContentUTMPixel');
   const btnModePan = document.getElementById('btnModePan');
   const btnModeDrawPV = document.getElementById('btnModeDrawPV');
   const btnStartDrawPV = document.getElementById('btnStartDrawPV');
@@ -141,17 +143,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function switchSidebarTab(tabName) {
-    if (tabName === 'pv') {
-      if (tabNavPV) tabNavPV.classList.add('active');
-      if (tabNavBBox) tabNavBBox.classList.remove('active');
-      if (tabContentPV) tabContentPV.style.display = 'flex';
-      if (tabContentBBox) tabContentBBox.style.display = 'none';
-    } else {
-      if (tabNavBBox) tabNavBBox.classList.add('active');
-      if (tabNavPV) tabNavPV.classList.remove('active');
-      if (tabContentBBox) tabContentBBox.style.display = 'flex';
-      if (tabContentPV) tabContentPV.style.display = 'none';
-    }
+    const tabs = [
+      { id: 'pv', nav: tabNavPV, content: tabContentPV },
+      { id: 'bbox', nav: tabNavBBox, content: tabContentBBox },
+      { id: 'utm_pixel', nav: tabNavUTMPixel, content: tabContentUTMPixel }
+    ];
+
+    tabs.forEach(t => {
+      const isActive = t.id === tabName;
+      if (t.nav) t.nav.classList.toggle('active', isActive);
+      if (t.content) t.content.style.display = isActive ? 'flex' : 'none';
+    });
   }
 
   function setPVDrawMode(drawMode) {
@@ -505,10 +507,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbBtnDecSize = document.getElementById('tbBtnDecSize');
     const tbBtnIncSize = document.getElementById('tbBtnIncSize');
 
-    // --- Sidebar Tabs Navigation (Đánh Tấm PV vs Định Vị BBox) ---
+    // --- Sidebar Tabs Navigation (Đánh Tấm PV vs Định Vị BBox vs Đọc Pixel UTM) ---
     // Gắn sự kiện chuyển tab Sidebar
     if (tabNavPV) tabNavPV.addEventListener('click', () => switchSidebarTab('pv'));
     if (tabNavBBox) tabNavBBox.addEventListener('click', () => switchSidebarTab('bbox'));
+    if (tabNavUTMPixel) tabNavUTMPixel.addEventListener('click', () => switchSidebarTab('utm_pixel'));
 
     // Gắn sự kiện chuyển đổi Ortho To / Ortho Vùng
     if (btnViewBig) btnViewBig.addEventListener('click', switchToBigOrtho);
@@ -1468,4 +1471,468 @@ document.addEventListener('DOMContentLoaded', () => {
     bigCropImg.src = `/api/crop-download?big_path=${encodeURIComponent(currentBigPath)}&xmin=${box.xmin}&ymin=${box.ymin}&width=${box.width}&height=${box.height}&format=PNG`;
     subImg.src = `/api/preview-image?filename=${loadedMatchData.sub_ortho.preview_filename}`;
   }
+
+  // =========================================================================
+  // TAB 3: NHẬP JSON UTM -> ĐÁNH DẤU POINTS & ĐỌC TRỰC TIẾP PIXEL -> XUẤT CSV
+  // =========================================================================
+  function initUTMPixelModule() {
+    const SAMPLE_UTM_JSON = JSON.stringify({
+      "Project_Info": {
+        "CRS": "WGS 84 / UTM zone 49N",
+        "EPSG": 32649,
+        "Total_Points": 4
+      },
+      "Coordinates": {
+        "35M.ThuậnNam19Points1": {
+          "X": 265499.0387,
+          "Y": 1263866.442,
+          "Z": 0.0
+        },
+        "35M.ThuậnNam19Points2": {
+          "X": 265475.1227,
+          "Y": 1263804.8983,
+          "Z": -0.0
+        },
+        "35M.ThuậnNam19Points3": {
+          "X": 265680.1109,
+          "Y": 1263865.9542,
+          "Z": 0.0
+        },
+        "35M.ThuậnNam19Points4": {
+          "X": 265654.0058,
+          "Y": 1263795.824,
+          "Z": 0.0
+        },
+        "Centroid": {
+          "X": 265577.0695,
+          "Y": 1263833.2796,
+          "Z": 0.0
+        }
+      }
+    }, null, 4);
+
+    let activeTarget = 'big'; // 'big' | 'sub' | 'sub2'
+    let lastPlottedResults = [];
+
+    const tabUTMBadge = document.getElementById('tabUTMBadge');
+    const utmPointCountBadge = document.getElementById('utmPointCountBadge');
+    const btnUtmTargetBig = document.getElementById('btnUtmTargetBig');
+    const btnUtmTargetSub = document.getElementById('btnUtmTargetSub');
+    const btnUtmTargetSub2 = document.getElementById('btnUtmTargetSub2');
+    const utmJsonDropzone = document.getElementById('utmJsonDropzone');
+    const utmJsonFileInput = document.getElementById('utmJsonFileInput');
+    const utmJsonTextarea = document.getElementById('utmJsonTextarea');
+    const btnLoadSampleUTMJson = document.getElementById('btnLoadSampleUTMJson');
+    const btnClearUTMText = document.getElementById('btnClearUTMText');
+    const btnPlotAndReadPixels = document.getElementById('btnPlotAndReadPixels');
+    const btnClearUTMPoints = document.getElementById('btnClearUTMPoints');
+    const utmMetaPreview = document.getElementById('utmMetaPreview');
+    const utmCrsVal = document.getElementById('utmCrsVal');
+    const utmDetectedPointsVal = document.getElementById('utmDetectedPointsVal');
+    const utmResultsCard = document.getElementById('utmResultsCard');
+    const utmPointsTableBody = document.getElementById('utmPointsTableBody');
+    const btnExportUTMCSV = document.getElementById('btnExportUTMCSV');
+    const btnCopyUTMTable = document.getElementById('btnCopyUTMTable');
+
+    // Chuyển chọn ảnh mục tiêu
+    function setTarget(target) {
+      activeTarget = target;
+      if (btnUtmTargetBig) btnUtmTargetBig.classList.toggle('active', target === 'big');
+      if (btnUtmTargetSub) btnUtmTargetSub.classList.toggle('active', target === 'sub');
+      if (btnUtmTargetSub2) btnUtmTargetSub2.classList.toggle('active', target === 'sub2');
+
+      // Tự động chuyển map view tương ứng nếu ảnh đã nạp
+      if (target === 'sub' && loadedSubData) {
+        switchToSubOrtho();
+      } else if (target === 'sub2' && loadedSub2Data) {
+        switchToSub2Ortho();
+      } else if (loadedBigData) {
+        switchToBigOrtho();
+      }
+    }
+
+    if (btnUtmTargetBig) btnUtmTargetBig.addEventListener('click', () => setTarget('big'));
+    if (btnUtmTargetSub) btnUtmTargetSub.addEventListener('click', () => setTarget('sub'));
+    if (btnUtmTargetSub2) btnUtmTargetSub2.addEventListener('click', () => setTarget('sub2'));
+
+    // Cập nhật hiển thị nút Sub 2 nếu Sub 2 được nạp
+    const observer = new MutationObserver(() => {
+      if (btnViewSub2 && btnViewSub2.style.display !== 'none') {
+        if (btnUtmTargetSub2) btnUtmTargetSub2.style.display = 'inline-block';
+      }
+    });
+    if (btnViewSub2) observer.observe(btnViewSub2, { attributes: true, attributeFilter: ['style'] });
+
+    // Tự động nạp mẫu Thuận Nam
+    if (btnLoadSampleUTMJson) {
+      btnLoadSampleUTMJson.addEventListener('click', () => {
+        utmJsonTextarea.value = SAMPLE_UTM_JSON;
+        analyzeJsonText(SAMPLE_UTM_JSON);
+        setStatus('Đã nạp JSON mẫu Thuận Nam 19 (4 Góc + Centroid)', 'success');
+      });
+    }
+
+    // Xóa nội dung textarea
+    if (btnClearUTMText) {
+      btnClearUTMText.addEventListener('click', () => {
+        utmJsonTextarea.value = '';
+        if (utmMetaPreview) utmMetaPreview.style.display = 'none';
+      });
+    }
+
+    // Xử lý upload file JSON
+    if (utmJsonFileInput) {
+      utmJsonFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          readFile(e.target.files[0]);
+        }
+      });
+    }
+
+    // Drag & Drop cho dropzone
+    if (utmJsonDropzone) {
+      utmJsonDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        utmJsonDropzone.classList.add('drag-over');
+      });
+      utmJsonDropzone.addEventListener('dragleave', () => {
+        utmJsonDropzone.classList.remove('drag-over');
+      });
+      utmJsonDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        utmJsonDropzone.classList.remove('drag-over');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          readFile(e.dataTransfer.files[0]);
+        }
+      });
+    }
+
+    function readFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        utmJsonTextarea.value = text;
+        analyzeJsonText(text);
+        setStatus(`Đã tải file JSON: ${file.name}`, 'success');
+      };
+      reader.readAsText(file);
+    }
+
+    // Lắng nghe thay đổi trong textarea để cập nhật preview meta
+    if (utmJsonTextarea) {
+      utmJsonTextarea.addEventListener('input', () => {
+        analyzeJsonText(utmJsonTextarea.value);
+      });
+    }
+
+    function parsePoints(jsonObj) {
+      const points = [];
+      let crs = 'WGS 84 / UTM zone 49N (EPSG:32649)';
+
+      if (!jsonObj || typeof jsonObj !== 'object') return { points, crs };
+
+      if (jsonObj.Project_Info && jsonObj.Project_Info.CRS) {
+        crs = `${jsonObj.Project_Info.CRS} (EPSG:${jsonObj.Project_Info.EPSG || 32649})`;
+      } else if (jsonObj.crs_name) {
+        crs = `${jsonObj.crs_name} (${jsonObj.crs || 'EPSG:32649'})`;
+      }
+
+      // Trường hợp 1: Dạng chuẩn người dùng "Coordinates": { "Point1": { "X": ..., "Y": ..., "Z": ... } }
+      if (jsonObj.Coordinates && typeof jsonObj.Coordinates === 'object') {
+        for (const [name, coords] of Object.entries(jsonObj.Coordinates)) {
+          if (coords && typeof coords === 'object') {
+            const x = coords.X !== undefined ? coords.X : coords.x;
+            const y = coords.Y !== undefined ? coords.Y : coords.y;
+            const z = coords.Z !== undefined ? coords.Z : (coords.z || 0.0);
+            if (x !== undefined && y !== undefined) {
+              points.push({ name, x: Number(x), y: Number(y), z: Number(z) });
+            }
+          }
+        }
+      }
+      // Trường hợp 2: Dạng panels của Ortho to.json / pvAnnotator
+      else if (Array.isArray(jsonObj.panels)) {
+        jsonObj.panels.forEach((p, pIdx) => {
+          const pId = p.id || `PV_${pIdx + 1}`;
+          if (p.centroid && p.centroid.utm_32649) {
+            points.push({
+              name: `${pId}_Centroid`,
+              x: p.centroid.utm_32649.easting,
+              y: p.centroid.utm_32649.northing,
+              z: 0.0
+            });
+          }
+          if (Array.isArray(p.corners)) {
+            p.corners.forEach(c => {
+              if (c.utm_32649) {
+                points.push({
+                  name: `${pId}_Corner_${c.corner_index}`,
+                  x: c.utm_32649.easting,
+                  y: c.utm_32649.northing,
+                  z: 0.0
+                });
+              }
+            });
+          }
+        });
+      }
+      // Trường hợp 3: Mảng phẳng [ { name, x, y, z }, ... ]
+      else if (Array.isArray(jsonObj)) {
+        jsonObj.forEach((item, idx) => {
+          const x = item.X !== undefined ? item.X : item.x;
+          const y = item.Y !== undefined ? item.Y : item.y;
+          const z = item.Z !== undefined ? item.Z : (item.z || 0.0);
+          const name = item.name || item.id || item.label || `Point_${idx + 1}`;
+          if (x !== undefined && y !== undefined) {
+            points.push({ name, x: Number(x), y: Number(y), z: Number(z) });
+          }
+        });
+      }
+      // Trường hợp 4: Đối tượng lồng trực tiếp { "P1": { x, y }, "P2": { x, y } }
+      else {
+        for (const [name, coords] of Object.entries(jsonObj)) {
+          if (coords && typeof coords === 'object') {
+            const x = coords.X !== undefined ? coords.X : coords.x;
+            const y = coords.Y !== undefined ? coords.Y : coords.y;
+            const z = coords.Z !== undefined ? coords.Z : (coords.z || 0.0);
+            if (x !== undefined && y !== undefined) {
+              points.push({ name, x: Number(x), y: Number(y), z: Number(z) });
+            }
+          }
+        }
+      }
+
+      return { points, crs };
+    }
+
+    function analyzeJsonText(text) {
+      if (!text || !text.trim()) {
+        if (utmMetaPreview) utmMetaPreview.style.display = 'none';
+        return;
+      }
+      try {
+        const parsed = JSON.parse(text);
+        const { points, crs } = parsePoints(parsed);
+        if (utmMetaPreview && points.length > 0) {
+          utmMetaPreview.style.display = 'flex';
+          utmCrsVal.innerText = crs;
+          utmDetectedPointsVal.innerText = `${points.length} điểm tọa độ`;
+        }
+      } catch (err) {
+        if (utmMetaPreview) utmMetaPreview.style.display = 'none';
+      }
+    }
+
+    // Đánh dấu Points & Đọc Pixel trực tiếp
+    if (btnPlotAndReadPixels) {
+      btnPlotAndReadPixels.addEventListener('click', async () => {
+        const text = utmJsonTextarea.value.trim();
+        if (!text) {
+          alert('Vui lòng nhập hoặc nạp file JSON chứa tọa độ UTM!');
+          return;
+        }
+
+        let parsed = null;
+        try {
+          parsed = JSON.parse(text);
+        } catch (err) {
+          alert(`Lỗi cú pháp JSON: ${err.message}`);
+          return;
+        }
+
+        const { points, crs } = parsePoints(parsed);
+        if (points.length === 0) {
+          alert('Không tìm thấy danh sách điểm tọa độ hợp lệ trong file JSON!');
+          return;
+        }
+
+        // Kiểm tra ảnh mục tiêu đã nạp chưa
+        let targetInfo = null;
+        if (activeTarget === 'sub2') {
+          if (!loadedSub2Data) {
+            alert('Chưa nạp Ortho Vùng 2! Vui lòng chọn ảnh mục tiêu khác hoặc nạp Ortho Vùng 2 trước.');
+            return;
+          }
+          switchToSub2Ortho();
+          targetInfo = loadedSub2Data;
+        } else if (activeTarget === 'sub') {
+          if (!loadedSubData) {
+            alert('Chưa nạp Ortho Vùng 1! Vui lòng chọn ảnh mục tiêu khác hoặc nạp Ortho Vùng 1 trước.');
+            return;
+          }
+          switchToSubOrtho();
+          targetInfo = loadedSubData;
+        } else {
+          if (!loadedBigData) {
+            alert('Chưa nạp Ortho To! Vui lòng nạp Ortho To trước.');
+            return;
+          }
+          switchToBigOrtho();
+          targetInfo = loadedBigData;
+        }
+
+        // ĐỌC TRỰC TIẾP TỪ ẢNH GEOTIFF BẰNG RASTERIO INDEX (KHÔNG DÙNG CÔNG THỨC TÍNH TOÁN THỦ CÔNG)
+        setStatus('Đang đọc tọa độ pixel trực tiếp từ GeoTIFF raster...', 'loading');
+        try {
+          const resp = await fetch('/api/read-pixels-from-utm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file_path: targetInfo.file_path,
+              points: points
+            })
+          });
+
+          if (!resp.ok) {
+            const errData = await resp.json().catch(() => ({}));
+            throw new Error(errData.detail || 'Lỗi khi đọc pixel từ file GeoTIFF');
+          }
+
+          const resData = await resp.json();
+          const pointsWithPixels = resData.points;
+
+          // Cắm các điểm đã đọc pixel trực tiếp lên ảnh trực giao
+          const results = viewer.plotAndReadUTMPoints(pointsWithPixels);
+          lastPlottedResults = results;
+
+          renderResultsTable(results);
+
+          // Cập nhật badges
+          if (tabUTMBadge) tabUTMBadge.innerText = results.length;
+          if (utmPointCountBadge) utmPointCountBadge.innerText = `${results.length} điểm`;
+
+          setStatus(`Đã đọc trực tiếp ${results.length} điểm pixel từ ${targetInfo.file_name} & đánh dấu lên ảnh`, 'success');
+        } catch (apiErr) {
+          console.error(apiErr);
+          alert(`Lỗi đọc pixel: ${apiErr.message}`);
+          setStatus('Lỗi đọc pixel từ GeoTIFF', 'error');
+        }
+      });
+    }
+
+    // Render bảng dữ liệu tọa độ pixel đọc được
+    function renderResultsTable(results) {
+      if (!utmResultsCard || !utmPointsTableBody) return;
+
+      if (!results || results.length === 0) {
+        utmResultsCard.style.display = 'none';
+        return;
+      }
+
+      utmResultsCard.style.display = 'block';
+      utmPointsTableBody.innerHTML = '';
+
+      results.forEach((pt, index) => {
+        const tr = document.createElement('tr');
+        tr.id = `utm-row-${index}`;
+
+        const isCentroid = pt.name && pt.name.toLowerCase().includes('centroid');
+
+        tr.innerHTML = `
+          <td>
+            <strong class="${isCentroid ? 'col-centroid' : ''}">
+              <i class="fa-solid ${isCentroid ? 'fa-star text-amber' : 'fa-location-dot text-cyan'}"></i>
+              ${pt.name}
+            </strong>
+          </td>
+          <td class="col-pixel" id="cell-u-${index}">${pt.pixel_u}</td>
+          <td class="col-pixel" id="cell-v-${index}">${pt.pixel_v}</td>
+          <td>${pt.x !== undefined ? pt.x.toLocaleString() : '--'}</td>
+          <td>${pt.y !== undefined ? pt.y.toLocaleString() : '--'}</td>
+          <td>${pt.z !== undefined ? pt.z : '0.0'}</td>
+        `;
+
+        tr.addEventListener('click', () => {
+          document.querySelectorAll('#utmPointsTableBody tr').forEach(r => r.classList.remove('active-row'));
+          tr.classList.add('active-row');
+          viewer.focusUTMPoint(index);
+        });
+
+        utmPointsTableBody.appendChild(tr);
+      });
+    }
+
+    // Lắng nghe khi người dùng kéo thả marker trên bản đồ
+    viewer.onUTMPointMoved = (pointData) => {
+      const idx = pointData.index;
+      const cellU = document.getElementById(`cell-u-${idx}`);
+      const cellV = document.getElementById(`cell-v-${idx}`);
+      if (cellU) cellU.innerText = pointData.pixel_u;
+      if (cellV) cellV.innerText = pointData.pixel_v;
+    };
+
+    // Xóa tất cả điểm đánh dấu
+    if (btnClearUTMPoints) {
+      btnClearUTMPoints.addEventListener('click', () => {
+        viewer.clearUTMPoints();
+        lastPlottedResults = [];
+        if (utmResultsCard) utmResultsCard.style.display = 'none';
+        if (tabUTMBadge) tabUTMBadge.innerText = '0';
+        if (utmPointCountBadge) utmPointCountBadge.innerText = '0 điểm';
+        setStatus('Đã xóa toàn bộ điểm đánh dấu trên bản đồ', 'ready');
+      });
+    }
+
+    // Xuất file CSV
+    if (btnExportUTMCSV) {
+      btnExportUTMCSV.addEventListener('click', () => {
+        const data = viewer.getPlottedPointsPixelData();
+        if (!data || data.length === 0) {
+          alert('Chưa có điểm nào được đánh dấu trên ảnh để xuất CSV!');
+          return;
+        }
+
+        const targetLabel = activeTarget === 'sub2' ? 'Ortho_Vung_2' : (activeTarget === 'sub' ? 'Ortho_Vung_1' : 'Ortho_To');
+        const crs = 'WGS 84 / UTM zone 49N (EPSG:32649)';
+
+        const headers = ['Point_Name', 'Pixel_U', 'Pixel_V', 'Pixel_U_Int', 'Pixel_V_Int', 'UTM_X', 'UTM_Y', 'Z', 'CRS', 'Target_Image'];
+        const csvRows = [headers.join(',')];
+
+        data.forEach(d => {
+          const row = [
+            `"${d.name}"`,
+            d.pixel_u,
+            d.pixel_v,
+            d.pixel_u_int,
+            d.pixel_v_int,
+            d.x !== undefined ? d.x : '',
+            d.y !== undefined ? d.y : '',
+            d.z !== undefined ? d.z : '0.0',
+            `"${crs}"`,
+            `"${targetLabel}"`
+          ];
+          csvRows.push(row.join(','));
+        });
+
+        // Thêm UTF-8 BOM (\uFEFF) để Excel hiển thị tiếng Việt chính xác
+        const csvContent = '\uFEFF' + csvRows.join('\r\n');
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+        const filename = `points_pixel_uv_${targetLabel}_${dateStr}.csv`;
+
+        OrthoReader.downloadFile(csvContent, filename, 'text/csv;charset=utf-8;');
+        setStatus(`Đã xuất file CSV thành công: ${filename}`, 'success');
+      });
+    }
+
+    // Sao chép bảng kết quả
+    if (btnCopyUTMTable) {
+      btnCopyUTMTable.addEventListener('click', () => {
+        const data = viewer.getPlottedPointsPixelData();
+        if (!data || data.length === 0) return;
+
+        const headers = ['Tên Điểm', 'Pixel U', 'Pixel V', 'UTM X', 'UTM Y', 'Z'];
+        const rows = [headers.join('\t')];
+        data.forEach(d => {
+          rows.push([d.name, d.pixel_u, d.pixel_v, d.x, d.y, d.z].join('\t'));
+        });
+
+        OrthoReader.copyToClipboard(rows.join('\n'), btnCopyUTMTable);
+        setStatus('Đã sao chép bảng kết quả vào Clipboard!', 'success');
+      });
+    }
+  }
+
+  // Khởi chạy module UTM Pixel
+  initUTMPixelModule();
 });

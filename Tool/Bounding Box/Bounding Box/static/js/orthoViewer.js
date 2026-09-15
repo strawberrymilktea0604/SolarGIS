@@ -27,6 +27,11 @@ class OrthoViewer {
     this.currentView = 'big'; // 'big' | 'sub' | 'sub2'
     this.subStandaloneOverlay = null;
 
+    this.utmPointsLayer = null;
+    this.plottedUTMMarkers = [];
+    this.utmPolygonLine = null;
+    this.onUTMPointMoved = null;
+
     this.initMap();
   }
 
@@ -40,6 +45,8 @@ class OrthoViewer {
       zoomDelta: 0.5,
       attributionControl: false,
     });
+
+    this.utmPointsLayer = L.layerGroup().addTo(this.map);
 
     // Bắt sự kiện di chuyển chuột để cập nhật HUD tọa độ
     this.map.on('mousemove', (e) => {
@@ -656,6 +663,190 @@ class OrthoViewer {
         if (hudUTM) hudUTM.innerText = `Ngoài ảnh`;
         if (hudGeo) hudGeo.innerText = `Ngoài phạm vi ảnh`;
       }
+    }
+  }
+
+  /**
+   * Đánh dấu các points đã được đọc trực tiếp từ ảnh GeoTIFF lên bản đồ
+   * (Các tọa độ pixel Col, Row được đọc từ GeoTIFF rasterio index)
+   * @param {Array<{ name: string, x: number, y: number, z?: number, pixel_u: number, pixel_v: number, in_bounds?: boolean }>} pointsList
+   */
+  plotAndReadUTMPoints(pointsList) {
+    this.clearUTMPoints();
+    if (!pointsList || pointsList.length === 0) return [];
+
+    const activeInfo = this.getActiveInfo();
+    const results = [];
+    const latlngs = [];
+
+    pointsList.forEach((pt, index) => {
+      const col = pt.pixel_u !== undefined ? pt.pixel_u : pt.col;
+      const row = pt.pixel_v !== undefined ? pt.pixel_v : pt.row;
+
+      // Đánh dấu marker lên ảnh trực giao: lng = col, lat = -row
+      const lat = -row;
+      const lng = col;
+      const latlng = L.latLng(lat, lng);
+      latlngs.push(latlng);
+
+      // Phân loại: Điểm góc hay Điểm tâm Centroid
+      const isCentroid = pt.name && pt.name.toLowerCase().includes('centroid');
+      const markerColor = isCentroid ? '#f59e0b' : '#06b6d4';
+      const markerIconHtml = `
+        <div class="utm-point-marker ${isCentroid ? 'centroid-marker' : ''}" style="--marker-color: ${markerColor}">
+          <span class="utm-marker-pin">
+            <i class="fa-solid ${isCentroid ? 'fa-star' : 'fa-location-dot'}"></i>
+          </span>
+          <span class="utm-marker-badge">${pt.name || `P${index + 1}`}</span>
+        </div>
+      `;
+
+      const customIcon = L.divIcon({
+        className: 'custom-utm-point-icon',
+        html: markerIconHtml,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+        popupAnchor: [0, -18]
+      });
+
+      const marker = L.marker(latlng, {
+        icon: customIcon,
+        draggable: true,
+        zIndexOffset: isCentroid ? 1000 : 500
+      });
+
+      // BƯỚC ĐỌC TRỰC TIẾP: Đọc pixel (u, v) từ chính vị trí marker cắm trên ảnh
+      const readMarkerPixels = () => {
+        const pos = marker.getLatLng();
+        const u_exact = parseFloat(pos.lng.toFixed(2));
+        const v_exact = parseFloat((-pos.lat).toFixed(2));
+        const u_int = Math.round(pos.lng);
+        const v_int = Math.round(-pos.lat);
+        let inBounds = true;
+        if (activeInfo) {
+          inBounds = (u_int >= 0 && u_int <= activeInfo.width && v_int >= 0 && v_int <= activeInfo.height);
+        }
+        return { u_exact, v_exact, u_int, v_int, inBounds };
+      };
+
+      const pxData = readMarkerPixels();
+
+      marker._pointData = {
+        name: pt.name || `Point_${index + 1}`,
+        x: pt.x,
+        y: pt.y,
+        z: pt.z !== undefined ? pt.z : 0.0,
+        pixel_u: pxData.u_exact,
+        pixel_v: pxData.v_exact,
+        pixel_u_int: pxData.u_int,
+        pixel_v_int: pxData.v_int,
+        in_bounds: pxData.inBounds,
+        index: index
+      };
+
+      const updatePopup = () => {
+        const d = marker._pointData;
+        marker.bindPopup(`
+          <div class="utm-popup">
+            <div class="utm-popup-title">
+              <i class="fa-solid ${isCentroid ? 'fa-star text-amber' : 'fa-location-dot text-cyan'}"></i>
+              <strong>${d.name}</strong>
+            </div>
+            <div class="utm-popup-body">
+              <div class="popup-row highlight">
+                <span>Tọa độ Pixel (u, v):</span>
+                <strong>(${d.pixel_u}, ${d.pixel_v})</strong>
+              </div>
+              <div class="popup-row">
+                <span>Pixel nguyên (Col, Row):</span>
+                <span>(${d.pixel_u_int}, ${d.pixel_v_int})</span>
+              </div>
+              <div class="popup-row">
+                <span>Tọa độ UTM X:</span>
+                <span>${d.x ? d.x.toLocaleString() : '--'} m</span>
+              </div>
+              <div class="popup-row">
+                <span>Tọa độ UTM Y:</span>
+                <span>${d.y ? d.y.toLocaleString() : '--'} m</span>
+              </div>
+              <div class="popup-row">
+                <span>Cao độ Z:</span>
+                <span>${d.z !== undefined ? d.z : '--'} m</span>
+              </div>
+              <div class="popup-row">
+                <span>Trạng thái:</span>
+                <span class="${d.in_bounds ? 'text-success' : 'text-danger'}">${d.in_bounds ? 'Trong ảnh' : 'Ngoài ảnh'}</span>
+              </div>
+            </div>
+          </div>
+        `);
+      };
+      updatePopup();
+
+      // Kéo thả marker: Đọc trực tiếp tọa độ mới từ vị trí marker
+      marker.on('drag', () => {
+        const curPx = readMarkerPixels();
+        marker._pointData.pixel_u = curPx.u_exact;
+        marker._pointData.pixel_v = curPx.v_exact;
+        marker._pointData.pixel_u_int = curPx.u_int;
+        marker._pointData.pixel_v_int = curPx.v_int;
+        marker._pointData.in_bounds = curPx.inBounds;
+        updatePopup();
+        if (typeof this.onUTMPointMoved === 'function') {
+          this.onUTMPointMoved(marker._pointData);
+        }
+      });
+
+      marker.on('dragend', () => {
+        if (typeof this.onUTMPointMoved === 'function') {
+          this.onUTMPointMoved(marker._pointData, true);
+        }
+      });
+
+      this.utmPointsLayer.addLayer(marker);
+      this.plottedUTMMarkers.push(marker);
+      results.push(marker._pointData);
+    });
+
+    // Vẽ đường bao quanh các góc nếu có các góc
+    const cornerMarkers = this.plottedUTMMarkers.filter(m => !m._pointData.name.toLowerCase().includes('centroid'));
+    if (cornerMarkers.length >= 3) {
+      const cornerCoords = cornerMarkers.map(m => m.getLatLng());
+      cornerCoords.push(cornerCoords[0]);
+      this.utmPolygonLine = L.polyline(cornerCoords, {
+        color: '#06b6d4',
+        weight: 2,
+        dashArray: '5, 5',
+        opacity: 0.8
+      }).addTo(this.utmPointsLayer);
+    }
+
+    // Tự động căn khung nhìn bao quát các điểm
+    if (latlngs.length > 0) {
+      const groupBounds = L.latLngBounds(latlngs);
+      this.map.fitBounds(groupBounds, { padding: [60, 60], maxZoom: 4 });
+    }
+
+    return results;
+  }
+
+  clearUTMPoints() {
+    if (this.utmPointsLayer) {
+      this.utmPointsLayer.clearLayers();
+    }
+    this.plottedUTMMarkers = [];
+    this.utmPolygonLine = null;
+  }
+
+  getPlottedPointsPixelData() {
+    return this.plottedUTMMarkers.map(m => m._pointData);
+  }
+
+  focusUTMPoint(index) {
+    const marker = this.plottedUTMMarkers[index];
+    if (marker) {
+      this.map.panTo(marker.getLatLng(), { animate: true });
+      marker.openPopup();
     }
   }
 }

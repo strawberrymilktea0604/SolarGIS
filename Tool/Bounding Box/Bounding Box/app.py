@@ -271,6 +271,23 @@ def crop_download(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi khi cắt ảnh: {str(e)}")
 
+class ReadUTMPixelsRequest(BaseModel):
+    file_path: str
+    points: list
+
+@app.post("/api/read-pixels-from-utm")
+async def read_pixels_from_utm_endpoint(payload: ReadUTMPixelsRequest):
+    """Đọc trực tiếp tọa độ điểm ảnh pixel từ file GeoTIFF bằng rasterio src.index(X, Y)"""
+    clean_path = os.path.normpath(payload.file_path.strip().strip('"').strip("'"))
+    if not os.path.exists(clean_path):
+        raise HTTPException(status_code=404, detail=f"File GeoTIFF không tồn tại: {clean_path}")
+
+    try:
+        results = processor.read_pixels_from_utm(clean_path, payload.points)
+        return {"status": "success", "points": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi đọc pixel từ GeoTIFF: {str(e)}")
+
 # Mount thư mục static cho giao diện web
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 os.makedirs(STATIC_DIR, exist_ok=True)
