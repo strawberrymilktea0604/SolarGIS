@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrthoScope BBox - Xác Định Vùng Orthophoto Chuyên Sâu</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css?v=9">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo-icon">
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span class="radar-ping"></span>
+      </div>
+      <div class="brand-text">
+        <h1>OrthoScope <span>BBox</span></h1>
+        <p>Phân tích & Xác định Vùng Orthophoto Drone / Viễn Thám</p>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <div class="status-indicator" id="globalStatus">
+        <span class="status-dot"></span>
+        <span class="status-text">Sẵn sàng</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btnQuickSample" title="Nạp nhanh 2 file mẫu có sẵn trên máy">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Dùng file mẫu Ghép 2.1
+      </button>
+      <button class="btn btn-outline btn-sm" id="btnScanFiles" title="Quét các file .tif trong thư mục">
+        <i class="fa-solid fa-folder-tree"></i> Quét file máy
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Files Modal / Dropdown Dialog -->
+  <div class="modal-backdrop" id="filesModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-folder-open"></i> Danh Sách File GeoTIFF Tìm Thấy</h3>
+        <button class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Chọn file để gán trực tiếp vào Ortho To hoặc Ortho Vùng:</p>
+        <div class="files-list" id="quickFilesContainer">
+          <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tìm kiếm file...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side-by-Side Comparison Modal -->
+  <div class="modal-backdrop modal-xl" id="splitModal" style="display: none;">
+    <div class="modal-card modal-fullscreen">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-columns"></i> So Sánh Đối Chiếu Song Song</h3>
+        <button class="modal-close" id="btnCloseSplitModal">&times;</button>
+      </div>
+      <div class="modal-body split-body">
+        <div class="split-pane">
+          <h4>Vùng trích xuất từ Ortho To</h4>
+          <div class="pane-img-wrapper">
+            <img id="splitBigCrop" src="" alt="Vùng cắt từ ảnh to" />
+          </div>
+        </div>
+        <div class="split-pane">
+          <h4>Ortho Vùng gốc</h4>
+          <div class="pane-img-wrapper">
+            <img id="splitSubImg" src="" alt="Ảnh vùng gốc" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Workspace Layout -->
+  <div class="app-workspace">
+    
+    <!-- Left Sidebar: Controls & Metrics -->
+    <aside class="sidebar">
+      
+      <!-- Thanh chuyển Tab chính của Sidebar -->
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" id="tabNavPV" data-tab="tabContentPV" title="Công cụ đánh dấu PV (Chấm 4 góc tự tính Centroid)">
+          <i class="fa-solid fa-solar-panel"></i>
+          <span>Đánh Tấm PV</span>
+          <span class="tab-badge" id="tabPVBadge">0</span>
+        </button>
+        <button class="sidebar-tab" id="tabNavBBox" data-tab="tabContentBBox" title="Nạp Ortho To, Ortho Vùng & Xác định Bounding Box">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Định Vị BBox</span>
+        </button>
+        <button class="sidebar-tab" id="tabNavUTMPixel" data-tab="tabContentUTMPixel" title="Nhập JSON tọa độ UTM, đánh dấu Points lên ảnh và đọc trực tiếp tọa độ pixel (u,v) để xuất CSV">
+          <i class="fa-solid fa-crosshairs"></i>
+          <span>Đọc Pixel (u, v)</span>
+          <span class="tab-badge" id="tabUTMBadge">0</span>
+        </button>
+      </div>
+
+      <!-- ================= TAB 1: CHẤM 5 ĐIỂM (EPSG:32649 & GPS) ================= -->
+      <div class="sidebar-tab-content active" id="tabContentPV">
+        
+        <!-- Card Công Cụ Đánh Dấu PV -->
+        <div class="card pv-card">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <i class="fa-solid fa-solar-panel" style="color: #f59e0b;"></i>
+              <span>Đánh Dấu PV (4 Góc + Centroid)</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-warning" id="pvCountBadge">0 tấm</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Chọn ảnh làm việc: Ortho To vs Ortho Vùng -->
+            <div class="target-ortho-toggle">
+              <label><i class="fa-solid fa-satellite"></i> Chọn ảnh làm việc:</label>
+              <div class="target-buttons">
+                <button type="button" class="btn-target active" id="btnTargetBig" title="Làm việc và đánh dấu trên Ortho To">
+                  <i class="fa-solid fa-mountain-sun"></i> Ortho To
+                </button>
+                <button type="button" class="btn-target" id="btnTargetSub" disabled title="Làm việc và đánh dấu trên Ortho Vùng (Cần nạp Ortho Vùng)">
+                  <i class="fa-solid fa-crosshairs"></i> Ortho Vùng
+                </button>
+              </div>
+            </div>
+
+            <!-- Chuyển chế độ đánh dấu -->
+            <div class="pv-mode-toggle">
+              <button type="button" class="pv-mode-btn active" id="btnSubModeManual" title="Click lần lượt 4 góc trên ảnh để tự tính tâm centroid (Phím Tab để chuyển)">
+                <i class="fa-solid fa-draw-polygon"></i> Chấm 4 góc PV (Tự tính tâm)
+              </button>
+              <button type="button" class="pv-mode-btn" id="btnSubModeStrip" title="Chấm hàng điểm dải pin (Hàng Trên - Hàng Dưới) rồi tự động hợp lực thành các tấm PV">
+                <i class="fa-solid fa-grip"></i> Dải Pin (Hàng Trên - Dưới)
+              </button>
+              <button type="button" class="pv-mode-btn" id="btnSubModeStamp" title="Khuôn mẫu dập nhanh">
+                <i class="fa-solid fa-stamp"></i> Dập Khuôn
+              </button>
+            </div>
+
+            <!-- Bảng điều khiển khuôn mẫu (Stamp Configuration) -->
+            <div class="stamp-controls-box" id="stampControlsBox">
+              <!-- Kích thước Rộng x Cao -->
+              <div class="stamp-row">
+                <div class="stamp-input-group">
+                  <label><i class="fa-solid fa-arrows-left-right"></i> Rộng (W):</label>
+                  <div class="num-control">
+                    <button class="btn-num" id="btnDecW" title="Giảm 5px">-5</button>
+                    <input type="number" id="stampWidthInput" value="60" min="5" max="2000" step="1" />
+                    <button class="btn-num" id="btnIncW" title="Tăng 5px">+5</button>
+                  </div>
+                </div>
+                <div class="stamp-input-group">
+                  <label><i class="fa-solid fa-arrows-up-down"></i> Cao (H):</label>
+                  <div class="num-control">
+                    <button class="btn-num" id="btnDecH" title="Giảm 5px">-5</button>
+                    <input type="number" id="stampHeightInput" value="30" min="5" max="2000" step="1" />
+                    <button class="btn-num" id="btnIncH" title="Tăng 5px">+5</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hướng tấm pin: Ngang / Dọc / Đảo -->
+              <div class="stamp-row mt-2">
+                <div class="stamp-input-group full-width">
+                  <label>
+                    <span><i class="fa-solid fa-repeat"></i> Hướng tấm pin:</span>
+                    <span class="badge badge-warning-subtle" id="orientationBadge">Ngang</span>
+                  </label>
+                  <div class="orientation-buttons">
+                    <button class="btn-orient active" id="btnOrientHorizontal" title="Hướng Nằm Ngang (Landscape)">
+                      <i class="fa-solid fa-grip-lines"></i> Ngang
+                    </button>
+                    <button class="btn-orient" id="btnOrientVertical" title="Hướng Đứng Dọc (Portrait)">
+                      <i class="fa-solid fa-grip-lines-vertical"></i> Dọc
+                    </button>
+                    <button class="btn-orient btn-swap" id="btnSwapWH" title="Đảo Rộng <-> Cao (Phím tắt R)">
+                      <i class="fa-solid fa-right-left"></i> Đảo [R]
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Góc xoay nghiêng -->
+              <div class="stamp-row mt-2">
+                <div class="stamp-input-group full-width">
+                  <div class="angle-header">
+                    <label><i class="fa-solid fa-compass"></i> Góc xoay nghiêng (&theta;):</label>
+                    <span class="angle-val" id="stampAngleVal">0°</span>
+                  </div>
+                  <div class="angle-slider-wrap">
+                    <input type="range" id="stampAngleSlider" min="-90" max="90" value="0" step="1" />
+                    <button class="btn-icon-xs" id="btnResetAngle" title="Đặt lại về 0°"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Công cụ phụ trợ: Hút mẫu & Đổi kích thước -->
+              <div class="stamp-tools-bar mt-2">
+                <button class="btn btn-outline btn-xs" id="btnPickStampSize" title="Lấy kích thước W, H và góc từ tấm đã vẽ">
+                  <i class="fa-solid fa-eye-dropper"></i> Hút mẫu tấm có sẵn
+                </button>
+                <div class="scale-quick-group">
+                  <span class="scale-label">To/Nhỏ:</span>
+                  <button class="btn btn-outline btn-xs" id="btnScaleDown" title="Thu nhỏ 10% (Phím [ )">-10%</button>
+                  <button class="btn btn-outline btn-xs" id="btnScaleUp" title="Phóng to 10% (Phím ] )">+10%</button>
+                </div>
+              </div>
+
+              <!-- Phím tắt gợi ý -->
+              <div class="stamp-shortcuts-hint">
+                <span><kbd>Click</kbd> Dập tấm</span>
+                <span><kbd>R</kbd> Ngang/Dọc</span>
+                <span><kbd>[</kbd> <kbd>]</kbd> To/Nhỏ</span>
+                <span><kbd>Ctrl+Z</kbd> Undo</span>
+              </div>
+            </div>
+
+            <!-- Các nút hành động chính -->
+            <div class="pv-primary-actions">
+              <button class="btn btn-warning btn-block" id="btnStartDrawPV">
+                <i class="fa-solid fa-draw-polygon"></i> Bật Chấm 4 Góc PV (Tự tính Centroid)
+              </button>
+              <div class="btn-pair mt-1">
+                <button class="btn btn-outline btn-sm btn-flex" id="btnExportPVJSON" title="Xuất toàn bộ tấm PV (4 góc + tâm Centroid) ra file JSON">
+                  <i class="fa-solid fa-file-export"></i> Xuất JSON
+                </button>
+                <button class="btn btn-outline btn-sm btn-flex" id="btnImportPVJSON" title="Nhập lại danh sách từ file JSON đã lưu">
+                  <i class="fa-solid fa-file-import"></i> Nhập JSON
+                </button>
+              </div>
+              <button class="btn btn-outline btn-sm btn-block mt-1 text-cyan" id="btnLoadCanonicalToAnnotator" title="Nạp nhanh toàn bộ tấm PV từ pv_module_reference_canonical.json vào bản đồ">
+                <i class="fa-solid fa-solar-panel"></i> ⚡ Nạp Canonical JSON lên bản đồ
+              </button>
+              <button class="btn btn-primary btn-sm btn-block mt-2" id="btnMapPVToBigGPS" title="Ánh xạ toàn bộ tấm pin PV từ Ortho Vùng sang Ortho To bằng tọa độ GPS thuần (Georeferencing)">
+                <i class="fa-solid fa-satellite-dish"></i> 🌐 Ánh Xạ Tấm PV Sang Ortho To (GPS Thuần)
+              </button>
+              <input type="file" id="fileImportPV" accept=".json" style="display: none;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Lưới Chuẩn 87m & Ánh Xạ Tương Đồng Euclidean -->
+        <div class="card control-card pv-card mt-2" id="cardGrid87m" style="border: 1px solid rgba(168, 85, 247, 0.35);">
+          <div class="card-header card-collapsible-header" id="headerGrid87m" style="cursor: pointer;">
+            <div class="card-title">
+              <i class="fa-solid fa-border-all" style="color: #c084fc;"></i>
+              <span>Lưới 87m & Ánh Xạ Tương Đồng</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-accent" id="refGridBadge">Chưa nạp</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body" id="bodyGrid87m">
+            <p class="text-hint mb-2">
+              <i class="fa-solid fa-circle-info"></i> Nạp <code>bbox_centroid_export.json</code> (36,544 module lưới toàn cảnh 87m). Khi ánh xạ, thực hiện biến đổi tương đồng qua cả GPS lẫn pixel, đối chiếu mã module, lọc chuẩn và tính sai số Euclidean.
+            </p>
+
+            <!-- 1. Nạp Grid JSON / CSV -->
+            <div class="d-flex gap-1 mb-2">
+              <button type="button" class="btn btn-outline btn-sm flex-1 text-cyan" id="btnLoadRefGridQuick" title="Nạp nhanh bbox_centroid_export.json có sẵn">
+                <i class="fa-solid fa-bolt"></i> ⚡ Nạp Lưới 87m (bbox_centroid)
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" id="btnBrowseRefGrid" title="Chọn file JSON hoặc CSV khác">
+                <i class="fa-solid fa-folder-open"></i> File...
+              </button>
+              <input type="file" id="inputRefGridFile" accept=".json,.csv" style="display: none;" />
+            </div>
+
+            <!-- Trạng thái hiển thị Lưới 87m trên bản đồ -->
+            <div id="refGridStatusWrap" style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; font-size: 11px;">
+              <div class="d-flex justify-between align-center mb-1">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 600; color: #c084fc;">
+                  <input type="checkbox" id="chkShowRefGridOnMap" checked />
+                  <span><i class="fa-solid fa-eye"></i> Hiện Lưới 87m trên Bản Đồ</span>
+                </label>
+                <button type="button" class="btn-link-xs text-cyan" id="btnFocusRefGrid" title="Phóng to đến toàn bộ vùng lưới 87m">
+                  <i class="fa-solid fa-magnifying-glass-location"></i> Đến Vùng
+                </button>
+              </div>
+              <div id="refGridCountInfo" style="color: #94a3b8; font-size: 11px;">
+                Chưa nạp lưới. Bấm "Nạp Lưới 87m" ở trên để hiển thị.
+              </div>
+            </div>
+
+            <!-- 2. Điều Kiện Tiêu Chuẩn Lưới (Bắt buộc đạt chuẩn mới được hiện lên) -->
+            <div class="standard-config-box" style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px;">
+              <label class="checkbox-label mb-1" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                <span style="color: #c084fc; font-weight: 600; font-size: 12px;">
+                  <i class="fa-solid fa-shield-check"></i> Chỉ hiện Box đạt chuẩn lưới (Ẩn box lỗi)
+                </span>
+                <input type="checkbox" id="chkFilterStandardOnly" checked />
+              </label>
+              <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                Tiêu chuẩn module PV: Dài 1.40 - 2.30m (chuẩn 1.91m) | Rộng 0.60 - 1.30m (chuẩn 0.97m) | Diện tích 1.20 - 2.60 m².
+              </div>
+            </div>
+
+            <!-- 3. Nút Ánh Xạ Tương Đồng & Tính Sai Số Euclidean -->
+            <button type="button" class="btn btn-primary btn-sm btn-block mb-1" id="btnMapSimilarityAndCompare" style="background: linear-gradient(135deg, #7c3aed, #db2777); border: none; font-weight: 600;" title="Ánh xạ tương đồng qua GPS & tọa độ pixel, đối chiếu mã module với file CSV/JSON toàn cảnh 87m, lọc chuẩn và tính sai số Euclidean">
+              <i class="fa-solid fa-calculator"></i> 🌐 Ánh Xạ Tương Đồng & Tính Sai Số Euclidean
+            </button>
+
+            <!-- 3.1. Nút Chuyển Đổi Đồng Loạt CSV 35m Lên Canvas 85m (Đối Soát Giàn Pin) -->
+            <button type="button" class="btn btn-success btn-sm btn-block mb-2" id="btnBatchMapCsvToCanvas" style="background: linear-gradient(135deg, #059669, #0284c7); border: none; font-weight: 600;" title="Nạp trực tiếp PV_Coordinates_Ortho_Vung_1_...csv, áp dụng ma trận Affine chuyển đổi đồng loạt toàn bộ 5.092 OBB lên Canvas map 85m và gióng lớp đối soát kết cấu giàn pin">
+              <i class="fa-solid fa-layer-group"></i> ⚡ Chuyển Đổi Đồng Loạt CSV 35m Lên Canvas 85m
+            </button>
+
+            <!-- 4. Khung Hiển Thị Kết Quả Sai Số Euclidean (Ban đầu ẩn) -->
+            <div id="euclideanResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+              <div class="panel-summary-grid mt-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                <div class="panel-stat-box" style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 6px; border: 1px solid #334155;">
+                  <span class="stat-label" style="font-size: 11px; color: #94a3b8;">Box Đạt Chuẩn</span>
+                  <span class="stat-val highlight" id="statValidBoxes" style="font-size: 14px; font-weight: bold; color: #10b981;">0 / 0</span>
+                </div>
+                <div class="panel-stat-box" style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 6px; border: 1px solid #334155;">
+                  <span class="stat-label" style="font-size: 11px; color: #94a3b8;">Sai Số TB (Mean)</span>
+                  <span class="stat-val highlight" id="statMeanEuclid" style="font-size: 14px; font-weight: bold; color: #38bdf8;">-</span>
+                </div>
+                <div class="panel-stat-box" style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 6px; border: 1px solid #334155;">
+                  <span class="stat-label" style="font-size: 11px; color: #94a3b8;">RMSE Euclidean</span>
+                  <span class="stat-val" id="statRmseEuclid" style="font-size: 14px; font-weight: bold; color: #f59e0b;">-</span>
+                </div>
+                <div class="panel-stat-box" style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 6px; border: 1px solid #334155;">
+                  <span class="stat-label" style="font-size: 11px; color: #94a3b8;">Sai Số Lớn Nhất</span>
+                  <span class="stat-val" id="statMaxEuclid" style="font-size: 14px; font-weight: bold; color: #ef4444;">-</span>
+                </div>
+              </div>
+
+              <!-- Toggles hiển thị layer -->
+              <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 6px; font-size: 12px;">
+                <div style="color: #cbd5e1; margin-bottom: 4px; font-weight: 500;"><i class="fa-solid fa-eye"></i> Lớp hiển thị trên Ortho To:</div>
+                <div class="d-flex flex-column gap-1">
+                  <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0;">
+                    <input type="checkbox" id="chkShowRefBoxes" checked>
+                    <span style="color: #c084fc;"><i class="fa-solid fa-square"></i> Box Lưới Chuẩn 87m (bbox_centroid)</span>
+                  </label>
+                  <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0;">
+                    <input type="checkbox" id="chkShowSimilarityBoxes" checked>
+                    <span style="color: #f59e0b;"><i class="fa-solid fa-draw-polygon"></i> Box Ánh Xạ Tương Đồng</span>
+                  </label>
+                  <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0;">
+                    <input type="checkbox" id="chkShowEuclidVectors" checked>
+                    <span style="color: #ef4444;"><i class="fa-solid fa-arrows-left-right"></i> Vector Sai Số (Lệch tâm)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Nút xuất CSV & Focus -->
+              <div class="d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-success btn-sm flex-1" id="btnExportEuclideanCSV" title="Tải file CSV thống kê chi tiết sai số Euclidean của từng module">
+                  <i class="fa-solid fa-file-csv"></i> Tải CSV Sai Số
+                </button>
+                <button type="button" class="btn btn-outline btn-sm flex-1" id="btnFocusEuclidRegion" title="Chuyển sang Ortho To và phóng to vùng các module">
+                  <i class="fa-solid fa-magnifying-glass-location"></i> Đến Vùng
+                </button>
+              </div>
+
+              <!-- Bảng kết quả từng module -->
+              <div class="mt-2" style="max-height: 240px; overflow-y: auto; border: 1px solid #334155; border-radius: 4px;">
+                <table class="data-table" id="euclideanTable" style="font-size: 11px; width: 100%; margin: 0;">
+                  <thead>
+                    <tr>
+                      <th>Mã Module 87m</th>
+                      <th>Mã Bên Vùng</th>
+                    <th>Phân Loại</th>
+                      <th id="thSortError" style="cursor: pointer;" title="Sắp xếp theo sai số (nhấp để đảo chiều)">Sai Số (cm) <i class="fa-solid fa-sort"></i></th>
+                      <th>Sai Số (px)</th>
+                      <th>Kích Thước</th>
+                      <th>Chuẩn</th>
+                    </tr>
+                  </thead>
+                  <tbody id="euclideanTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Danh Sách Tấm PV Đã Đánh Dấu -->
+        <div class="card pv-list-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-list-check" style="color: #06b6d4;"></i>
+              <span>Danh Sách Tấm PV</span>
+            </div>
+            <button class="btn-text-danger" id="btnClearAllPV" style="display: none;" title="Xóa toàn bộ">
+              <i class="fa-solid fa-trash-can"></i> Xóa hết
+            </button>
+          </div>
+          <div class="card-body list-body">
+            <!-- Ô tìm kiếm theo mã tấm PV -->
+            <div class="pv-search-box" id="pvSearchBox" style="display: none;">
+              <div class="input-with-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="pvSearchInput" placeholder="Tìm kiếm theo mã (ví dụ: PV_001)..." />
+                <button class="btn-clear-search" id="btnClearPVSearch" style="display: none;" title="Xóa tìm kiếm">&times;</button>
+              </div>
+            </div>
+
+            <!-- Danh sách các tấm PV -->
+            <div class="pv-list-container" id="pvListContainer">
+              <div class="empty-hint">
+                <i class="fa-regular fa-clone"></i>
+                <span>Chưa có tấm PV nào. Bấm <b>"Bật Đánh Tấm PV"</b> ở trên rồi click vào ảnh để dập tấm pin.</span>
+              </div>
+            </div>
+
+            <!-- Thanh phân trang cho danh sách tấm PV -->
+            <div class="pv-pagination" id="pvPagination" style="display: none;">
+              <button class="btn-page" id="btnPVPrevPage" title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>
+              <span class="page-info" id="pvPageInfo">1 / 1</span>
+              <button class="btn-page" id="btnPVNextPage" title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 2: ĐỊNH VỊ VÙNG BBOX ================= -->
+      <div class="sidebar-tab-content" id="tabContentBBox" style="display: none;">
+        
+        <!-- Section 1: Ortho To -->
+        <div class="card control-card">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <span class="step-badge">1</span>
+              <span>Ortho Lớn (Ortho To)</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-subtle" id="bigBadge">Chưa nạp</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="input-group">
+              <label for="bigPathInput">Đường dẫn file trên máy:</label>
+              <div class="input-with-action">
+                <input type="text" id="bigPathInput" placeholder="Ví dụ: C:\...\ortho.tif" />
+                <button class="btn-icon" id="btnClearBigPath" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="upload-dropzone" id="bigDropzone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Hoặc kéo thả / chọn file tải lên</span>
+              <input type="file" id="bigFileInput" accept=".tif,.tiff,.TIF,.TIFF" />
+            </div>
+            <button class="btn btn-primary btn-block mt-2" id="btnLoadBig">
+              <i class="fa-solid fa-mountain-sun"></i> Nạp & Xem Trước Ortho To
+            </button>
+          </div>
+
+          <!-- Big Ortho Meta Info (Hidden initially) -->
+          <div class="meta-box" id="bigMetaBox" style="display: none;">
+            <div class="meta-item">
+              <span class="meta-label">Kích thước:</span>
+              <span class="meta-val" id="bigDimVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Hệ tọa độ CRS:</span>
+              <span class="meta-val highlight" id="bigCrsVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Độ phân giải GSD:</span>
+              <span class="meta-val" id="bigGsdVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Diện tích thực địa:</span>
+              <span class="meta-val" id="bigAreaVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Dung lượng file:</span>
+              <span class="meta-val" id="bigSizeVal">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Ortho Vùng -->
+        <div class="card control-card">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <span class="step-badge">2</span>
+              <span>Ortho Vùng 1 Cần Định Vị</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-subtle" id="subBadge">Chưa nạp</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="input-group">
+              <label for="subPathInput">Đường dẫn file trên máy:</label>
+              <div class="input-with-action">
+                <input type="text" id="subPathInput" placeholder="Ví dụ: C:\...\thermal_ortho.tif" />
+                <button class="btn-icon" id="btnClearSubPath" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="upload-dropzone" id="subDropzone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Hoặc kéo thả / chọn file tải lên</span>
+              <input type="file" id="subFileInput" accept=".tif,.tiff,.TIF,.TIFF" />
+            </div>
+            <button class="btn btn-secondary btn-block mt-2" id="btnLoadSub">
+              <i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 1
+            </button>
+          </div>
+
+          <!-- Sub Ortho Meta Info & Thumbnail -->
+          <div class="meta-box" id="subMetaBox" style="display: none;">
+            <div class="sub-thumb-wrapper" id="subThumbWrapper" style="display: none;">
+              <div class="sub-thumb-header">
+                <span><i class="fa-regular fa-image"></i> Ảnh xem trước Ortho Vùng 1:</span>
+              </div>
+              <div class="sub-thumb-box">
+                <img id="subThumbnail" src="" alt="Xem trước Ortho Vùng 1" />
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Kích thước vùng:</span>
+              <span class="meta-val" id="subDimVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Hệ tọa độ CRS:</span>
+              <span class="meta-val highlight" id="subCrsVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Độ phân giải GSD:</span>
+              <span class="meta-val" id="subGsdVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Diện tích vùng:</span>
+              <span class="meta-val" id="subAreaVal">-</span>
+            </div>
+            <button class="btn btn-outline btn-sm btn-block mt-2" id="btnOpenSubView" title="Xem trực tiếp ảnh con Ortho Vùng 1 và đánh dấu điểm">
+              <i class="fa-solid fa-expand"></i> Mở Xem & Đánh Dấu Trên Ortho Vùng 1
+            </button>
+          </div>
+
+          <!-- Nút Tùy chọn Thêm Ortho 2 & Nút Xác Định 2 Vùng -->
+          <div class="sub-actions-bar mt-2">
+            <button type="button" class="btn btn-outline btn-sm btn-block" id="btnToggleSub2" title="Thêm một ảnh Ortho vùng thứ 2 để đối chiếu / so sánh">
+              <i class="fa-solid fa-plus"></i> Thêm 1 ảnh ortho
+            </button>
+            <button type="button" class="btn btn-accent btn-block mt-2" id="btnMatchTwoSubs" style="display: none;" title="So sánh thông số và xác định vị trí tương quan giữa 2 ảnh Ortho vùng">
+              <i class="fa-solid fa-object-ungroup"></i> Xác định vị trí 2 Ortho vùng
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2b: Ortho Vùng 2 (Tùy chọn) -->
+        <div class="card control-card mt-3" id="sub2CardSection" style="display: none;">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <span class="step-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">2b</span>
+              <span>Ortho Vùng 2</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-subtle" id="sub2Badge">Chưa nạp</span>
+              <button type="button" class="btn-icon-xs" id="btnCloseSub2" title="Ẩn khung Ortho Vùng 2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="input-group">
+              <label for="sub2PathInput">Đường dẫn file Ortho 2 trên máy:</label>
+              <div class="input-with-action">
+                <input type="text" id="sub2PathInput" placeholder="Ví dụ: C:\...\sub_ortho_2.tif" />
+                <button class="btn-icon" id="btnClearSub2Path" title="Xóa"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div class="upload-dropzone" id="sub2Dropzone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Hoặc kéo thả / chọn file tải lên</span>
+              <input type="file" id="sub2FileInput" accept=".tif,.tiff,.TIF,.TIFF" />
+            </div>
+            <button class="btn btn-warning btn-block mt-2" id="btnLoadSub2">
+              <i class="fa-solid fa-eye"></i> Nạp & Xem Trước Ortho Vùng 2
+            </button>
+          </div>
+
+          <!-- Sub 2 Meta Info & Thumbnail -->
+          <div class="meta-box" id="sub2MetaBox" style="display: none;">
+            <div class="sub-thumb-wrapper" id="sub2ThumbWrapper" style="display: none;">
+              <div class="sub-thumb-header">
+                <span><i class="fa-regular fa-image"></i> Ảnh xem trước Ortho Vùng 2:</span>
+              </div>
+              <div class="sub-thumb-box">
+                <img id="sub2Thumbnail" src="" alt="Xem trước Ortho Vùng 2" />
+              </div>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Kích thước vùng:</span>
+              <span class="meta-val" id="sub2DimVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Hệ tọa độ CRS:</span>
+              <span class="meta-val highlight" id="sub2CrsVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Độ phân giải GSD:</span>
+              <span class="meta-val" id="sub2GsdVal">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Diện tích vùng:</span>
+              <span class="meta-val" id="sub2AreaVal">-</span>
+            </div>
+            <button class="btn btn-outline btn-sm btn-block mt-2" id="btnOpenSub2View" title="Xem trực tiếp ảnh Ortho Vùng 2 và đánh dấu điểm">
+              <i class="fa-solid fa-expand"></i> Mở Xem & Đánh Dấu Trên Ortho Vùng 2
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Button: Các thao tác xác định vị trí -->
+        <div class="action-section">
+          <button class="btn btn-action btn-block" id="btnMatchRegion">
+            <i class="fa-solid fa-crosshairs"></i> Xác Định Vị Trí Bounding Box
+          </button>
+          <button class="btn btn-warning btn-block mt-2" id="btnMatchTwoSubsOnBig" style="display: none;" title="Xác định và vẽ đồng thời cả 2 Bounding Box của 2 Ortho vùng lên Ortho To">
+            <i class="fa-solid fa-layer-group"></i> Xác định vị trí 2 Ortho trên Ortho To
+          </button>
+          <p class="action-hint text-muted" id="actionHint"><i class="fa-solid fa-circle-info"></i> Nhấn nút trên để tìm khớp Bounding Box trên Ortho To.</p>
+        </div>
+
+        <!-- Section 3: Bounding Box Results (English Information) -->
+        <div class="card result-card" id="resultCard" style="display: none;">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <i class="fa-solid fa-vector-square"></i>
+              <span id="resultCardTitle">Bounding Box Results</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-success" id="overlapBadge">100% Match</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Overlay Display Options -->
+            <div class="overlay-display-mode">
+              <div class="mode-header">
+                <span><i class="fa-solid fa-eye"></i> Display Options:</span>
+              </div>
+              <div class="mode-buttons">
+                <button class="mode-btn active" id="btnModeBoth" title="Display sub-ortho overlay image on canvas">
+                  <i class="fa-solid fa-clone"></i> Show Overlay Image
+                </button>
+                <button class="mode-btn" id="btnModeOnlyBBox" title="Display only neon bounding box outline">
+                  <i class="fa-solid fa-vector-square"></i> BBox Outlines Only
+                </button>
+              </div>
+            </div>
+
+            <!-- Single BBox Metric Grid -->
+            <div class="metrics-grid" id="singleMetricsGrid">
+              <div class="metric-card">
+                <div class="metric-title" id="metricTitle1">Origin Coordinates (Pixel)</div>
+                <div class="metric-value" id="pixelBoxVal">X: 0, Y: 0</div>
+                <div class="metric-sub" id="pixelDimVal">W: 0, H: 0 px</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title" id="metricTitle2">GSD Resolution Ratio</div>
+                <div class="metric-value" id="gsdRatioVal">-</div>
+                <div class="metric-sub" id="metricSub2">Master / Sub resolution ratio</div>
+              </div>
+            </div>
+
+            <!-- Dual Sub-Ortho Comparison Panel (English) -->
+            <div class="dual-compare-panel mt-2" id="dualComparePanel" style="display: none;">
+              <div class="dual-compare-header">
+                <i class="fa-solid fa-scale-balanced" style="color: #f59e0b;"></i>
+                <span>Sub-Ortho Comparative Analysis</span>
+              </div>
+              <div class="table-responsive">
+                <table class="specs-table" id="dualCompareTable">
+                  <thead>
+                    <tr>
+                      <th>Metric</th>
+                      <th style="color: #06b6d4;"><i class="fa-solid fa-square"></i> Sub-Ortho 1</th>
+                      <th style="color: #f59e0b;"><i class="fa-solid fa-square"></i> Sub-Ortho 2</th>
+                      <th>Comparison / Match</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dualCompareTableBody">
+                    <!-- Populated via JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab Bar for Formats (English) -->
+            <div class="format-tabs">
+              <button class="tab-btn active" data-tab="tab-pixel">Pixel Coordinates</button>
+              <button class="tab-btn" data-tab="tab-norm">Normalized</button>
+              <button class="tab-btn" data-tab="tab-yolo">YOLO Format</button>
+              <button class="tab-btn" data-tab="tab-geo">WGS84 / Geo</button>
+            </div>
+
+            <div class="tab-content" id="tab-pixel">
+              <div class="code-box">
+                <pre id="codePixel"></pre>
+                <button class="copy-btn" data-target="codePixel" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-norm" style="display: none;">
+              <div class="code-box">
+                <pre id="codeNorm"></pre>
+                <button class="copy-btn" data-target="codeNorm" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-yolo" style="display: none;">
+              <div class="code-box">
+                <pre id="codeYOLO"></pre>
+                <button class="copy-btn" data-target="codeYOLO" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-geo" style="display: none;">
+              <div class="code-box">
+                <pre id="codeGeo"></pre>
+                <button class="copy-btn" data-target="codeGeo" title="Copy to clipboard"><i class="fa-regular fa-copy"></i></button>
+              </div>
+            </div>
+
+            <!-- Export & Extraction Buttons (English) -->
+            <div class="export-actions">
+              <button class="btn btn-outline btn-sm btn-block" id="btnExportYOLO">
+                <i class="fa-solid fa-file-arrow-down"></i> Export YOLO (.txt)
+              </button>
+              <button class="btn btn-outline btn-sm btn-block" id="btnExportGeoJSON">
+                <i class="fa-solid fa-map-location-dot"></i> Export GeoJSON (.geojson)
+              </button>
+              <button class="btn btn-success btn-sm btn-block" id="btnCropGeoTIFF">
+                <i class="fa-solid fa-scissors"></i> Extract Cropped GeoTIFF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Chấm Điểm Tự Do Bất Kỳ (Cả 2 Vùng & Tổng Quan) & Xuất CSV Độc Lập -->
+        <div class="card control-card" id="cardFreePointPicker">
+          <div class="card-header card-collapsible-header">
+            <div class="card-title">
+              <span class="step-badge" style="background: #0ea5e9;">4</span>
+              <span>Chấm Điểm Tự Do & Xuất CSV Độc Lập</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-accent" id="badgeSubFreePoints" title="Số điểm đã chấm trên Ortho Vùng">Vùng: 0</span>
+              <span class="badge badge-success" id="badgeBigFreePoints" title="Số điểm đã chấm trên Ortho Tổng Quan">Tổng Quan: 0</span>
+              <i class="fa-solid fa-chevron-down card-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="section-desc" style="font-size: 11px; margin-bottom: 10px; color: #94a3b8; line-height: 1.45;">
+              Nhấp chuột trực tiếp trên bản đồ để đánh dấu vị trí tùy ý (trên <b>Ortho Vùng 1</b>, <b>Vùng 2</b> hoặc <b>Tổng Quan</b>). Hệ thống tự trích xuất tọa độ <b>Pixel</b>, <b>UTM Zone 49N</b> và <b>GPS WGS84</b>, cho phép xuất file CSV độc lập riêng biệt.
+            </p>
+
+            <!-- Nút bật/tắt chế độ chấm điểm & Chỉ báo trạng thái -->
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center;">
+              <button class="btn btn-outline btn-sm" id="btnToggleFreePointMarking" style="flex: 1; border-color: #0ea5e9; color: #38bdf8;">
+                <i class="fa-solid fa-crosshairs"></i> <span id="lblToggleFreePoint">Bật Chế Độ Chấm Điểm</span>
+              </button>
+              <div id="freePointStatusIndicator" style="font-size: 11px; padding: 6px 10px; border-radius: 4px; background: rgba(148, 163, 184, 0.12); border: 1px solid #334155; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                <span class="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #64748b;" id="freePointDot"></span>
+                <span id="freePointCurrentViewText" style="font-weight: 600; color: #94a3b8;">Chưa bật</span>
+              </div>
+            </div>
+
+            <!-- Chuyển đổi khung nhìn nhanh giữa Ortho To, Vùng 1 và Vùng 2 -->
+            <div style="margin-bottom: 12px; background: rgba(15, 23, 42, 0.5); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-size: 11px; font-weight: 600; color: #94a3b8; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-layer-group"></i> Chọn Khung Nhìn Để Chấm:</span>
+                <span id="freePointTargetBadge" style="color: #38bdf8; font-weight: 700; font-size: 10.5px;">Đang ở: Tổng Quan</span>
+              </div>
+              <div class="btn-group-row" style="display: flex; gap: 6px;">
+                <button class="btn btn-xs btn-outline" id="btnFreePointSwitchBig" style="flex: 1;" title="Chuyển sang Ortho Toàn Cảnh (85m)">
+                  <i class="fa-solid fa-globe"></i> Tổng Quan
+                </button>
+                <button class="btn btn-xs btn-outline" id="btnFreePointSwitchSub1" style="flex: 1;" title="Chuyển sang Ortho Vùng 1 (35m)">
+                  <i class="fa-solid fa-map-location-dot"></i> Vùng 1
+                </button>
+                <button class="btn btn-xs btn-outline" id="btnFreePointSwitchSub2" style="flex: 1;" title="Chuyển sang Ortho Vùng 2">
+                  <i class="fa-solid fa-map-location-dot"></i> Vùng 2
+                </button>
+              </div>
+            </div>
+
+            <!-- Khối thông tin điểm vừa chấm gần nhất -->
+            <div id="lastMarkedPointBox" style="display: none; margin-bottom: 12px; padding: 8px 10px; background: rgba(14, 165, 233, 0.08); border-left: 3px solid #0ea5e9; border-radius: 4px; font-size: 11px; font-family: var(--font-mono, monospace);">
+              <div style="font-weight: 700; color: #38bdf8; margin-bottom: 3px; display: flex; justify-content: space-between;" id="lastMarkedPointTitle">
+                <span>Điểm vừa chấm: #1</span>
+                <span style="font-size: 10px; color: #94a3b8;" id="lastMarkedPointRegion">Vùng 1</span>
+              </div>
+              <div id="lastMarkedPointCoords" style="color: #cbd5e1; line-height: 1.45;">Pixel: (--, --) | UTM: --, --</div>
+            </div>
+
+            <!-- Tabs chọn xem danh sách điểm Vùng vs Tổng Quan -->
+            <div class="format-tabs" style="margin-bottom: 8px; display: flex; gap: 4px;">
+              <button class="tab-btn active" id="tabBtnSubPoints" style="flex: 1; padding: 5px 8px; font-size: 11px;">
+                <i class="fa-solid fa-map-pin" style="color: #06b6d4;"></i> Điểm Vùng (<span id="countSubPoints">0</span>)
+              </button>
+              <button class="tab-btn" id="tabBtnBigPoints" style="flex: 1; padding: 5px 8px; font-size: 11px;">
+                <i class="fa-solid fa-map-pin" style="color: #10b981;"></i> Tổng Quan (<span id="countBigPoints">0</span>)
+              </button>
+            </div>
+
+            <!-- Bảng danh sách điểm Vùng (Vùng 1 / Vùng 2) -->
+            <div id="viewTableSubPoints" style="max-height: 170px; overflow-y: auto; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; background: rgba(0,0,0,0.15);">
+              <table class="specs-table" style="font-size: 10px; width: 100%; margin: 0;">
+                <thead>
+                  <tr>
+                    <th style="width: 24px; text-align: center;">#</th>
+                    <th>Mã</th>
+                    <th>Vùng</th>
+                    <th>Pixel (u, v)</th>
+                    <th>UTM 49N</th>
+                    <th style="width: 24px; text-align: center;">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody id="tblSubPointsBody">
+                  <tr><td colspan="6" style="text-align: center; color: #64748b; padding: 12px 6px;">Chưa có điểm nào trên Vùng 1 hoặc Vùng 2</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Bảng danh sách điểm Tổng Quan -->
+            <div id="viewTableBigPoints" style="max-height: 170px; overflow-y: auto; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; background: rgba(0,0,0,0.15); display: none;">
+              <table class="specs-table" style="font-size: 10px; width: 100%; margin: 0;">
+                <thead>
+                  <tr>
+                    <th style="width: 24px; text-align: center;">#</th>
+                    <th>Mã</th>
+                    <th>Vùng</th>
+                    <th>Pixel (X, Y)</th>
+                    <th>UTM 49N</th>
+                    <th style="width: 24px; text-align: center;">Xóa</th>
+                  </tr>
+                </thead>
+                <tbody id="tblBigPointsBody">
+                  <tr><td colspan="6" style="text-align: center; color: #64748b; padding: 12px 6px;">Chưa có điểm nào trên Ortho Tổng Quan</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Khối Nhập CSV Độc Lập cho Vùng và Tổng Quan -->
+            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px; background: rgba(15, 23, 42, 0.45); padding: 8px 10px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.12);">
+              <div style="font-size: 11px; font-weight: 600; color: #94a3b8; display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-file-import" style="color: #38bdf8;"></i> Nhập Điểm từ File CSV:</span>
+                <span style="font-size: 9.5px; color: #64748b;">(Tự nhận Pixel, UTM hoặc GPS)</span>
+              </div>
+              <input type="file" id="fileImportSubPoints" accept=".csv" style="display: none;" />
+              <input type="file" id="fileImportBigPoints" accept=".csv" style="display: none;" />
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-sm" id="btnImportSubPointsCSV" style="flex: 1; border-color: #06b6d4; color: #38bdf8; font-weight: 600;" title="Nhập file CSV tọa độ để nạp lên Ortho Vùng (Vùng 1 hoặc Vùng 2)">
+                  <i class="fa-solid fa-file-arrow-up"></i> Nhập CSV Vùng
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnImportBigPointsCSV" style="flex: 1; border-color: #10b981; color: #34d399; font-weight: 600;" title="Nhập file CSV tọa độ để nạp lên Ortho Tổng Quan">
+                  <i class="fa-solid fa-file-arrow-up"></i> Nhập CSV Tổng Quan
+                </button>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-xs" id="btnQuickLoadSampleSubCSV" style="flex: 1; font-size: 9.5px; color: #94a3b8; border-color: rgba(255,255,255,0.08);" title="Nạp nhanh file mẫu PV_Coordinates_Ortho_Vung_1_20260929_0018.csv có sẵn trên máy">
+                  <i class="fa-solid fa-bolt" style="color: #06b6d4;"></i> Nạp nhanh Vùng 1 mẫu
+                </button>
+                <button class="btn btn-outline btn-xs" id="btnQuickLoadSampleBigCSV" style="flex: 1; font-size: 9.5px; color: #94a3b8; border-color: rgba(255,255,255,0.08);" title="Nạp nhanh file mẫu bbox_centroid_export.csv mốc QGIS có sẵn trên máy">
+                  <i class="fa-solid fa-bolt" style="color: #10b981;"></i> Nạp nhanh Tổng Quan mẫu
+                </button>
+              </div>
+            </div>
+
+            <!-- Nút xuất CSV Độc Lập cho Vùng và Tổng Quan -->
+            <div class="export-actions" style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-sm" id="btnExportSubPointsCSV" style="flex: 1; border-color: #06b6d4; color: #38bdf8; font-weight: 600;" title="Xuất CSV độc lập cho các điểm trên Ortho Vùng (Vùng 1 & 2)">
+                  <i class="fa-solid fa-file-csv"></i> Xuất CSV Điểm Vùng
+                </button>
+                <button class="btn btn-outline btn-sm" id="btnExportBigPointsCSV" style="flex: 1; border-color: #10b981; color: #34d399; font-weight: 600;" title="Xuất CSV độc lập cho các điểm trên Ortho Tổng Quan">
+                  <i class="fa-solid fa-file-csv"></i> Xuất CSV Điểm Tổng Quan
+                </button>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-outline btn-xs" id="btnClearSubPoints" style="flex: 1; color: #f87171; border-color: rgba(248,113,113,0.3);" title="Xóa toàn bộ điểm đã chấm trên Vùng">
+                  <i class="fa-solid fa-trash-can"></i> Xóa Điểm Vùng
+                </button>
+                <button class="btn btn-outline btn-xs" id="btnClearBigPoints" style="flex: 1; color: #f87171; border-color: rgba(248,113,113,0.3);" title="Xóa toàn bộ điểm đã chấm trên Tổng Quan">
+                  <i class="fa-solid fa-trash-can"></i> Xóa Điểm Tổng Quan
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= TAB 3: NHẬP JSON UTM -> ĐÁNH DẤU POINTS & ĐỌC PIXEL TRỰC TIẾP -> XUẤT CSV ================= -->
+      <div class="sidebar-tab-content" id="tabContentUTMPixel" style="display: none;">
+        
+        <div class="card control-card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-crosshairs" style="color: #06b6d4;"></i>
+              <span>Nhập JSON/CSV & Đọc Tọa Độ Pixel</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-accent" id="utmPointCountBadge">0 điểm</span>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <!-- Chọn ảnh mục tiêu -->
+            <div class="input-group">
+              <label><i class="fa-solid fa-layer-group"></i> Ảnh trực giao mục tiêu:</label>
+              <div class="btn-group-toggle" id="utmTargetGroup">
+                <button type="button" class="btn-toggle active" id="btnUtmTargetBig" data-target="big">Ortho To</button>
+                <button type="button" class="btn-toggle" id="btnUtmTargetSub" data-target="sub">Vùng 1</button>
+                <button type="button" class="btn-toggle" id="btnUtmTargetSub2" data-target="sub2" style="display: none;">Vùng 2</button>
+              </div>
+            </div>
+
+            <!-- Upload File JSON / CSV -->
+            <div class="input-group mt-2">
+              <label><i class="fa-solid fa-file-code"></i> Tải file JSON hoặc CSV tọa độ:</label>
+              <div class="upload-dropzone utm-dropzone" id="utmJsonDropzone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Chọn file .json / .csv hoặc kéo thả vào đây</span>
+                <input type="file" id="utmJsonFileInput" accept=".json,application/json,.csv,text/csv" />
+              </div>
+            </div>
+
+            <!-- Dán JSON trực tiếp hoặc Nạp nhanh -->
+            <div class="input-group mt-2">
+              <div class="d-flex justify-between align-center mb-1 flex-wrap gap-1">
+                <label for="utmJsonTextarea" class="mb-0"><i class="fa-solid fa-code"></i> Dán JSON/CSV hoặc nạp sẵn:</label>
+                <div class="d-flex gap-1">
+                  <button type="button" class="btn-link-xs text-cyan" id="btnLoadCanonicalJson" title="Nạp nhanh file pv_module_reference_canonical.json có sẵn">
+                    <i class="fa-solid fa-bolt"></i> Nạp Canonical JSON
+                  </button>
+                  <button type="button" class="btn-link-xs" id="btnLoadSampleUTMJson" title="Nạp nhanh ví dụ JSON Thuận Nam 19">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Mẫu Thuận Nam
+                  </button>
+                </div>
+              </div>
+              <textarea id="utmJsonTextarea" rows="6" class="form-control code-textarea" placeholder='Dán JSON/CSV tọa độ UTM/WGS84 hoặc bấm "Nạp Canonical JSON" ở trên...'></textarea>
+            </div>
+
+            <!-- Cấu hình tùy chọn Canonical JSON -->
+            <div class="canonical-options-box mt-2" id="canonicalOptionsBox" style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 8px; padding: 10px;">
+              <div class="d-flex justify-between align-center mb-1">
+                <span style="font-size: 12px; font-weight: 600; color: #06b6d4;">
+                  <i class="fa-solid fa-sliders"></i> Cấu hình tính Canonical JSON:
+                </span>
+                <span class="badge badge-accent" id="canonicalBadge" style="font-size: 11px;">6,473 module</span>
+              </div>
+              
+              <!-- Chế độ tính toán: Tâm Centroid vs 5 Điểm (4 góc + tâm) -->
+              <div class="canonical-mode-toggle mt-1">
+                <label style="font-size: 11px; display: block; margin-bottom: 4px; color: var(--text-muted);">Số điểm tính toán mỗi module:</label>
+                <div class="btn-group-toggle" id="canonicalModeGroup">
+                  <button type="button" class="btn-toggle active" id="btnCanonicalModeCentroid" data-mode="centroid" title="Chỉ tính điểm tâm Centroid (6,473 điểm - khuyên dùng)">
+                    <i class="fa-solid fa-crosshairs"></i> Tâm Centroid (1 điểm)
+                  </button>
+                  <button type="button" class="btn-toggle" id="btnCanonicalModeAll" data-mode="all" title="Tính cả 4 góc + Tâm (32,365 điểm)">
+                    <i class="fa-solid fa-shapes"></i> 4 Góc + Tâm (5 điểm)
+                  </button>
+                  <button type="button" class="btn-toggle" id="btnCanonicalModeBoxes" data-mode="boxes" title="Vẽ toàn bộ khung box đa giác 4 góc cho từng tấm pin & gán ID theo thứ tự Đông-Tây-Nam-Bắc">
+                    <i class="fa-solid fa-vector-square"></i> 📦 Khung Box 4 Góc (Đông-Tây-Nam-Bắc)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lọc hiển thị: Chỉ các điểm nằm trong ảnh GeoTIFF và đạt chuẩn -->
+              <div class="canonical-filters mt-2 d-flex justify-between align-center flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                  <label class="checkbox-label" style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chkOnlyInBounds" />
+                    <span>Chỉ lấy điểm <b>nằm trong ảnh</b> (In Bounds)</span>
+                  </label>
+                  <label class="checkbox-label" style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" id="chkFilterStandardCanonical" checked />
+                    <span>Chỉ lấy tấm pin <b>đạt chuẩn</b> (Lọc lỗi kích thước)</span>
+                  </label>
+                </div>
+                <button type="button" class="btn btn-primary btn-xs" id="btnCalcCanonicalDirect" title="Bấm để tính toán trực tiếp từ Canonical JSON vào ảnh đang chọn">
+                  <i class="fa-solid fa-calculator"></i> Tính Tọa Độ Ngay
+                </button>
+              </div>
+
+              <!-- Checkbox Bật/Tắt Layer Khung Box (Đa giác 4 góc) -->
+              <div class="mt-2" id="boxesLayerToggleWrap" style="display: none; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: var(--radius-sm); padding: 6px 10px;">
+                <label class="checkbox-label" style="font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                  <span style="color: #c084fc; font-weight: 600;"><i class="fa-solid fa-vector-square"></i> Hiển thị Khung Box (Đa giác 4 góc)</span>
+                  <input type="checkbox" id="chkShowBoxesLayer" checked />
+                </label>
+              </div>
+            </div>
+
+            <!-- Thông tin CRS & Project Info nhận diện được -->
+            <div class="utm-meta-preview mt-2" id="utmMetaPreview" style="display: none;">
+              <div class="meta-item">
+                <span class="meta-label">CRS:</span>
+                <span class="meta-val highlight" id="utmCrsVal">WGS 84 / UTM zone 49N (EPSG:32649)</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Số điểm nhận diện:</span>
+                <span class="meta-val" id="utmDetectedPointsVal">0 điểm</span>
+              </div>
+            </div>
+
+            <!-- Nút hành động chính -->
+            <div class="action-buttons-stack mt-3">
+              <button type="button" class="btn btn-primary btn-block" id="btnPlotAndReadPixels">
+                <i class="fa-solid fa-location-crosshairs"></i> Đánh Dấu Points & Đọc Pixel (u, v)
+              </button>
+              <div class="d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-outline btn-sm flex-1" id="btnClearUTMPoints">
+                  <i class="fa-solid fa-trash-can"></i> Xóa điểm
+                </button>
+                <button type="button" class="btn btn-outline btn-sm flex-1" id="btnClearUTMText">
+                  <i class="fa-solid fa-eraser"></i> Xóa JSON
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảng Kết Quả Đọc Tọa Độ Điểm Ảnh Pixel (u, v) -->
+        <div class="card mt-3" id="utmResultsCard" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-table-list" style="color: #10b981;"></i>
+              <span>Tọa Độ Pixel Đọc Trực Tiếp</span>
+            </div>
+            <div class="header-right-tools">
+              <span class="badge badge-success" id="utmInBoundsBadge">0 / 0 trong ảnh</span>
+              <button class="btn-icon-xs" id="btnCopyUTMTable" title="Sao chép bảng kết quả"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- Thanh tìm kiếm & lọc nhanh trong bảng kết quả -->
+            <div class="utm-table-toolbar mb-2 d-flex justify-between align-center gap-2">
+              <div class="input-with-icon flex-1">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="utmSearchInput" placeholder="Tìm theo mã tấm (ví dụ: D04-T242)..." class="form-control form-control-sm" />
+              </div>
+              <label class="checkbox-label" style="font-size: 11px; white-space: nowrap; cursor: pointer;">
+                <input type="checkbox" id="chkFilterInBoundsTable" checked />
+                <span>Chỉ hiện In-Bounds</span>
+              </label>
+            </div>
+
+            <div class="table-responsive utm-table-wrap" style="max-height: 420px; overflow-y: auto;">
+              <table class="data-table" id="utmPointsTable">
+                <thead>
+                  <tr>
+                    <th>Tên Điểm / Mã Tấm</th>
+                    <th title="Tọa độ pixel Col (ngang)">Pixel U</th>
+                    <th title="Tọa độ pixel Row (dọc)">Pixel V</th>
+                    <th title="Tọa độ thực địa X UTM">UTM X</th>
+                    <th title="Tọa độ thực địa Y UTM">UTM Y</th>
+                    <th>Lon</th>
+                    <th>Lat</th>
+                    <th>Trạng Thái</th>
+                  </tr>
+                </thead>
+                <tbody id="utmPointsTableBody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Thanh phân trang bảng tọa độ -->
+            <div class="pv-pagination mt-2" id="utmPagination" style="display: none; justify-content: space-between; align-items: center;">
+              <button class="btn-page" id="btnUTMPrevPage" title="Trang trước"><i class="fa-solid fa-chevron-left"></i></button>
+              <span class="page-info" id="utmPageInfo" style="font-size: 12px;">Trang 1 / 1 (0 điểm)</span>
+              <button class="btn-page" id="btnUTMNextPage" title="Trang sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <p class="text-hint mt-2">
+              <i class="fa-solid fa-circle-info"></i> Tọa độ Pixel (u, v) được đọc trực tiếp từ GeoTIFF rasterio index. Bấm vào từng dòng để bay tới điểm trên ảnh.
+            </p>
+
+            <!-- Nút xuất CSV -->
+            <div class="export-actions mt-3 d-flex gap-2">
+              <button type="button" class="btn btn-success flex-1" id="btnExportUTMCSV">
+                <i class="fa-solid fa-file-csv"></i> Xuất File CSV Pixel (u, v)
+              </button>
+            </div>
+
+            </div>
+          </div>
+
+          <!-- Ánh Xạ GPS Thuần Card -->
+          <div class="card control-card" id="cardMapGPS" style="margin-top: 15px;">
+            <div class="card-header card-collapsible-header" onclick="document.getElementById('mapGPSBody').classList.toggle('d-none'); this.querySelector('.card-toggle-icon').classList.toggle('fa-rotate-180');">
+              <div class="card-title">
+                <i class="fa-solid fa-satellite-dish" style="color: #10b981;"></i>
+                <span>Ánh Xạ Tọa Độ Lên Ortho To (GPS Thuần)</span>
+              </div>
+              <div class="header-right-tools">
+                <i class="fa-solid fa-chevron-down card-toggle-icon" style="transition: transform 0.2s;"></i>
+              </div>
+            </div>
+            <div class="card-body" id="mapGPSBody">
+              <p class="text-hint mb-3">
+                <i class="fa-solid fa-circle-info"></i> Quy chiếu trực tiếp tọa độ (u, v) từ Ortho Vùng sang Ortho To bằng Georeferencing / GeoTIFF Transform không phụ thuộc AI hay đối sánh ảnh.
+              </p>
+
+              <div class="radio-group mb-2">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                  <input type="radio" name="gpsMapSource" value="current" checked id="radioGpsSourceCurrent">
+                  <span>Dùng danh sách điểm đang nạp/đo ở trên</span>
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px;">
+                  <input type="radio" name="gpsMapSource" value="csv" id="radioGpsSourceCsv">
+                  <span>Tải lên file CSV chứa cột (Pixel_U, Pixel_V)</span>
+                </label>
+              </div>
+
+              <div class="input-group mb-3" id="gpsCsvFileInputGroup" style="display: none;">
+                <label for="gpsCsvFileInput"><i class="fa-solid fa-file-csv"></i> Chọn File CSV (u, v):</label>
+                <input type="file" id="gpsCsvFileInput" accept=".csv" style="width: 100%; padding: 6px; font-size: 12px; background: rgba(15,23,42,0.6); border: 1px solid #334155; color: #e2e8f0; border-radius: 4px;">
+              </div>
+
+              <button type="button" class="btn btn-success btn-block mb-2" id="btnMapPointsGPS">
+                <i class="fa-solid fa-satellite-dish"></i> Thực Hiện Ánh Xạ GPS Thuần
+              </button>
+
+              <div id="gpsMapResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+                <div class="export-actions d-flex" style="gap: 8px;">
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 13px;" id="btnExportGpsMappedCSV" title="Tải File CSV Kết Quả Ánh Xạ GPS">
+                    <i class="fa-solid fa-download"></i> Tải CSV GPS
+                  </button>
+                  <button type="button" class="btn btn-outline flex-fill" style="padding: 6px; font-size: 13px;" id="btnFocusGpsPoints" title="Chuyển sang Ortho To và phóng to vùng các điểm">
+                    <i class="fa-solid fa-magnifying-glass-location"></i> Xem Trên Ortho To
+                  </button>
+                </div>
+
+                <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 4px; font-size: 13px;">
+                  <div style="color: #cbd5e1; margin-bottom: 6px;"><i class="fa-solid fa-eye"></i> Hiển thị trực quan:</div>
+                  <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowGPSMapped" checked>
+                    <span style="color: #10b981; font-weight: 500;"><i class="fa-solid fa-crosshairs"></i> Điểm Ánh Xạ GPS (Ortho To)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ánh Xạ AI Card -->
+          <div class="card control-card" id="cardMapAI" style="margin-top: 15px;">
+            <div class="card-header card-collapsible-header" onclick="document.getElementById('mapAIBody').classList.toggle('d-none'); this.querySelector('.card-toggle-icon').classList.toggle('fa-rotate-180');">
+              <div class="card-title">
+                <i class="fa-solid fa-brain" style="color: #a855f7;"></i>
+                <span>Ánh Xạ Bằng AI (Không Dùng GPS)</span>
+              </div>
+              <div class="header-right-tools">
+                <i class="fa-solid fa-chevron-down card-toggle-icon" style="transition: transform 0.2s;"></i>
+              </div>
+            </div>
+            <div class="card-body" id="mapAIBody">
+              <p class="text-hint mb-3">
+                <i class="fa-solid fa-circle-info"></i> Tải lên file CSV chứa tọa độ (u, v) của Ortho Vùng. Hệ thống tự động quét đặc trưng ảnh (SIFT/ORB) để ánh xạ lên Ortho To mà không cần dựa vào GPS.
+              </p>
+              
+              <div class="input-group mb-3">
+                <label for="csvFileInput"><i class="fa-solid fa-file-csv"></i> Chọn File CSV (u, v):</label>
+                <input type="file" id="csvFileInput" accept=".csv" style="width: 100%; padding: 6px; font-size: 12px; background: rgba(15,23,42,0.6); border: 1px solid #334155; color: #e2e8f0; border-radius: 4px;">
+              </div>
+
+              <button type="button" class="btn btn-outline btn-block mb-2" id="btnTransformPointsCV">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Tính Toán Ma Trận AI
+              </button>
+              
+              <div id="transformResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+                <div class="export-actions d-flex" style="gap: 8px;">
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 13px;" id="btnExportAffineCSV" title="Tải File CSV sử dụng biến đổi Affine">
+                    <i class="fa-solid fa-download"></i> CSV (Affine)
+                  </button>
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 13px;" id="btnExportHomoCSV" title="Tải File CSV sử dụng biến đổi Homography">
+                    <i class="fa-solid fa-download"></i> CSV (Homography)
+                  </button>
+                </div>
+                
+                <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 4px; font-size: 13px;">
+                  <div style="color: #cbd5e1; margin-bottom: 6px;"><i class="fa-solid fa-eye"></i> Hiển thị trực quan (chỉ trên Ortho To):</div>
+                  <label class="d-flex align-items-center mb-1" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowAffine" checked>
+                    <span style="color: #ef4444;"><i class="fa-solid fa-play fa-rotate-270"></i> Điểm Affine</span>
+                  </label>
+                  <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowHomo" checked>
+                    <span style="color: #3b82f6;"><i class="fa-solid fa-square"></i> Điểm Homography</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ánh Xạ Ma Trận Affine Card -->
+          <div class="card control-card" id="cardMapAffine" style="margin-top: 15px;">
+            <div class="card-header card-collapsible-header" onclick="document.getElementById('mapAffineBody').classList.toggle('d-none'); this.querySelector('.card-toggle-icon').classList.toggle('fa-rotate-180');">
+              <div class="card-title">
+                <i class="fa-solid fa-shapes" style="color: #f59e0b;"></i>
+                <span>Ánh Xạ Bằng Ma Trận Affine (6 DOF)</span>
+              </div>
+              <div class="header-right-tools">
+                <i class="fa-solid fa-chevron-down card-toggle-icon" style="transition: transform 0.2s;"></i>
+              </div>
+            </div>
+            <div class="card-body" id="mapAffineBody">
+              <p class="text-hint mb-3">
+                <i class="fa-solid fa-circle-info"></i> Biến đổi trực tiếp 4 góc OBB và tâm từ CSV 35m sang hệ tọa độ map 85m bằng ma trận Affine 2D (6 tham số). Tự động ghép cặp GPS + AI và đối soát mốc chuẩn với <code>bbox_centroid_export.csv</code>.
+              </p>
+
+              <div class="radio-group mb-2">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                  <input type="radio" name="affineMapSource" value="default" checked id="radioAffineSourceDefault">
+                  <span>Dùng file PV_Coordinates_Ortho_Vung_1_...csv có sẵn</span>
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px;">
+                  <input type="radio" name="affineMapSource" value="upload" id="radioAffineSourceUpload">
+                  <span>Tải lên file CSV detection OBB khác</span>
+                </label>
+              </div>
+
+              <div class="input-group mb-3" id="affineCsvFileInputGroup" style="display: none;">
+                <label for="affineCsvFileInput"><i class="fa-solid fa-file-csv"></i> Chọn File CSV (u, v / BBox corners):</label>
+                <input type="file" id="affineCsvFileInput" accept=".csv" style="width: 100%; padding: 6px; font-size: 12px; background: rgba(15,23,42,0.6); border: 1px solid #334155; color: #e2e8f0; border-radius: 4px;">
+              </div>
+
+              <button type="button" class="btn btn-warning btn-block mb-2" id="btnMapPointsAffine" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: none; font-weight: 600; color: #fff;">
+                <i class="fa-solid fa-shapes"></i> Thực Hiện Ánh Xạ Ma Trận Affine
+              </button>
+
+              <div id="affineMapResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+                <div class="panel-summary-grid mt-2 mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">Khớp chuẩn giàn</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #10b981;" id="statAffineValid">4.923 / 5.092 (96.7%)</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">RMSE Tâm (cm)</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #38bdf8;" id="statAffineRmse">19.69 cm</div>
+                  </div>
+                </div>
+
+                <!-- Phân loại khuyết tật PV -->
+                <div class="mt-2 mb-2" style="background: rgba(15,23,42,0.6); padding: 6px 8px; border-radius: 4px; border: 1px solid #334155; font-size: 11px;">
+                  <div style="color: #cbd5e1; font-weight: 600; margin-bottom: 4px;"><i class="fa-solid fa-tags"></i> Phân loại khuyết tật PV (AI Detect):</div>
+                  <div class="d-flex flex-wrap gap-1" id="affineClassBadges" style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    <span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; padding: 2px 6px; border-radius: 3px;">Bình thường: 4.657</span>
+                    <span class="badge" style="background: rgba(245,158,11,0.2); color: #f59e0b; padding: 2px 6px; border-radius: 3px;">HotSpot: 309</span>
+                    <span class="badge" style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 2px 6px; border-radius: 3px;">MultiHotSpot: 87</span>
+                    <span class="badge" style="background: rgba(236,72,153,0.2); color: #ec4899; padding: 2px 6px; border-radius: 3px;">Bypass: 31</span>
+                    <span class="badge" style="background: rgba(139,92,246,0.2); color: #8b5cf6; padding: 2px 6px; border-radius: 3px;">Mixed: 8</span>
+                  </div>
+                </div>
+
+                <div class="export-actions d-flex flex-wrap" style="gap: 6px;">
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 12px;" id="btnExportAffineResultCSV" title="Tải File CSV Kết Quả Ánh Xạ Affine (Tọa độ 4 đỉnh + UTM + Canvas)">
+                    <i class="fa-solid fa-download"></i> Tải CSV Affine
+                  </button>
+                  <button type="button" class="btn btn-success flex-fill" style="padding: 6px; font-size: 12px;" id="btnExportParallelismCSV" onclick="window.open('/api/download-parallelism-csv', '_blank')" title="Tải File CSV Đánh Giá Tính Bảo Toàn Song Song & Độ Lệch Chuỗi Giàn Pin">
+                    <i class="fa-solid fa-ruler-combined"></i> Tải CSV Song Song
+                  </button>
+                  <button type="button" class="btn btn-warning flex-fill" style="padding: 6px; font-size: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none;" id="btnExportIoUCSV" onclick="window.open('/api/download-iou-evaluation-csv', '_blank')" title="Tải File CSV Đo Đạc Sai Số Tịnh Tiến & IoU (So Sánh GPS Thuần vs Affine)">
+                    <i class="fa-solid fa-chart-pie"></i> Tải CSV IoU & Sai Số
+                  </button>
+                  <button type="button" class="btn btn-outline flex-fill" style="padding: 6px; font-size: 12px; color: #f87171; border-color: #f87171;" id="btnExportEdgeCSV" onclick="window.open('/api/download-edge-limitation-csv?kind=detail', '_blank'); setTimeout(() => window.open('/api/download-edge-limitation-csv?kind=summary', '_blank'), 400);" title="Tải CSV sai số Affine vs Homography theo vùng Trung tâm / Mép ortho nguồn (từng box + tổng hợp vùng)">
+                    <i class="fa-solid fa-border-none"></i> Tải CSV Vùng Mép
+                  </button>
+                  <button type="button" class="btn btn-outline flex-fill" style="padding: 6px; font-size: 12px;" id="btnFocusAffinePoints" title="Chuyển sang Ortho To và phóng to vùng các OBB">
+                    <i class="fa-solid fa-magnifying-glass-location"></i> Đến Vùng
+                  </button>
+                </div>
+
+                <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 4px; font-size: 13px;">
+                  <div style="color: #cbd5e1; margin-bottom: 6px;"><i class="fa-solid fa-eye"></i> Hiển thị trực quan:</div>
+                  <label class="d-flex align-items-center mb-1" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowAffineBoxes" checked>
+                    <span style="color: #10b981; font-weight: 500;"><i class="fa-solid fa-vector-square"></i> Khung Box OBB (Màu theo phân loại lỗi)</span>
+                  </label>
+                  <label class="d-flex align-items-center mb-1" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowDefectsOnly">
+                    <span style="color: #f59e0b; font-weight: 500;"><i class="fa-solid fa-triangle-exclamation"></i> Chỉ hiện các tấm có khuyết tật (435 tấm)</span>
+                  </label>
+                  <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowAffineCentroids" checked>
+                    <span style="color: #38bdf8; font-weight: 500;"><i class="fa-solid fa-crosshairs"></i> Điểm Tâm OBB (UTM Easting, Northing)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ánh Xạ Ma Trận Homography Card -->
+          <div class="card control-card" id="cardMapHomography" style="margin-top: 15px;">
+            <div class="card-header card-collapsible-header" onclick="document.getElementById('mapHomographyBody').classList.toggle('d-none'); this.querySelector('.card-toggle-icon').classList.toggle('fa-rotate-180');">
+              <div class="card-title">
+                <i class="fa-solid fa-vector-polygon" style="color: #8b5cf6;"></i>
+                <span>Ánh Xạ Bằng Ma Trận Homography (8 DOF)</span>
+              </div>
+              <div class="header-right-tools">
+                <i class="fa-solid fa-chevron-down card-toggle-icon" style="transition: transform 0.2s;"></i>
+              </div>
+            </div>
+            <div class="card-body" id="mapHomographyBody">
+              <p class="text-hint mb-3">
+                <i class="fa-solid fa-circle-info"></i> Nắn chỉnh phối cảnh 4 đỉnh tứ giác OBB và tâm từ CSV 35m đè khớp lên mặt phẳng giàn pin 85m bằng ma trận Homography $3 \times 3$ (8 bậc tự do, DLT + Chuẩn hóa Hartley + RANSAC). Tự động ghép cặp GPS + AI và đo đạc sai số với <code>bbox_centroid_export.csv</code>.
+              </p>
+
+              <div class="radio-group mb-2">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                  <input type="radio" name="homoMapSource" value="default" checked id="radioHomoSourceDefault">
+                  <span>Dùng file PV_Coordinates_Ortho_Vung_1_...csv có sẵn</span>
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px;">
+                  <input type="radio" name="homoMapSource" value="upload" id="radioHomoSourceUpload">
+                  <span>Tải lên file CSV detection OBB khác</span>
+                </label>
+              </div>
+
+              <div class="input-group mb-3" id="homoCsvFileInputGroup" style="display: none;">
+                <label for="homoCsvFileInput"><i class="fa-solid fa-file-csv"></i> Chọn File CSV (u, v / BBox corners):</label>
+                <input type="file" id="homoCsvFileInput" accept=".csv" style="width: 100%; padding: 6px; font-size: 12px; background: rgba(15,23,42,0.6); border: 1px solid #334155; color: #e2e8f0; border-radius: 4px;">
+              </div>
+
+              <button type="button" class="btn btn-primary btn-block mb-2" id="btnMapPointsHomography" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: none; font-weight: 600; color: #fff;">
+                <i class="fa-solid fa-vector-polygon"></i> Thực Hiện Ánh Xạ Ma Trận Homography
+              </button>
+
+              <div id="homoMapResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+                <div class="panel-summary-grid mt-2 mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">Khớp chuẩn giàn</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #10b981;" id="statHomoValid">5.044 / 5.071 (99.47%)</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">RMSE Tâm / Median</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #38bdf8;" id="statHomoRmse">15.25 / 9.69 cm</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">Sai số 4 đỉnh (Med)</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #c084fc;" id="statHomoCornerErr">11.18 cm</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">Polygon IoU (Med)</div>
+                    <div style="font-size: 13px; font-weight: bold; color: #f59e0b;" id="statHomoIoU">80.26%</div>
+                  </div>
+                </div>
+
+                <!-- Phân loại khuyết tật PV (Homography) -->
+                <div class="mt-2 mb-2" style="background: rgba(15,23,42,0.6); padding: 6px 8px; border-radius: 4px; border: 1px solid #334155; font-size: 11px;">
+                  <div style="color: #cbd5e1; font-weight: 600; margin-bottom: 4px;"><i class="fa-solid fa-tags"></i> Phân loại OBB & Khuyết tật (Homography 8 DOF):</div>
+                  <div class="d-flex flex-wrap gap-1" id="homoClassBadges" style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    <span class="badge" style="background: rgba(16,185,129,0.2); color: #10b981; padding: 2px 6px; border-radius: 3px;">Bình thường: 4.657</span>
+                    <span class="badge" style="background: rgba(245,158,11,0.2); color: #f59e0b; padding: 2px 6px; border-radius: 3px;">HotSpot: 309</span>
+                    <span class="badge" style="background: rgba(239,68,68,0.2); color: #ef4444; padding: 2px 6px; border-radius: 3px;">MultiHotSpot: 87</span>
+                    <span class="badge" style="background: rgba(236,72,153,0.2); color: #ec4899; padding: 2px 6px; border-radius: 3px;">Bypass: 31</span>
+                    <span class="badge" style="background: rgba(139,92,246,0.2); color: #8b5cf6; padding: 2px 6px; border-radius: 3px;">Mixed: 8</span>
+                  </div>
+                </div>
+
+                <div class="export-actions d-flex flex-wrap" style="gap: 6px;">
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 12px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: none;" id="btnExportHomoResultCSV" title="Tải File CSV Kết Quả Ánh Xạ 4 Đỉnh OBB Bằng Homography (Pixel 85m + UTM + IoU)">
+                    <i class="fa-solid fa-download"></i> Tải CSV 4 Đỉnh OBB
+                  </button>
+                  <button type="button" class="btn btn-success flex-fill" style="padding: 6px; font-size: 12px;" id="btnExportDltHartleyCSV" onclick="window.open('/api/download-homography-dlt-csv', '_blank')" title="Tải File CSV Đánh Giá Thuật Toán DLT + Chuẩn Hóa Hartley (8 DOF)">
+                    <i class="fa-solid fa-calculator"></i> Tải CSV DLT-Hartley
+                  </button>
+                  <button type="button" class="btn btn-warning flex-fill" style="padding: 6px; font-size: 12px; background: linear-gradient(135deg, #ec4899, #db2777); color: #fff; border: none;" id="btnExportHomoMorphologyCSV" onclick="window.open('/api/download-homography-morphology-csv?kind=detail', '_blank'); setTimeout(() => window.open('/api/download-homography-morphology-csv?kind=summary', '_blank'), 400);" title="Tải CSV Phân Tích Chuyển Dịch Hình Thái (Chữ nhật -> Bình hành Affine -> Tứ giác phối cảnh Homography)">
+                    <i class="fa-solid fa-draw-polygon"></i> Tải CSV Hình Thái
+                  </button>
+                  <button type="button" class="btn btn-info flex-fill" style="padding: 6px; font-size: 12px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; border: none;" id="btnExportLandmarkSensitivityCSV" onclick="window.open('/api/download-landmark-sensitivity-csv?kind=detail', '_blank'); setTimeout(() => window.open('/api/download-landmark-sensitivity-csv?kind=summary', '_blank'), 400);" title="Tải CSV Kiểm Tra Độ Nhạy Phân Bố Mốc (Case A Cụm Góc vs Case B Toàn Vùng)">
+                    <i class="fa-solid fa-chart-network"></i> Tải CSV Độ Nhạy Mốc
+                  </button>
+                  <button type="button" class="btn btn-outline flex-fill" style="padding: 6px; font-size: 12px;" id="btnFocusHomoPoints" title="Chuyển sang Ortho To và phóng to vùng các OBB Homography">
+                    <i class="fa-solid fa-magnifying-glass-location"></i> Đến Vùng
+                  </button>
+                </div>
+
+                <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 4px; font-size: 13px;">
+                  <div style="color: #cbd5e1; margin-bottom: 6px;"><i class="fa-solid fa-eye"></i> Hiển thị trực quan (Homography):</div>
+                  <label class="d-flex align-items-center mb-1" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowHomoBoxes" checked>
+                    <span style="color: #c084fc; font-weight: 500;"><i class="fa-solid fa-vector-square"></i> Khung Tứ Giác OBB 4 Đỉnh (Nắn phối cảnh 8 DOF)</span>
+                  </label>
+                  <label class="d-flex align-items-center mb-1" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowHomoDefectsOnly">
+                    <span style="color: #f59e0b; font-weight: 500;"><i class="fa-solid fa-triangle-exclamation"></i> Chỉ hiện các tấm có khuyết tật (435 tấm)</span>
+                  </label>
+                  <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                    <input type="checkbox" id="chkShowHomoCentroids" checked>
+                    <span style="color: #38bdf8; font-weight: 500;"><i class="fa-solid fa-crosshairs"></i> Điểm Tâm OBB Homography (UTM Easting, Northing)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thẻ Đối Chiếu Trực Quan Khớp Khung Giàn Affine vs Homography -->
+          <div class="card control-card" id="cardCompareAffineHomo" style="margin-top: 15px; border-left: 3px solid #06b6d4;">
+            <div class="card-header card-collapsible-header" onclick="document.getElementById('compareAffineHomoBody').classList.toggle('d-none'); this.querySelector('.card-toggle-icon').classList.toggle('fa-rotate-180');">
+              <div class="card-title">
+                <i class="fa-solid fa-code-compare" style="color: #06b6d4;"></i>
+                <span>So Sánh Trực Quan Khớp Giàn (Affine vs Homography)</span>
+              </div>
+              <div class="header-right-tools">
+                <span class="badge" style="background: rgba(6,182,212,0.2); color: #06b6d4; font-size: 11px;" id="badgeCompareStatus">Sẵn sàng</span>
+                <i class="fa-solid fa-chevron-down card-toggle-icon" style="transition: transform 0.2s;"></i>
+              </div>
+            </div>
+            <div class="card-body" id="compareAffineHomoBody">
+              <p class="text-hint mb-3">
+                <i class="fa-solid fa-circle-info"></i> Đối chiếu trực quan và định lượng trên cùng nền Ortho 85m giữa 2 mô hình: <b>Affine (6 DOF - bảo toàn song song)</b> và <b>Homography (8 DOF - nắn phối cảnh tứ giác lồi)</b>. Đo đạc độ lệch vi sai giữa 2 mô hình (Discrepancy) và so sánh mức độ khớp khung giàn với <code>bbox_centroid_export.csv</code>.
+              </p>
+
+              <div class="radio-group mb-2">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                  <input type="radio" name="compareMapSource" value="default" checked id="radioCompareSourceDefault">
+                  <span>Dùng file PV_Coordinates_Ortho_Vung_1_...csv có sẵn</span>
+                </label>
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; margin-top: 4px;">
+                  <input type="radio" name="compareMapSource" value="upload" id="radioCompareSourceUpload">
+                  <span>Tải lên file CSV detection OBB khác</span>
+                </label>
+              </div>
+
+              <div class="input-group mb-3" id="compareCsvFileInputGroup" style="display: none;">
+                <label for="compareCsvFileInput"><i class="fa-solid fa-file-csv"></i> Chọn File CSV (u, v / BBox corners):</label>
+                <input type="file" id="compareCsvFileInput" accept=".csv" style="width: 100%; padding: 6px; font-size: 12px; background: rgba(15,23,42,0.6); border: 1px solid #334155; color: #e2e8f0; border-radius: 4px;">
+              </div>
+
+              <button type="button" class="btn btn-block mb-2" id="btnRunCompareAffineHomo" style="background: linear-gradient(135deg, #06b6d4, #0284c7); border: none; font-weight: 600; color: #fff;">
+                <i class="fa-solid fa-code-compare"></i> Thực Hiện Đối Chiếu Affine vs Homography
+              </button>
+
+              <div id="compareMapResultsWrap" style="display: none; animation: fadeIn 0.3s ease;">
+                <!-- Bảng So Sánh Chỉ Số 2 Mô Hình -->
+                <div style="background: rgba(15,23,42,0.7); border: 1px solid #334155; border-radius: 6px; padding: 8px; margin-top: 8px; margin-bottom: 8px;">
+                  <div style="font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-scale-balanced"></i> Bảng Đối Chiếu Định Lượng (5.071 Mốc 85m):
+                  </div>
+                  <table style="width: 100%; font-size: 11px; border-collapse: collapse; text-align: left;">
+                    <thead>
+                      <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                        <th style="padding: 3px 0;">Chỉ số</th>
+                        <th style="padding: 3px 0; color: #f59e0b;">Affine (6 DOF)</th>
+                        <th style="padding: 3px 0; color: #8b5cf6;">Homography (8 DOF)</th>
+                        <th style="padding: 3px 0; color: #10b981;">Cải thiện</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-bottom: 1px solid rgba(51,65,85,0.4);">
+                        <td style="padding: 4px 0; color: #cbd5e1;">RMSE Tâm</td>
+                        <td style="color: #f59e0b; font-weight: 600;" id="cmpAffRmse">18.92 cm</td>
+                        <td style="color: #8b5cf6; font-weight: 600;" id="cmpHomoRmse">15.25 cm</td>
+                        <td style="color: #10b981; font-weight: 600;" id="cmpGainRmse">-3.67 cm (-19%)</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(51,65,85,0.4);">
+                        <td style="padding: 4px 0; color: #cbd5e1;">Trung vị tâm</td>
+                        <td style="color: #f59e0b;" id="cmpAffMed">10.89 cm</td>
+                        <td style="color: #8b5cf6; font-weight: 600;" id="cmpHomoMed">9.69 cm</td>
+                        <td style="color: #10b981;" id="cmpGainMed">-1.20 cm</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(51,65,85,0.4);">
+                        <td style="padding: 4px 0; color: #cbd5e1;">Sai số 4 đỉnh</td>
+                        <td style="color: #f59e0b;" id="cmpAff4c">12.19 cm</td>
+                        <td style="color: #8b5cf6; font-weight: 600;" id="cmpHomo4c">11.18 cm</td>
+                        <td style="color: #10b981;" id="cmpGain4c">-1.01 cm</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(51,65,85,0.4);">
+                        <td style="padding: 4px 0; color: #cbd5e1;">Polygon IoU (Med)</td>
+                        <td style="color: #f59e0b;" id="cmpAffIou">79.92%</td>
+                        <td style="color: #8b5cf6; font-weight: 600;" id="cmpHomoIou">80.26%</td>
+                        <td style="color: #10b981;" id="cmpGainIou">+0.34%</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid rgba(51,65,85,0.4);">
+                        <td style="padding: 4px 0; color: #cbd5e1;">Khớp chuẩn giàn</td>
+                        <td style="color: #f59e0b;" id="cmpAffValid">97.75% (4.957)</td>
+                        <td style="color: #8b5cf6; font-weight: 600;" id="cmpHomoValid">99.47% (5.044)</td>
+                        <td style="color: #10b981; font-weight: bold;" id="cmpGainValid">+87 tấm</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; color: #cbd5e1;">Vùng mép (<10%)</td>
+                        <td style="color: #f87171;" id="cmpAffEdge">92.55%</td>
+                        <td style="color: #10b981; font-weight: 600;" id="cmpHomoEdge">98.50%</td>
+                        <td style="color: #10b981; font-weight: bold;" id="cmpGainEdge">+5.95%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Thống kê độ lệch giữa 2 mô hình -->
+                <div class="panel-summary-grid mt-1 mb-2" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">Độ lệch tâm 2 mô hình</div>
+                    <div style="font-size: 12px; font-weight: bold; color: #38bdf8;" id="statCmpDiscrepancy">TB: 8.78 cm | Med: 6.81 cm</div>
+                  </div>
+                  <div style="background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; border: 1px solid #334155;">
+                    <div style="font-size: 11px; color: #94a3b8;">IoU Trùng Khớp 2 Mô Hình</div>
+                    <div style="font-size: 12px; font-weight: bold; color: #f59e0b;" id="statCmpAffHomoIoU">88.30% (Med)</div>
+                  </div>
+                </div>
+
+                <!-- Các nút hành động tải CSV & Điều hướng -->
+                <div class="export-actions d-flex flex-wrap" style="gap: 6px;">
+                  <button type="button" class="btn btn-primary flex-fill" style="padding: 6px; font-size: 12px; background: linear-gradient(135deg, #06b6d4, #0284c7); border: none;" id="btnExportComparisonCSV" title="Tải File CSV Kết Quả Đối Chiếu Trực Quan & Định Lượng Affine vs Homography">
+                    <i class="fa-solid fa-download"></i> Tải CSV Đối Chiếu
+                  </button>
+                  <button type="button" class="btn btn-outline flex-fill" style="padding: 6px; font-size: 12px;" id="btnFocusComparePoints" title="Chuyển sang Ortho To và phóng to vùng đối chiếu">
+                    <i class="fa-solid fa-magnifying-glass-location"></i> Đến Vùng
+                  </button>
+                </div>
+
+                <!-- Điều khiển hiển thị trực quan lớp bản đồ -->
+                <div class="mt-2" style="background: rgba(15,23,42,0.6); padding: 8px; border-radius: 4px; font-size: 12px;">
+                  <div style="color: #cbd5e1; margin-bottom: 6px; font-weight: 600;"><i class="fa-solid fa-layer-group"></i> Chế độ hiển thị trực quan:</div>
+                  <div class="radio-group mb-2" style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                      <input type="radio" name="compareVisualMode" value="both" checked id="radioCmpVisualBoth">
+                      <span style="color: #e2e8f0;"><i class="fa-solid fa-clone"></i> <b>Chồng lớp song song:</b> Affine (cam nét đứt) + Homography (tím nét liền)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                      <input type="radio" name="compareVisualMode" value="discrepancy" id="radioCmpVisualDiscrepancy">
+                      <span style="color: #38bdf8;"><i class="fa-solid fa-palette"></i> <b>Tô màu độ lệch vi sai:</b> Xanh (&lt;10cm) | Vàng (10-20cm) | Đỏ (&gt;20cm)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                      <input type="radio" name="compareVisualMode" value="affine" id="radioCmpVisualAffine">
+                      <span style="color: #f59e0b;"><i class="fa-solid fa-shapes"></i> Chỉ hiện khung Affine (6 DOF - Hình bình hành)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                      <input type="radio" name="compareVisualMode" value="homo" id="radioCmpVisualHomo">
+                      <span style="color: #8b5cf6;"><i class="fa-solid fa-vector-polygon"></i> Chỉ hiện khung Homography (8 DOF - Tứ giác lồi)</span>
+                    </label>
+                  </div>
+
+                  <div style="border-top: 1px solid #334155; padding-top: 6px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px;">
+                    <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                      <input type="checkbox" id="chkCompareDefectsOnly">
+                      <span style="color: #ec4899; font-weight: 500;"><i class="fa-solid fa-triangle-exclamation"></i> Chỉ đối chiếu 435 tấm khuyết tật nhiệt</span>
+                    </label>
+                    <label class="d-flex align-items-center mb-0" style="cursor: pointer; gap: 8px;">
+                      <input type="checkbox" id="chkCompareOnlyMismatch">
+                      <span style="color: #f87171; font-weight: 500;"><i class="fa-solid fa-arrows-split-up-and-left"></i> Chỉ hiện các tấm có độ lệch giữa 2 mô hình &gt; 15 cm</span>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+    </aside>
+
+    <!-- Center: Interactive Viewer -->
+    <main class="viewer-container">
+      
+      <!-- Top Viewer Floating Controls (Tinh Gọn & Không đè nút Zoom) -->
+      <div class="viewer-toolbar">
+        <!-- Nhóm chuyển đổi ảnh xem: Ortho To vs Ortho Vùng -->
+        <div class="tool-group" id="viewImageGroup">
+          <button class="tool-btn active" id="btnViewBig" title="Xem ảnh Ortho To">
+            <i class="fa-solid fa-mountain-sun"></i> Ortho To
+          </button>
+          <button class="tool-btn" id="btnViewSub" disabled title="Xem ảnh Ortho Vùng 1">
+            <i class="fa-solid fa-crosshairs"></i> Vùng 1
+          </button>
+          <button class="tool-btn" id="btnViewSub2" disabled style="display: none;" title="Xem ảnh Ortho Vùng 2">
+            <i class="fa-solid fa-crosshairs" style="color: #f59e0b;"></i> Vùng 2
+          </button>
+        </div>
+
+        <!-- Nhóm Chọn Layer Khi Mapping 2 Vùng Lên Ortho To -->
+        <div class="tool-group" id="dualLayerGroup" style="display: none;">
+          <div class="tool-separator"></div>
+          <span class="tool-label" title="Chọn Layer hiển thị khi mapping 2 vùng"><i class="fa-solid fa-layer-group"></i> Layer:</span>
+          <button class="tool-btn active" id="btnDualLayerBoth" title="Hiển thị cả 2 lớp ảnh vùng con">
+            <i class="fa-solid fa-clone"></i> Cả 2 Vùng
+          </button>
+          <button class="tool-btn" id="btnDualLayerSub1" title="Chỉ hiển thị lớp ảnh Ortho Vùng 1">
+            <span class="layer-dot cyan"></span> Vùng 1
+          </button>
+          <button class="tool-btn" id="btnDualLayerSub2" title="Chỉ hiển thị lớp ảnh Ortho Vùng 2">
+            <span class="layer-dot amber"></span> Vùng 2
+          </button>
+          <button class="tool-btn" id="btnDualLayerOverlap" title="Chỉ hiển thị / phóng to vùng giao nhau">
+            <span class="layer-dot green"></span> Vùng Giao
+          </button>
+        </div>
+
+        <div class="tool-separator"></div>
+
+        <!-- Nhóm chế độ thao tác -->
+        <div class="tool-group">
+          <button class="tool-btn active" id="btnModePan" title="Chế độ di chuyển và phóng to thu nhỏ bản đồ (Pan)">
+            <i class="fa-solid fa-hand"></i> Di chuyển
+          </button>
+          <button class="tool-btn btn-highlight" id="btnModeDrawPV" title="Bật chế độ chấm 4 góc PV (tự tính tâm centroid)">
+            <i class="fa-solid fa-solar-panel"></i> Đánh Tấm PV
+          </button>
+          <button class="tool-btn" id="btnToggleChain" title="Bật/Tắt chế độ Nối Nhanh 2 Click (tự bắt 2 góc từ tấm pin liền kề)">
+            <i class="fa-solid fa-link"></i> Nối 2 Click
+          </button>
+          <button class="tool-btn" id="btnUndoPV" title="Hoàn tác điểm vừa chấm (Ctrl+Z)">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+
+        <div class="tool-separator"></div>
+
+        <!-- Quick Stamp Pill -->
+        <div class="tool-group" id="tbStampGroup">
+          <button class="tool-btn-pill" id="tbBtnSwapOrient" title="Đảo hướng Ngang <-> Dọc (Phím R)">
+            <i class="fa-solid fa-repeat"></i> <span id="tbOrientLabel">Ngang (60x30)</span>
+          </button>
+          <button class="tool-btn-icon" id="tbBtnDecSize" title="Thu nhỏ 10% (Phím [ )">
+            <i class="fa-solid fa-minus"></i>
+          </button>
+          <button class="tool-btn-icon" id="tbBtnIncSize" title="Phóng to 10% (Phím ] )">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <div class="tool-separator"></div>
+
+        <!-- Độ mờ Opacity gọn gàng -->
+        <div class="tool-group">
+          <span class="tool-label" title="Độ mờ lớp phủ vùng"><i class="fa-solid fa-circle-half-stroke"></i></span>
+          <input type="range" id="opacitySlider" min="0" max="100" value="85" title="Độ mờ lớp phủ" />
+          <span class="slider-value" id="opacityVal">85%</span>
+        </div>
+
+        <div class="tool-separator"></div>
+
+        <!-- Bật/Tắt Lớp Phủ -->
+        <div class="tool-group">
+          <button class="tool-btn active" id="btnToggleBBox" title="Bật/Tắt khung Bounding Box">
+            <i class="fa-solid fa-vector-square"></i> BBox
+          </button>
+          <button class="tool-btn active" id="btnToggleOverlay" title="Bật/Tắt lớp phủ ảnh vùng">
+            <i class="fa-solid fa-image"></i> Lớp Phủ
+          </button>
+          <button class="tool-btn" id="btnToggleFloatingInfo" style="display: none;" title="Bật/Tắt bảng thông tin chi tiết bên ngoài Bounding Box">
+            <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Thông Tin
+          </button>
+          <button class="tool-btn" id="btnSplitView" title="So sánh song song 2 ảnh">
+            <i class="fa-solid fa-columns"></i>
+          </button>
+        </div>
+
+        <div class="tool-separator"></div>
+
+        <!-- Tiện ích Viewport -->
+        <div class="tool-group">
+          <button class="tool-btn active" id="btnToggleHD" title="Chế độ siêu nét HD khi zoom sâu">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> HD
+          </button>
+          <button class="tool-btn" id="btnZoomFit" title="Đặt lại góc nhìn vừa màn hình">
+            <i class="fa-solid fa-expand"></i> Vừa khung
+          </button>
+          <button class="tool-btn" id="btnZoomRegion" title="Phóng to vào vùng Bounding Box">
+            <i class="fa-solid fa-magnifying-glass-location"></i> Đến vùng
+          </button>
+        </div>
+      </div>
+
+      <!-- Bảng Thông Tin Đa Năng Nổi Bên Ngoài Bounding Box (Floating Info Panel) -->
+      <div class="dual-info-panel" id="dualFloatingInfoPanel" style="display: none;">
+        <div class="info-panel-header">
+          <div class="panel-header-title">
+            <i class="fa-solid fa-circle-nodes" style="color: var(--accent-cyan);"></i>
+            <span id="floatingPanelTitle">Dual Region Mapping Info</span>
+          </div>
+          <div class="panel-header-actions">
+            <button class="btn-icon-panel" id="btnMinimizeInfoPanel" title="Minimize / Maximize"><i class="fa-solid fa-minus"></i></button>
+            <button class="btn-icon-panel" id="btnCloseInfoPanel" title="Close panel"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+        <div class="info-panel-tabs">
+          <button class="panel-tab-btn active" data-tab="tabCompare">
+            <i class="fa-solid fa-scale-balanced"></i> Compare Regions
+          </button>
+          <button class="panel-tab-btn" data-tab="tabSub1">
+            <span class="layer-dot cyan"></span> Region 1
+          </button>
+          <button class="panel-tab-btn" data-tab="tabSub2">
+            <span class="layer-dot amber"></span> Region 2
+          </button>
+          <button class="panel-tab-btn" data-tab="tabExport">
+            <i class="fa-solid fa-code"></i> Coords & Export
+          </button>
+        </div>
+        <div class="info-panel-body" id="floatingPanelBody">
+          <!-- Tab 1: So Sánh 2 Vùng -->
+          <div class="panel-tab-content active" id="fTabCompare">
+            <div class="panel-summary-grid">
+              <div class="panel-stat-box">
+                <span class="stat-label">Overlap (IoU)</span>
+                <span class="stat-val highlight" id="fStatIoU">0%</span>
+              </div>
+              <div class="panel-stat-box">
+                <span class="stat-label">Center Distance</span>
+                <span class="stat-val" id="fStatCenterDist">-</span>
+              </div>
+            </div>
+            <div class="table-responsive mt-2">
+              <table class="floating-specs-table">
+                <thead>
+                  <tr>
+                    <th>Specification</th>
+                    <th style="color: #06b6d4;">🔵 Region 1</th>
+                    <th style="color: #f59e0b;">🟠 Region 2</th>
+                  </tr>
+                </thead>
+                <tbody id="fCompareTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Bộ Điều Khiển Độ Mờ So Sánh 2 Vùng (Dual Opacity Controls) -->
+            <div class="dual-opacity-card mt-2">
+              <div class="dual-opacity-title">
+                <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i>
+                <span>Comparison Opacity Settings</span>
+              </div>
+              
+              <!-- Thanh trượt Vùng 1 -->
+              <div class="opacity-slider-row">
+                <div class="opacity-slider-label">
+                  <span class="layer-dot cyan"></span>
+                  <span>Region 1:</span>
+                </div>
+                <input type="range" id="fSub1OpacitySlider" min="0" max="100" value="85" class="custom-range custom-range-cyan" />
+                <span class="opacity-num cyan" id="fSub1OpacityVal">85%</span>
+              </div>
+
+              <!-- Thanh trượt Vùng 2 -->
+              <div class="opacity-slider-row">
+                <div class="opacity-slider-label">
+                  <span class="layer-dot amber"></span>
+                  <span>Region 2:</span>
+                </div>
+                <input type="range" id="fSub2OpacitySlider" min="0" max="100" value="85" class="custom-range custom-range-amber" />
+                <span class="opacity-num amber" id="fSub2OpacityVal">85%</span>
+              </div>
+
+              <!-- Thanh trượt Vùng Giao Nhau -->
+              <div class="opacity-slider-row" id="overlapSliderContainer" style="display: none;">
+                <div class="opacity-slider-label">
+                  <span class="layer-dot green" style="background-color: #10b981;"></span>
+                  <span>Intersection:</span>
+                </div>
+                <input type="range" id="fOverlapOpacitySlider" min="0" max="100" value="35" class="custom-range custom-range-green" style="--slider-color: #10b981;" />
+                <span class="opacity-num green" id="fOverlapOpacityVal" style="color: #10b981;">35%</span>
+              </div>
+
+              <!-- Nút chọn nhanh tỉ lệ so sánh -->
+              <div class="opacity-quick-presets mt-2">
+                <button type="button" class="preset-pill" id="btnPresetSub1Only" title="Show Region 1 Only (100% / 0%)">🔵 Region 1 Only</button>
+                <button type="button" class="preset-pill" id="btnPresetBlend50" title="Blend 50/50 for comparison">⚖️ Blend 50/50</button>
+                <button type="button" class="preset-pill" id="btnPresetSub2Only" title="Show Region 2 Only (0% / 100%)">🟠 Region 2 Only</button>
+                <button type="button" class="preset-pill" id="btnPresetBothFull" title="Show both clearly">✨ Both 100%</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Chi Tiết Vùng 1 -->
+          <div class="panel-tab-content" id="fTabSub1" style="display: none;">
+            <div class="panel-sub-card">
+              <div class="panel-field-row">
+                <span class="field-lbl">Filename:</span>
+                <span class="field-val highlight cyan" id="fSub1Name">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Pixel Origin (X, Y):</span>
+                <span class="field-val" id="fSub1Origin">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Dimensions:</span>
+                <span class="field-val" id="fSub1Dim">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Resolution (GSD):</span>
+                <span class="field-val" id="fSub1Gsd">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Region Area:</span>
+                <span class="field-val" id="fSub1Area">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Coverage on Master:</span>
+                <span class="field-val highlight" id="fSub1Overlap">-</span>
+              </div>
+
+              <!-- Độ mờ riêng Vùng 1 -->
+              <div class="opacity-slider-row mt-2">
+                <div class="opacity-slider-label">
+                  <span class="layer-dot cyan"></span>
+                  <span>Opacity:</span>
+                </div>
+                <input type="range" id="tabSub1OpacitySlider" min="0" max="100" value="85" class="custom-range custom-range-cyan" />
+                <span class="opacity-num cyan" id="tabSub1OpacityVal">85%</span>
+              </div>
+
+              <button class="btn btn-outline btn-sm btn-block mt-2" id="btnZoomToSub1">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom to Region 1
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 3: Chi Tiết Vùng 2 -->
+          <div class="panel-tab-content" id="fTabSub2" style="display: none;">
+            <div class="panel-sub-card">
+              <div class="panel-field-row">
+                <span class="field-lbl">Filename:</span>
+                <span class="field-val highlight amber" id="fSub2Name">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Pixel Origin (X, Y):</span>
+                <span class="field-val" id="fSub2Origin">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Dimensions:</span>
+                <span class="field-val" id="fSub2Dim">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Resolution (GSD):</span>
+                <span class="field-val" id="fSub2Gsd">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Region Area:</span>
+                <span class="field-val" id="fSub2Area">-</span>
+              </div>
+              <div class="panel-field-row">
+                <span class="field-lbl">Coverage on Master:</span>
+                <span class="field-val highlight" id="fSub2Overlap">-</span>
+              </div>
+
+              <!-- Độ mờ riêng Vùng 2 -->
+              <div class="opacity-slider-row mt-2">
+                <div class="opacity-slider-label">
+                  <span class="layer-dot amber"></span>
+                  <span>Opacity:</span>
+                </div>
+                <input type="range" id="tabSub2OpacitySlider" min="0" max="100" value="85" class="custom-range custom-range-amber" />
+                <span class="opacity-num amber" id="tabSub2OpacityVal">85%</span>
+              </div>
+
+              <button class="btn btn-outline btn-sm btn-block mt-2" id="btnZoomToSub2">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom to Region 2
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 4: Tọa Độ & Xuất File -->
+          <div class="panel-tab-content" id="fTabExport" style="display: none;">
+            <div class="panel-sub-tabs">
+              <button class="mini-tab-btn active" data-subtab="fCodePixel">Pixel JSON</button>
+              <button class="mini-tab-btn" data-subtab="fCodeYolo">YOLO</button>
+              <button class="mini-tab-btn" data-subtab="fCodeGeo">WGS84</button>
+            </div>
+            <div class="code-box mt-1">
+              <pre id="fCodeContent" style="max-height: 120px; font-size: 11px;"></pre>
+              <button class="copy-btn" id="btnCopyFloatingCode" title="Copy"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            <div class="export-actions mt-2">
+              <button class="btn btn-outline btn-sm btn-block" id="btnFloatingExportYOLO">
+                <i class="fa-solid fa-file-arrow-down"></i> Xuất YOLO (.txt)
+              </button>
+              <button class="btn btn-outline btn-sm btn-block" id="btnFloatingExportGeoJSON">
+                <i class="fa-solid fa-map-location-dot"></i> Xuất GeoJSON (.geojson)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaflet Map Container -->
+      <div id="orthoMap" class="map-viewport">
+        <!-- Floating Drawing Prompt / Guide Badge -->
+        <div class="draw-guide-badge" id="drawGuideBadge" style="display: none;">
+          <i class="fa-solid fa-stamp"></i> <b>Chế độ Dập 1-Click:</b> Click chuột để đặt ngay tấm PV (Esc để thoát)
+        </div>
+
+        <!-- Placeholder overlay before image loaded -->
+        <div class="viewer-placeholder" id="viewerPlaceholder">
+          <div class="placeholder-content">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h3>Chưa Nạp Orthophoto</h3>
+            <p>Vui lòng nhập đường dẫn hoặc tải lên file <strong>Ortho To</strong> và <strong>Ortho Vùng</strong> để bắt đầu phân tích xác định vị trí.</p>
+            <button class="btn btn-primary" id="btnPlaceholderQuick">
+              <i class="fa-solid fa-play"></i> Dùng Thử File Mẫu Ghép 2.1 Ngay
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Coordinate HUD -->
+      <footer class="viewer-hud">
+        <div class="hud-item">
+          <span class="hud-label">Tọa độ Pixel:</span>
+          <span class="hud-val" id="hudPixel">X: 0, Y: 0</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">UTM 49N (EPSG:32649):</span>
+          <span class="hud-val" id="hudUTM">E: --, N: --</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">GPS WGS84:</span>
+          <span class="hud-val" id="hudGeo">Lat: --, Lon: --</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Thu phóng (Zoom):</span>
+          <span class="hud-val" id="hudZoom">100%</span>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <!-- Proj4js Coordinate Transformation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
+  
+  <!-- App JS Modules -->
+  <script src="/js/coordUtils.js?v=15"></script>
+  <script src="/js/orthoReader.js?v=15"></script>
+  <script src="/js/orthoViewer.js?v=15"></script>
+  <script src="/js/pvAnnotator.js?v=15"></script>
+  <script src="/js/app.js?v=15"></script>
+</body>
+</html>
