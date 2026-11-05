@@ -1,0 +1,361 @@
+{
+ "_cuu_tu": "localStorage origin file:// , ngày 2026-08-13",
+ "_ghi_chu": "khoá gan_nhan_tam_v1 — vòng gán cũ",
+ "tam_da_gan": 52,
+ "nhan": [
+  {
+   "ma_tam": "D08-T179",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D31-T096",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T200",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D18-T076",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D35-T118",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T283",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D34-T069",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D30-T067",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T161",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D07-T096",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": [
+    3737.9,
+    638.1,
+    3737.9,
+    605,
+    3804.4,
+    605,
+    3804.4,
+    638.1
+   ]
+  },
+  {
+   "ma_tam": "D13-T073",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D38-T044",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D26-T118",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T166",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T359",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T078",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D26-T270",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T054",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T302",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D18-T129",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D17-T184",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D35-T069",
+   "tinh_trang": "SingleHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D22-T011",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D30-T011",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D36-T084",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T355",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D11-T273",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T073",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T320",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T414",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D11-T392",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D16-T079",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D34-T063",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D08-T377",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D19-T308",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T275",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D11-T280",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D24-T060",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D40-T084",
+   "tinh_trang": "tot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D08-T206",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D38-T068",
+   "tinh_trang": "MultiHotSpot",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D11-T346",
+   "tinh_trang": "ModuleOpenCircuit",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D07-T131",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D40-T071",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D11-T352",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D18-T134",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D26-T198",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D37-T062",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D32-T069",
+   "tinh_trang": "khac",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D18-T012",
+   "tinh_trang": "Bypass",
+   "ghi_chu": null,
+   "vien_sua": null
+  },
+  {
+   "ma_tam": "D12-T025",
+   "tinh_trang": "Bypass",
+   "ghi_chu": null,
+   "vien_sua": [
+    1766,
+    1506.5,
+    1697.3,
+    1505.3,
+    1696.6,
+    1472.3,
+    1765.9,
+    1471.8
+   ]
+  },
+  {
+   "ma_tam": "D07-T031",
+   "tinh_trang": "Bypass",
+   "ghi_chu": null,
+   "vien_sua": [
+    2886.7,
+    678.4,
+    2886.6,
+    644.5,
+    2954.4,
+    644.3,
+    2954.5,
+    678.2
+   ]
+  },
+  {
+   "ma_tam": "D08-T022",
+   "tinh_trang": null,
+   "ghi_chu": null,
+   "vien_sua": [
+    982.7,
+    1771,
+    982.3,
+    1745,
+    915.5,
+    1746.2,
+    915.9,
+    1772.1
+   ]
+  }
+ ]
+}

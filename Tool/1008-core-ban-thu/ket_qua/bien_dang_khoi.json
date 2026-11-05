@@ -1,0 +1,46 @@
+{
+ "_mo_ta": "So tâm chụp đã bình sai với toạ độ RTK quan trắc, cùng nằm trong cameras.xml.",
+ "xml": "du_lieu/Thermal2_31M_full_export/cameras.xml",
+ "so_camera": 598,
+ "accuracy_cameras_m": 10.0,
+ "so_marker": 0,
+ "goc_enu": {
+  "lat": 11.42440092935826,
+  "lon": 108.85125304961721
+ },
+ "tho": {
+  "lech_tb_enu_m": [
+   2.2347,
+   -0.87,
+   -2.6313
+  ],
+  "do_lech_chuan_enu_m": [
+   0.9334,
+   0.2864,
+   3.1797
+  ],
+  "rms_3d_m": 4.8722,
+  "rms_ngang_m": 2.5892,
+  "max_3d_m": 12.3448
+ },
+ "sau_dich_cung": {
+  "rms_3d_m": 3.3262,
+  "do_lech_chuan_enu_m": [
+   0.9334,
+   0.2864,
+   3.1797
+  ]
+ },
+ "sau_helmert7": {
+  "rms_3d_m": 2.1412,
+  "ti_le": 0.99275544,
+  "ti_le_ppm": -7244.6
+ },
+ "vom": {
+  "he_so_tren_m2": -0.0006659233453297489,
+  "lech_tai_r100m_m": -6.659,
+  "phan_du_sau_khu_vom_m": 0.0906,
+  "ban_kinh_khoi_max_m": 111.3,
+  "ban_kinh_khoi_trung_vi_m": 54.19
+ }
+}

@@ -1,0 +1,356 @@
+{
+ "_cau_hoi": "cung fault_obb_4class.pt, quet tren ortho nhiet THAY GHEP thi duoc gi",
+ "_ortho_thay": "du_lieu/Thermal2_31M_full_export/thermal_ortho.tif",
+ "conf": 0.25,
+ "so_loi_moc": 603,
+ "dung_sai_m": [
+  0.5,
+  1.0,
+  1.5,
+  2.0,
+  3.0,
+  4.0,
+  5.0,
+  6.0
+ ],
+ "_moc": "603 loi trong loi_4lop_cuoi.json DEU do chinh model nay bat tren anh le ironbow goc -> nhanh anh le = 100 % theo dinh nghia, la MOC chu khong phai phep do doc lap.",
+ "C": {
+  "thay_mau_goc_xoay0": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0174,
+    "1.0": 0.0662,
+    "1.5": 0.1237,
+    "2.0": 0.216,
+    "3.0": 0.4617,
+    "4.0": 0.6638,
+    "5.0": 0.784,
+    "6.0": 0.8589
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 566,
+    "recall_neu_cham_bua": 0.9861,
+    "phat_hien_tren_o_trung_vi": 5.0
+   },
+   "lech_trung_vi_m": 3.11,
+   "giay": 96.9
+  },
+  "thay_mau_goc_xoay90": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0296,
+    "1.0": 0.1289,
+    "1.5": 0.2334,
+    "2.0": 0.3676,
+    "3.0": 0.6864,
+    "4.0": 0.8589,
+    "5.0": 0.9373,
+    "6.0": 0.9739
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 573,
+    "recall_neu_cham_bua": 0.9983,
+    "phat_hien_tren_o_trung_vi": 8.0
+   },
+   "lech_trung_vi_m": 2.44,
+   "giay": 94.4
+  },
+  "thay_mau_goc_xoay180": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0105,
+    "1.0": 0.0575,
+    "1.5": 0.1063,
+    "2.0": 0.1934,
+    "3.0": 0.4477,
+    "4.0": 0.6307,
+    "5.0": 0.7578,
+    "6.0": 0.8659
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 564,
+    "recall_neu_cham_bua": 0.9826,
+    "phat_hien_tren_o_trung_vi": 5.0
+   },
+   "lech_trung_vi_m": 3.18,
+   "giay": 95.3
+  },
+  "thay_mau_goc_xoay270": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0279,
+    "1.0": 0.1272,
+    "1.5": 0.23,
+    "2.0": 0.3571,
+    "3.0": 0.6951,
+    "4.0": 0.8537,
+    "5.0": 0.9338,
+    "6.0": 0.9704
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 573,
+    "recall_neu_cham_bua": 0.9983,
+    "phat_hien_tren_o_trung_vi": 8.0
+   },
+   "lech_trung_vi_m": 2.4,
+   "giay": 96.6
+  },
+  "thay_inferno_xoay0": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0192,
+    "1.0": 0.0679,
+    "1.5": 0.1289,
+    "2.0": 0.2195,
+    "3.0": 0.4983,
+    "4.0": 0.7213,
+    "5.0": 0.824,
+    "6.0": 0.9024
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 566,
+    "recall_neu_cham_bua": 0.9861,
+    "phat_hien_tren_o_trung_vi": 5.0
+   },
+   "lech_trung_vi_m": 2.98,
+   "giay": 101.0
+  },
+  "thay_inferno_xoay90": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0314,
+    "1.0": 0.1254,
+    "1.5": 0.2369,
+    "2.0": 0.3606,
+    "3.0": 0.6742,
+    "4.0": 0.8449,
+    "5.0": 0.9199,
+    "6.0": 0.9652
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 573,
+    "recall_neu_cham_bua": 0.9983,
+    "phat_hien_tren_o_trung_vi": 8.0
+   },
+   "lech_trung_vi_m": 2.46,
+   "giay": 96.5
+  },
+  "thay_inferno_xoay180": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0174,
+    "1.0": 0.0714,
+    "1.5": 0.122,
+    "2.0": 0.216,
+    "3.0": 0.4913,
+    "4.0": 0.6899,
+    "5.0": 0.8084,
+    "6.0": 0.892
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 566,
+    "recall_neu_cham_bua": 0.9861,
+    "phat_hien_tren_o_trung_vi": 5.0
+   },
+   "lech_trung_vi_m": 3.01,
+   "giay": 101.2
+  },
+  "thay_inferno_xoay270": {
+   "o_thu": 574,
+   "bo_vi_mep": 29,
+   "bo_vi_thung": 0,
+   "gsd_cm_per_px": 2.624,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.0296,
+    "1.0": 0.1307,
+    "1.5": 0.2422,
+    "2.0": 0.3606,
+    "3.0": 0.6916,
+    "4.0": 0.8519,
+    "5.0": 0.9303,
+    "6.0": 0.9669
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 573,
+    "recall_neu_cham_bua": 0.9983,
+    "phat_hien_tren_o_trung_vi": 9.0
+   },
+   "lech_trung_vi_m": 2.41,
+   "giay": 93.9
+  },
+  "tulam_inferno_xoay0": {
+   "o_thu": 539,
+   "bo_vi_mep": 0,
+   "bo_vi_thung": 64,
+   "gsd_cm_per_px": 2.871,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.4249,
+    "1.0": 0.5306,
+    "1.5": 0.564,
+    "2.0": 0.6178,
+    "3.0": 0.7273,
+    "4.0": 0.7996,
+    "5.0": 0.8738,
+    "6.0": 0.9258
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 538,
+    "recall_neu_cham_bua": 0.9981,
+    "phat_hien_tren_o_trung_vi": 7.0
+   },
+   "lech_trung_vi_m": 0.88,
+   "giay": 86.5
+  },
+  "tulam_inferno_xoay270": {
+   "o_thu": 539,
+   "bo_vi_mep": 0,
+   "bo_vi_thung": 64,
+   "gsd_cm_per_px": 2.871,
+   "recall_theo_dung_sai_m": {
+    "0.5": 0.705,
+    "1.0": 0.8275,
+    "1.5": 0.8497,
+    "2.0": 0.8905,
+    "3.0": 0.9406,
+    "4.0": 0.9703,
+    "5.0": 0.9833,
+    "6.0": 0.9889
+   },
+   "_lam_phong_dung_sai": {
+    "_y": "cham bua: o nao co phat hien cung tinh dung. Tran cua cot dung sai lon.",
+    "o_co_phat_hien": 539,
+    "recall_neu_cham_bua": 1.0,
+    "phat_hien_tren_o_trung_vi": 12.0
+   },
+   "lech_trung_vi_m": 0.18,
+   "giay": 85.6
+  }
+ },
+ "cau_hinh_tot_nhat": {
+  "khoa": "thay_mau_goc_xoay90",
+  "xoay": 90,
+  "bang_mau": "goc"
+ },
+ "D_quet_truot": {
+  "_mo_ta": "quet truot ca ortho thay, gop trung 0.60 m, doi chieu 603 loi nhanh anh le",
+  "_canh_bao": "603 loi KHONG phai chan ly day du, chung la dau ra nhanh anh le. 'khong khop' la CAN TREN cua bao dong gia, chua soi tay.",
+  "bang_mau": "goc",
+  "xoay": 90,
+  "o_quet": 128,
+  "o_bo_vi_trong": 0,
+  "phat_hien_tho": 742,
+  "sau_gop_trung": 466,
+  "recall_theo_dung_sai_m": {
+   "0.5": 0.0299,
+   "1.0": 0.1277,
+   "1.5": 0.2272,
+   "2.0": 0.3632,
+   "3.0": 0.6982,
+   "4.0": 0.8557,
+   "5.0": 0.9403,
+   "6.0": 0.9751
+  },
+  "ty_le_phat_hien_khop_theo_dung_sai_m": {
+   "0.5": 0.0365,
+   "1.0": 0.1459,
+   "1.5": 0.2575,
+   "2.0": 0.4163,
+   "3.0": 0.7167,
+   "4.0": 0.8541,
+   "5.0": 0.9142,
+   "6.0": 0.9442
+  },
+  "lech_trung_vi_phat_hien_m": 2.26,
+  "recall_doi_mot_mot": {
+   "_y": "moi phat hien chi nhan duoc mot loi moc - chan viec mot phat hien 'bat trung' nhieu loi cung luc o dung sai lon",
+   "0.5": 0.0282,
+   "1.0": 0.1128,
+   "1.5": 0.1841,
+   "2.0": 0.2803,
+   "3.0": 0.461,
+   "4.0": 0.5655,
+   "5.0": 0.6235,
+   "6.0": 0.6584
+  },
+  "moc_ngau_nhien": {
+   "_y": "rai lai dung so phat hien do vao vung phu, cham y het. Day la san nha - con so that phai vuot han moc nay moi co y nghia.",
+   "recall_lang_gieng": {
+    "0.5": 0.0249,
+    "1.0": 0.0879,
+    "1.5": 0.194,
+    "2.0": 0.2886,
+    "3.0": 0.5439,
+    "4.0": 0.7629,
+    "5.0": 0.8889,
+    "6.0": 0.9469
+   },
+   "recall_doi_mot_mot": {
+    "0.5": 0.0249,
+    "1.0": 0.0829,
+    "1.5": 0.1459,
+    "2.0": 0.199,
+    "3.0": 0.3284,
+    "4.0": 0.4129,
+    "5.0": 0.4627,
+    "6.0": 0.4925
+   }
+  },
+  "bu_dich_deu_tot_nhat": {
+   "_y": "sai so dinh vi ortho thay co phai mot phep tinh tien khong",
+   "dx_m": -2.9,
+   "dy_m": 2.5,
+   "recall_sau_bu": {
+    "0.5": 0.0663,
+    "1.0": 0.2007,
+    "1.5": 0.393,
+    "2.0": 0.5605,
+    "3.0": 0.7944,
+    "4.0": 0.9204,
+    "5.0": 0.9701,
+    "6.0": 0.9884
+   },
+   "recall_doi_mot_mot_sau_bu": {
+    "0.5": 0.0647,
+    "1.0": 0.1708,
+    "1.5": 0.3068,
+    "2.0": 0.4046,
+    "3.0": 0.5439,
+    "4.0": 0.6434,
+    "5.0": 0.6849,
+    "6.0": 0.7131
+   }
+  },
+  "danh_sach": "ket_qua/detect_ortho_thay_ds_phat_hien.json",
+  "giay": 58.0
+ }
+}

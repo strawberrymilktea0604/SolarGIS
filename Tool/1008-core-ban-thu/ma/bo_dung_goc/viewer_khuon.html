@@ -1,0 +1,294 @@
+<title>Bản đồ lỗi tấm pin — so sánh 4 mô hình</title>
+<style>
+  :root{
+    --ground:#EDF0F3;--surface:#FFF;--surface-2:#F5F7F9;
+    --ink:#121820;--ink-2:#4A5763;--muted:#6C7A88;--line:#D5DCE3;
+    --accent:#15616D;--accent-soft:#E3EEF0;
+    --hot:#C63D0F;--warm:#B77914;--cool:#5C6E7E;
+    --shadow:0 1px 2px rgba(18,24,32,.06),0 8px 24px rgba(18,24,32,.06);
+    --sans:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+    --mono:ui-monospace,"Cascadia Mono","Segoe UI Mono",Consolas,monospace;}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --ground:#0D1116;--surface:#161C23;--surface-2:#1C242C;
+    --ink:#E7ECF1;--ink-2:#B3BFCA;--muted:#8896A4;--line:#28323C;
+    --accent:#5BB3C0;--accent-soft:#16323A;
+    --hot:#F0763F;--warm:#E0AB4A;--cool:#8496A6;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);}}
+  :root[data-theme="dark"]{
+    --ground:#0D1116;--surface:#161C23;--surface-2:#1C242C;
+    --ink:#E7ECF1;--ink-2:#B3BFCA;--muted:#8896A4;--line:#28323C;
+    --accent:#5BB3C0;--accent-soft:#16323A;
+    --hot:#F0763F;--warm:#E0AB4A;--cool:#8496A6;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+       font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1440px;margin:0 auto;padding:24px 20px 48px;
+        display:flex;flex-direction:column;gap:18px}
+  header{display:flex;align-items:baseline;gap:16px;border-bottom:1px solid var(--line);
+         padding-bottom:12px;flex-wrap:wrap}
+  h1{margin:0;font-size:24px;font-weight:650;letter-spacing:-.02em}
+  .panes{display:grid;grid-template-columns:minmax(0,2fr) minmax(290px,.85fr);gap:16px;
+         align-items:start}
+  @media(max-width:980px){.panes{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+        box-shadow:var(--shadow);overflow:hidden}
+  .card>h2{margin:0;padding:11px 15px;font-size:11.5px;font-weight:600;letter-spacing:.07em;
+     text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);
+     background:var(--surface-2);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .seg{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;
+       overflow:hidden;background:var(--surface)}
+  .seg button{border:0;background:transparent;cursor:pointer;padding:5px 12px;
+    font:600 10.5px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+  .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .models{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;
+          background:var(--line);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .models button{border:0;background:var(--surface);cursor:pointer;padding:11px 14px;
+    text-align:left;display:flex;flex-direction:column;gap:2px;font-family:var(--sans)}
+  .models button:hover{background:var(--surface-2)}
+  .models button[aria-pressed="true"]{background:var(--accent-soft);
+    box-shadow:inset 0 -3px 0 var(--accent)}
+  .models .lb{font-size:12.5px;font-weight:600;color:var(--ink)}
+  .models .nb{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--accent);
+              font-variant-numeric:tabular-nums}
+  .models .sm{font-size:11.5px;color:var(--muted)}
+  .models button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+  .filters{display:flex;gap:7px;flex-wrap:wrap;padding:10px 15px;
+           border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .filters button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+    cursor:pointer;padding:4px 10px;border-radius:999px;font:500 11.5px/1.3 var(--sans)}
+  .filters button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .filters .cnt{font-family:var(--mono);opacity:.75;margin-left:5px}
+
+  .mapbox{position:relative;overflow:hidden;background:var(--surface-2);cursor:grab;touch-action:none}
+  .mapbox.grabbing{cursor:grabbing}
+  .mapinner{position:absolute;inset:0 auto auto 0;width:100%;transform-origin:0 0;--ps:1}
+  .mapinner img{display:block;width:100%;height:auto;pointer-events:none}
+  /* Viền tấm pin lỗi vẽ bằng SVG theo đúng 4 đỉnh polygon.
+     Nét viền co theo mức phóng (--sw) để lúc thu nhỏ không bị dày bịt kín ô,
+     lúc phóng sâu vẫn đủ rõ. Kẹp trong khoảng 0,9–2 px hiển thị. */
+  /* Nét viền KHÔNG dùng non-scaling-stroke: để nó co giãn cùng khung, đặt theo
+     đơn vị viewBox (100 = toàn ảnh). Một tấm pin rộng ~0,9 đơn vị, nên 0,05
+     tương đương ~5% bề rộng tấm — mảnh ở mọi mức phóng. */
+  .ov{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  /* pointer-events:all -> bam vao giua khung cung chon duoc, khong can trung net vien */
+  .ov polygon{fill:transparent;stroke-width:.018;cursor:pointer;pointer-events:all}
+  .ov polygon:hover{stroke-width:.045}
+  .ov polygon.dim{opacity:.12}
+  .ov polygon[aria-current="true"]{stroke-width:.055}
+  /* Cham = tam o loi do chuoi chieu ra. Khung = tam pin do best.pt khoanh.
+     Cham phai nam trong khung; lech nhau tuc la gan sai tam. */
+  .ov circle{pointer-events:none}
+  .ov circle.dim{opacity:.12}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;padding:9px 15px;font-size:12px;
+          color:var(--muted);border-top:1px solid var(--line);background:var(--surface-2)}
+  .legend i{display:inline-block;width:13px;height:9px;border:2px solid;margin-right:5px;
+            vertical-align:middle}
+  .zoomctl{position:absolute;right:10px;bottom:10px;display:flex;border:1px solid var(--line);
+    border-radius:8px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+  .zoomctl button{border:0;background:transparent;color:var(--ink-2);cursor:pointer;
+    font:600 15px/1 var(--mono);padding:7px 11px}
+  .zoomctl .lvl{font:600 11px/1 var(--mono);color:var(--muted);display:grid;place-items:center;
+    padding:0 9px;border-left:1px solid var(--line);border-right:1px solid var(--line);min-width:46px}
+  .hint{position:absolute;left:10px;bottom:10px;font-size:11px;color:var(--muted);
+    background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 9px;
+    pointer-events:none;opacity:.92}
+
+  .shots{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+  .shot{background:var(--surface);position:relative}
+  .shot img{display:block;width:100%;height:auto}
+  .shot span{position:absolute;left:7px;top:7px;font:600 9.5px/1 var(--mono);letter-spacing:.07em;
+    text-transform:uppercase;color:#fff;background:rgba(10,14,18,.72);padding:4px 6px;border-radius:4px}
+  dl{margin:0;padding:13px 15px 15px;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;
+     font-size:13px}
+  dt{color:var(--muted)}dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .code{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--accent)}
+  .badge{display:inline-block;font:600 11px/1 var(--sans);padding:3px 8px;border-radius:999px}
+  .b-ok{background:var(--accent-soft);color:var(--accent)}
+  .b-no{background:#f6e3da;color:#9c3d12}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header><h1>Bản đồ lỗi tấm pin — so sánh mô hình</h1></header>
+  <section class="models" id="models"></section>
+
+  <div class="panes">
+    <section class="card">
+      <h2>Bản đồ
+        <span class="seg" role="group" aria-label="Lớp nền">
+          <button id="bRGB" aria-pressed="true">Ảnh màu</button>
+          <button id="bTH" aria-pressed="false">Ảnh nhiệt</button>
+        </span>
+      </h2>
+      <div class="filters" id="filters"></div>
+      <div class="mapbox" id="mapbox">
+        <div class="mapinner" id="mapinner"></div>
+        <div class="hint">Lăn chuột để phóng · kéo để di chuyển · nháy đúp để về ban đầu</div>
+        <div class="zoomctl"><button id="zOut" aria-label="Thu nhỏ">−</button>
+          <span class="lvl" id="zLvl">100%</span>
+          <button id="zIn" aria-label="Phóng to">+</button></div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <section class="card"><h2>Chi tiết lỗi</h2><div id="detail"></div></section>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+const sets = DATA.sets;
+const sev = c => c>=.70?'hot':c>=.45?'warm':'cool';
+const colr = {hot:'var(--hot)',warm:'var(--warm)',cool:'var(--cool)'};
+/* Mau theo LOAI LOI. Ten lop cua hai model khac nhau nen gom ve cung mot bang. */
+const CLSCOL = {
+  SingleHotSpot:'#E8590C', MultiHotSpot:'#C2255C',
+  Bypass:'#1C7ED6', SingleByPassed:'#1C7ED6', MultiByPassed:'#0B7285',
+  ModuleOpenCircuit:'#6741D9', StringOpenCircuit:'#6741D9',
+  SingleDiode:'#2F9E44', MultiDiode:'#087F5B',
+  HeatedJunctionBox:'#F08C00', Soiling:'#868E96',
+  StringReversedPolarity:'#A61E4D',
+};
+const ccol = c => CLSCOL[c] || '#868E96';
+let cur = 0, filt = 'all';
+const S = () => sets[cur].items;
+
+document.getElementById('models').innerHTML = sets.map((s,i)=>
+  `<button data-i="${i}" aria-pressed="${i===0}">
+     <span class="lb">${s.label}</span>
+     <span class="nb">${s.n} lỗi</span>
+     <span class="sm">gán đúng tấm ${Math.round(100*s.in_panel/s.n)}%</span>
+   </button>`).join('');
+
+const box=document.getElementById('mapbox'), inner=document.getElementById('mapinner'),
+      lvl=document.getElementById('zLvl');
+let z=1,tx=0,ty=0;
+function apply(){
+  const w=box.clientWidth,h=box.clientHeight;
+  tx=Math.min(0,Math.max(w-z*w,tx)); ty=Math.min(0,Math.max(h-z*h,ty));
+  inner.style.transform=`translate(${tx}px,${ty}px) scale(${z})`;
+  inner.style.setProperty('--ps',1/z); lvl.textContent=Math.round(z*100)+'%';
+}
+function zoomAt(px,py,f){const nz=Math.min(18,Math.max(1,z*f)); if(nz===z)return;
+  tx=px-(px-tx)*nz/z; ty=py-(py-ty)*nz/z; z=nz; apply();}
+box.addEventListener('wheel',e=>{e.preventDefault();const r=box.getBoundingClientRect();
+  zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY<0?1.25:1/1.25);},{passive:false});
+let drag=null;
+/* Bam vao khung loi thi KHONG khoi dong keo ban do, de con click chon duoc.
+   Chi coi la keo khi con tro da di chuyen qua 4 px. */
+box.addEventListener('pointerdown',e=>{
+  if(e.target.closest('polygon')||e.target.closest('.zoomctl'))return;
+  drag={x:e.clientX,y:e.clientY,moved:false};
+  box.setPointerCapture(e.pointerId);});
+box.addEventListener('pointermove',e=>{if(!drag)return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  if(!drag.moved && Math.hypot(dx,dy)>4){drag.moved=true;box.classList.add('grabbing');}
+  if(!drag.moved)return;
+  tx+=dx;ty+=dy;drag.x=e.clientX;drag.y=e.clientY;apply();});
+['pointerup','pointercancel'].forEach(k=>box.addEventListener(k,()=>{
+  drag=null;box.classList.remove('grabbing');}));
+box.addEventListener('dblclick',()=>{z=1;tx=ty=0;apply();});
+document.getElementById('zIn').onclick=()=>zoomAt(box.clientWidth/2,box.clientHeight/2,1.5);
+document.getElementById('zOut').onclick=()=>zoomAt(box.clientWidth/2,box.clientHeight/2,1/1.5);
+addEventListener('resize',apply);
+
+const bRGB=document.getElementById('bRGB'),bTH=document.getElementById('bTH');
+function base(t){document.getElementById('bs').src = t?DATA.overview_thermal:DATA.overview;
+  bRGB.setAttribute('aria-pressed',String(!t));bTH.setAttribute('aria-pressed',String(t));}
+bRGB.onclick=()=>base(false); bTH.onclick=()=>base(true);
+
+/* Toa do y trong du lieu la % chieu cao. Neu ep vao viewBox vuong 100x100 voi
+   preserveAspectRatio=none thi truc x va y bi keo khac nhau, khien net doc day
+   gap ~2,2 lan net ngang. Nen quy y ve cung don vi voi x bang he so AR. */
+let AR = 44.5;
+function drawShapes(){
+  const k = AR/100;
+  const shapes = S().map(d=>{
+    const c = ccol(d.cls);
+    const tip = `<title>${d.code||'?'} · ${d.cls} · ${d.conf} · ${d.size} m</title>`;
+    if(d.poly)
+      return `<polygon points="${d.poly.map(p=>p[0]+','+(p[1]*k)).join(' ')}" stroke="${c}"
+        data-id="${d.id}" data-cls="${d.cls}" aria-current="false">${tip}</polygon>`;
+    const x=d.x-d.w/2, y=(d.y-d.h/2)*k, w=d.w, h=d.h*k;
+    return `<polygon points="${x},${y} ${x+w},${y} ${x+w},${y+h} ${x},${y+h}"
+      stroke="${c}" stroke-dasharray=".22 .16"
+      data-id="${d.id}" data-cls="${d.cls}" aria-current="false">${tip}</polygon>`;
+  }).join('')
+  + S().map(d=>`<circle cx="${d.x}" cy="${d.y*k}" r=".03" fill="${ccol(d.cls)}"
+      data-cls="${d.cls}"/>`).join('');
+  const svg = inner.querySelector('svg');
+  svg.setAttribute('viewBox', `0 0 100 ${AR}`);
+  svg.innerHTML = shapes;
+  applyFilter();
+}
+function drawPins(){
+  const wasThermal = bTH.getAttribute('aria-pressed')==='true';
+  inner.innerHTML = `<img id="bs" src="${wasThermal?DATA.overview_thermal:DATA.overview}"
+      alt="Bản đồ nhà máy với vị trí lỗi">
+    <svg class="ov" viewBox="0 0 100 ${AR}" preserveAspectRatio="none"></svg>`;
+  const im = document.getElementById('bs');
+  const onload = () => {
+    AR = 100 * im.naturalHeight / im.naturalWidth;
+    box.style.aspectRatio = `${im.naturalWidth}/${im.naturalHeight}`;
+    drawShapes(); apply();
+  };
+  if (im.complete && im.naturalWidth) onload(); else im.addEventListener('load', onload, {once:true});
+  drawShapes();
+  const k=[...new Set(S().map(d=>d.cls))].sort();
+  document.getElementById('legend').innerHTML = k.map(c=>
+    `<span><i style="border-color:${ccol(c)}"></i>${c}</span>`).join('')
+    + `<span><i style="border-color:var(--muted);border-style:dashed"></i>không xác định được tấm</span>`;
+}
+function drawFilters(){
+  const k=[...new Set(S().map(d=>d.cls))].map(c=>[c,S().filter(d=>d.cls===c).length])
+          .sort((a,b)=>b[1]-a[1]);
+  document.getElementById('filters').innerHTML =
+    `<button data-f="all" aria-pressed="${filt==='all'}">Tất cả<span class="cnt">${S().length}</span></button>`
+    + k.map(([c,n])=>`<button data-f="${c}" aria-pressed="${filt===c}">${c}<span class="cnt">${n}</span></button>`).join('');
+}
+function applyFilter(){
+  document.querySelectorAll('.ov polygon, .ov circle').forEach(p=>
+    p.classList.toggle('dim', filt!=='all' && p.dataset.cls!==filt));
+}
+function select(id){
+  const d=S().find(x=>x.id===id); if(!d)return;
+  document.querySelectorAll('.ov polygon').forEach(p=>
+    p.setAttribute('aria-current',String(+p.dataset.id===id)));
+  document.getElementById('detail').innerHTML=`
+    <div class="shots">
+      <div class="shot"><img src="${d.t}" alt="Ảnh nhiệt lỗi ${d.id}"><span>ortho nhiệt</span></div>
+      <div class="shot"><img src="${d.o}" alt="Ảnh màu lỗi ${d.id}"><span>ortho màu</span></div>
+    </div>
+    <dl>
+      <dt>Mã tấm pin</dt><dd><span class="code">${d.code||'không xác định'}</span></dd>
+      <dt>Loại lỗi</dt><dd>${d.cls}</dd>
+      <dt>Độ tin cậy</dt><dd style="color:${colr[sev(d.conf)]};font-weight:600">${d.conf.toFixed(2)}</dd>
+      <dt>Kinh độ</dt><dd>${d.lon.toFixed(8)}</dd>
+      <dt>Vĩ độ</dt><dd>${d.lat.toFixed(8)}</dd>
+      <dt>Kích thước</dt><dd>${d.size} m</dd>
+      <dt>Khớp tấm pin</dt><dd><span class="badge ${d.inp?'b-ok':'b-no'}">
+        ${d.inp?'nằm trong tấm':'ngoài polygon'}</span> IoU ${d.iou.toFixed(2)}</dd>
+    </dl>`;
+}
+document.getElementById('models').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  cur=+b.dataset.i; filt='all';
+  document.querySelectorAll('#models button').forEach(x=>
+    x.setAttribute('aria-pressed',String(x===b)));
+  drawFilters(); drawPins(); select(0);
+});
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  filt=b.dataset.f;
+  document.querySelectorAll('#filters button').forEach(x=>
+    x.setAttribute('aria-pressed',String(x===b)));
+  applyFilter();
+});
+inner.addEventListener('click',e=>{const p=e.target.closest('polygon'); if(p)select(+p.dataset.id);});
+
+drawFilters(); drawPins(); select(0);
+</script>

@@ -1,0 +1,1999 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Gán nhãn tấm pin — ortho màu + nhiệt</title>
+<style>
+:root{
+  --nen:#0f1116; --the:#171a21; --the2:#1e222b; --vien:#2b313c;
+  --chu:#e7eaf0; --mo:#96a0b0; --nhat:#6b7686;
+  --xanh:#3fb96b; --do:#e0575b; --cam:#e08a3a; --tim:#9a7ae0;
+  --vang:#e0c23a; --duong:#4d8fd6;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--nen);color:var(--chu);overflow:hidden;
+     display:flex;flex-direction:column;
+     font:14.5px/1.5 "Segoe UI",system-ui,sans-serif}
+button{background:#232833;color:var(--chu);border:1px solid var(--vien);
+       border-radius:7px;padding:6px 11px;cursor:pointer;font:inherit;font-size:13.5px}
+button:hover{background:#2c323f}
+button:disabled{opacity:.4;cursor:default}
+kbd{background:#232833;border:1px solid var(--vien);border-radius:4px;
+    padding:0 5px;font:inherit;font-size:11.5px;color:var(--mo)}
+
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;flex:none;
+       background:#12151b;border-bottom:1px solid var(--vien);padding:9px 16px}
+h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+/* nút về trang chủ — đứng đầu thanh, bấm là ra chỗ có mọi thứ khác của dự án */
+.veNha{display:flex;align-items:center;justify-content:center;width:30px;height:28px;
+  margin-right:-8px;border:1px solid var(--vien);border-radius:7px;font-size:15px;
+  color:var(--mo);text-decoration:none;background:var(--the2);flex:none}
+.veNha:hover{color:var(--chu);border-color:var(--duong);background:#1b2432}
+.thanh{flex:1;min-width:140px;height:7px;background:#252a35;border-radius:4px;overflow:hidden}
+.thanh i{display:block;height:100%;background:var(--xanh);width:0;transition:.2s}
+.dem{font-variant-numeric:tabular-nums;color:var(--mo);font-size:12.5px;white-space:nowrap}
+
+.khung{display:grid;grid-template-columns:262px minmax(0,1fr) 430px;
+       flex:1;min-height:0}
+.khung.dong{grid-template-columns:0 minmax(0,1fr) 430px}
+@media(max-width:1320px){
+  .khung{grid-template-columns:230px minmax(0,1fr) 360px}
+  .khung.dong{grid-template-columns:0 minmax(0,1fr) 360px}
+}
+
+/* ------------------------------------------------- danh sách tấm (cột trái) */
+.ds{background:var(--the);border-right:1px solid var(--vien);
+    display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.ds h2{margin:0;padding:9px 12px;font-size:11.5px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--nhat);border-bottom:1px solid var(--vien);
+  background:var(--the2);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.ds h2 b{color:var(--chu);font-family:ui-monospace,Consolas,monospace;letter-spacing:0}
+.ds h2 button{margin-left:auto;padding:2px 7px;font-size:12px;line-height:1.3}
+.locDs{display:flex;gap:5px;padding:8px 10px;border-bottom:1px solid var(--vien);
+       background:var(--the2)}
+.locDs button{flex:1;padding:4px 6px;font-size:11.5px;border-radius:6px}
+.locDs button[aria-pressed=true]{background:var(--duong);border-color:var(--duong);color:#fff}
+.cuonDs{flex:1;overflow-y:auto;overflow-x:hidden}
+.hangDs{width:100%;display:flex;align-items:center;gap:8px;text-align:left;
+  padding:6px 11px;border:0;border-bottom:1px solid var(--vien);border-radius:0;
+  background:transparent;font-size:12.5px;color:var(--chu2);
+  content-visibility:auto;contain-intrinsic-size:0 31px}
+.hangDs:hover{background:var(--the2)}
+.hangDs.chon{background:#1e2c3d;color:var(--chu);box-shadow:inset 3px 0 0 var(--duong)}
+.hangDs i{width:9px;height:9px;border-radius:3px;flex:none}
+.hangDs .ma{font-family:ui-monospace,Consolas,monospace;font-size:12px;
+            letter-spacing:-.01em}
+.hangDs .tt{margin-left:auto;font-size:10.5px;padding:1px 6px;border-radius:999px;
+            border:1px solid var(--vien);color:var(--nhat);white-space:nowrap}
+.hangDs .tt.chot{border-color:#2f5c3f;background:#16281c;color:#7fd39a}
+.hangDs .tt.sua{border-color:#5c452a;background:#2a2118;color:#e8b56a}
+.rong{padding:22px 14px;color:var(--nhat);font-size:12.5px;text-align:center}
+.moDs{position:absolute;left:0;top:50%;transform:translateY(-50%);
+      border-radius:0 8px 8px 0;padding:14px 5px;font-size:12px;writing-mode:vertical-rl;
+      background:rgba(15,17,22,.9);border-left:0;backdrop-filter:blur(6px);z-index:3}
+
+/* ---------------------------------------------------------------- bản đồ */
+.banDo{position:relative;background:#000;overflow:hidden;cursor:grab}
+.banDo.keo{cursor:grabbing}
+.lop{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.lop img{position:absolute;left:0;top:0;display:block;
+         image-rendering:auto;-webkit-user-drag:none;user-select:none}
+#cv{position:absolute;inset:0;pointer-events:none}
+
+.dieuKhien{position:absolute;left:12px;top:12px;display:flex;gap:8px;align-items:center;
+     background:rgba(15,17,22,.86);border:1px solid var(--vien);border-radius:9px;
+     padding:7px 11px;backdrop-filter:blur(6px);flex-wrap:wrap;max-width:calc(100% - 24px)}
+.dieuKhien .nhan{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--nhat)}
+.dieuKhien input[type=range]{width:130px;accent-color:var(--cam)}
+.seg{display:flex;border:1px solid var(--vien);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:5px 11px;font-size:12px;background:transparent}
+.seg button[aria-pressed=true]{background:var(--duong);color:#fff}
+
+.zoom{position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:5px}
+.zoom button{width:34px;height:32px;padding:0;font-size:16px;
+             background:rgba(15,17,22,.86);backdrop-filter:blur(6px)}
+.btChuGiai{position:absolute;left:12px;bottom:12px;padding:5px 11px;font-size:12px;
+  background:rgba(15,17,22,.86);backdrop-filter:blur(6px);z-index:2}
+.chuGiai[hidden]{display:none}
+.chuGiai{position:absolute;left:12px;bottom:12px;display:flex;gap:12px;flex-wrap:wrap;
+     background:rgba(15,17,22,.86);border:1px solid var(--vien);border-radius:9px;
+     padding:7px 11px;font-size:12px;color:var(--mo);backdrop-filter:blur(6px);
+     max-width:calc(100% - 130px)}
+.chuGiai i{display:inline-block;width:11px;height:11px;border-radius:3px;
+           margin-right:5px;vertical-align:-1px}
+
+/* ------------------------------------------------------------------ bên */
+.ben{background:var(--the);border-left:1px solid var(--vien);
+     display:flex;flex-direction:column;overflow:hidden}
+.ben h2{margin:0;padding:10px 14px;font-size:11.5px;font-weight:600;letter-spacing:.07em;
+   text-transform:uppercase;color:var(--nhat);border-bottom:1px solid var(--vien);
+   background:var(--the2);display:flex;align-items:center;gap:9px}
+.ben h2 b{color:var(--chu);font-size:14px;letter-spacing:0;text-transform:none;
+          font-family:ui-monospace,Consolas,monospace}
+.than{flex:1;overflow-y:auto;padding:13px 14px 20px}
+
+.hai{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.o{position:relative}
+.o canvas{width:100%;height:auto;display:block;border-radius:8px;background:#000;
+          border:1px solid var(--vien)}
+.o .nhan{position:absolute;left:7px;top:6px;background:rgba(0,0,0,.7);
+         padding:2px 7px;border-radius:5px;font-size:11px;color:#dfe4ea;
+         max-width:calc(100% - 14px);white-space:nowrap;overflow:hidden;
+         text-overflow:ellipsis}
+/* khung nhiệt có nút "xem ảnh gốc" ở góc phải -> nhãn phải nhường chỗ, không thì
+   nút đè lên chữ */
+.o:has(.nutNguon) .nhan{max-width:calc(100% - 106px)}
+.nutNguon{position:absolute;right:6px;top:5px;padding:2px 8px;font-size:11px;
+          background:rgba(0,0,0,.72);border-color:#3b4351}
+.nutNguon:hover{background:rgba(30,36,46,.92)}
+.nutNguon[hidden]{display:none}
+
+.the{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px;font-size:12px}
+.the span{background:var(--the2);border:1px solid var(--vien);border-radius:6px;
+          padding:2px 8px;color:var(--mo)}
+.the b{color:var(--chu);font-weight:600}
+.goiY{margin:11px 0 3px;padding:9px 11px;border-radius:8px;font-size:13px;
+      background:#1d2530;border:1px solid #2f3b4a}
+.goiY.trong{background:var(--the2);border-color:var(--vien);color:var(--mo)}
+.goiY.canhNhiet{background:#2a2118;border-color:#5c452a;color:#e8cba6}
+
+/* Nút duyệt: đường đi nhanh nhất cho ca model đoán đúng — mà đó là phần lớn ca.
+   Bấm một phát là nhận nguyên nhãn model gợi ý rồi nhảy tấm sau. Chỉ khi model
+   sai mới phải xuống bảng dưới chọn lại. */
+.duyet{width:100%;margin-top:14px;padding:12px 14px;font-size:14.5px;font-weight:600;
+       display:flex;align-items:center;gap:10px;border-width:2px;line-height:1.25}
+.duyet i{width:13px;height:13px;border-radius:4px;flex:none}
+.duyet em{margin-left:auto;font-style:normal;font-weight:500;font-size:11.5px;
+          color:var(--nhat)}
+.duyet[hidden]{display:none}
+.duyet.da{opacity:.55}
+.muc{margin-top:15px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+     color:var(--nhat);margin-bottom:7px}
+.nut{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.nut button{display:flex;align-items:center;gap:7px;justify-content:flex-start;
+            padding:8px 9px;font-size:12.5px;white-space:nowrap}
+.nut button i{width:11px;height:11px;border-radius:3px;flex:none}
+.nut button.on{border-width:2px;padding:7px 9px;font-weight:600}
+.nut button em{margin-left:auto;font-style:normal;color:var(--nhat);font-size:11px}
+
+.btSua{width:100%;margin-top:13px;padding:9px;font-size:13.5px}
+.btSua.dangSua{background:#2a2118;border-color:var(--cam);color:#f0c98a;font-weight:600}
+.khoiSua{margin-top:9px;padding:11px 13px;border-radius:9px;
+         background:#1d2028;border:1px solid var(--cam)}
+.khoiSua p{margin:0 0 9px;font-size:12.5px;color:var(--mo)}
+.khoiSua p.nho{margin:9px 0 0;font-size:11.5px}
+.khoiSua code{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--chu2)}
+.khoiSua b{color:var(--chu)}
+.nutSua{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.nutSua button{display:flex;align-items:center;gap:6px;padding:7px 9px;font-size:12.5px}
+.nutSua button:first-child{grid-column:1/-1}
+.nutSua button em{margin-left:auto;font-style:normal;color:var(--nhat);font-size:11px}
+.boChot{width:100%;margin-top:2px;padding:8px;font-size:13px;
+        background:#16281c;border-color:#2f5c3f;color:#9fd9b4}
+.boChot[hidden]{display:none}
+.hangDs .tt.chot{border-color:#2f5c3f;background:#16281c;color:#7fd39a;font-weight:600}
+textarea{width:100%;background:var(--the2);color:var(--chu);border:1px solid var(--vien);
+         border-radius:7px;padding:7px 9px;font:inherit;font-size:13px;resize:vertical;
+         min-height:48px}
+.di{display:flex;gap:7px;align-items:center;margin-top:13px}
+.di button{flex:1}
+.loc{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.loc button{font-size:12px;padding:4px 9px}
+.loc button[aria-pressed=true]{background:var(--duong);border-color:var(--duong);color:#fff}
+.phim{margin-top:14px;font-size:11.5px;color:var(--nhat);line-height:1.9}
+.canh{margin-top:12px;padding:9px 11px;border-radius:8px;font-size:12.5px;
+      background:#2a1e1e;border:1px solid #4a2f2f;color:#e8b9b9;display:none}
+.canh.hien{display:block}
+
+/* ---------------------------------------------------- hai chế độ trong MỘT trang
+   SỬA   = công cụ gán nhãn đầy đủ (mặc định)
+   CHỐT  = bản bàn giao: giấu hết đồ nghề, chỉ còn tấm đã chốt là có lỗi.
+   Chỉ là ẩn/hiện chứ không đổi dữ liệu — bấm qua bấm lại bao nhiêu cũng được. */
+#cheDoXem button[data-x=chot][aria-pressed=true]{background:#2f7a52}
+body.banGiao .khung{grid-template-columns:262px minmax(0,1fr) 0}
+body.banGiao .khung.dong{grid-template-columns:0 minmax(0,1fr) 0}
+body.banGiao .ben,
+body.banGiao .chiSua{display:none}
+body.banGiao .thanhChot{display:flex;align-items:center;gap:9px;font-size:12.5px;
+  color:var(--nhat)}
+.thanhChot{display:none}
+.thanhChot b{color:var(--chu)}
+.thanhChot i{width:9px;height:9px;border-radius:2px;display:inline-block;
+  margin-right:4px;vertical-align:-1px}
+
+/* --------------------------------------------------- chế độ THÊM TẤM bằng tay */
+.banDo.dangThem{cursor:crosshair}
+#btThem[aria-pressed=true]{background:var(--xanh);border-color:var(--xanh);color:#fff}
+.xoaTay{width:100%;margin-top:8px;padding:8px;font-size:13px;
+  background:#2a1e1e;border-color:#4a2f2f;color:#e8b9b9}
+.xoaTay[hidden]{display:none}
+.nhanTay{display:inline-block;margin-left:7px;padding:1px 7px;border-radius:4px;
+  font-size:11px;background:#1c3326;border:1px solid #2f5c3f;color:#7fd39a}
+</style>
+
+<header>
+  <a class="veNha" href="../index.html" title="Về trang chủ">⌂</a>
+  <h1>Tấm pin</h1>
+  <div class="seg" id="cheDoXem">
+    <button data-x="sua" aria-pressed="true"
+      title="Công cụ gán nhãn đầy đủ — phím X để đổi qua lại">✎ Sửa</button>
+    <button data-x="chot"
+      title="Bản bàn giao: chỉ tấm đã chốt là có lỗi, không sửa được gì">✓ Đã chốt</button>
+  </div>
+  <div class="seg chiSua" id="cheDo">
+    <button data-q="goi_y" aria-pressed="true">Model đánh dấu</button>
+    <button data-q="chua">Chưa xét</button>
+    <button data-q="da">Đã gán</button>
+    <button data-q="thieu">Thiếu nhiệt</button>
+    <button data-q="tay">Tự thêm</button>
+    <button data-q="tat_ca">Tất cả</button>
+  </div>
+  <div class="thanh chiSua"><i id="thanh"></i></div>
+  <div class="dem chiSua" id="dem"></div>
+  <div class="thanhChot" id="thanhChot"></div>
+  <button onclick="taiJSON()">Tải JSON</button>
+  <button class="chiSua" onclick="taiCSV()" title="Toàn bộ nhãn, đủ cả tốt lẫn lỗi — dùng để tính chỉ số">Tải CSV</button>
+  <button onclick="taiCSVLoi()" title="Chỉ tấm cần thay: bỏ tấm tốt và tấm chưa rõ">Tải CSV lỗi</button>
+  <button class="chiSua" onclick="nap.click()">Nạp lại</button>
+  <button class="chiSua" onclick="xoaHet()" title="Xoá toàn bộ nhãn và viền đã sửa, tất cả về chưa chốt">Xoá hết</button>
+  <input type="file" id="nap" accept=".json" hidden>
+</header>
+
+<div class="khung" id="khung">
+  <aside class="ds">
+    <h2>Danh sách <b id="dsSo">0</b>
+      <button onclick="batDs()" title="Đóng cột này — phím L">✕</button></h2>
+    <div class="locDs chiSua" id="locDs">
+      <button data-l="tat" aria-pressed="true">Tất cả</button>
+      <button data-l="chua">Chưa xong</button>
+      <button data-l="roi">✓ Đã xong</button>
+    </div>
+    <div class="cuonDs" id="cuonDs"></div>
+  </aside>
+
+  <div class="banDo" id="banDo">
+    <button class="moDs" id="moDs" onclick="batDs()" hidden>Danh sách</button>
+    <div class="lop" id="lop">
+      <img id="im_rgb"><img id="im_nh">
+    </div>
+    <canvas id="cv"></canvas>
+
+    <div class="dieuKhien">
+      <div class="seg" id="segLop">
+        <button data-v="0" aria-pressed="true" title="Chỉ ảnh màu — phím Q">Màu</button>
+        <button data-v="50" title="Chồng nửa nhiệt nửa màu — phím W">Trộn</button>
+        <button data-v="100" title="Chỉ ảnh nhiệt — phím E">Nhiệt</button>
+      </div>
+      <span class="nhan">nhiệt</span>
+      <input type="range" id="tron" min="0" max="100" value="0">
+      <span class="nhan" id="tronSo">0%</span>
+      <span class="nhan">khung tấm</span>
+      <div class="seg" id="segKhung">
+        <button data-v="loi" aria-pressed="true"
+          title="Chỉ vẽ khung cho tấm có lỗi hoặc đã gán nhãn — sạch mắt nhất">Có lỗi</button>
+        <button data-v="tat" title="Vẽ khung cho cả 6473 tấm">Tất cả</button>
+        <button data-v="an" title="Không vẽ khung tấm nào — phím K">Ẩn</button>
+      </div>
+      <button id="btRia" onclick="anRia()"></button>
+      <button class="chiSua" id="btThem" aria-pressed="false" onclick="batThem()"
+        title="Vẽ thêm một tấm pin mà best.pt dò sót — phím A">+ Thêm tấm</button>
+      <span class="nhan">lỗi</span>
+      <div class="seg" id="segLoi">
+        <button data-v="goc" aria-pressed="true"
+          title="Vẽ box đúng chỗ model chiếu ra — thấy được sai số chiếu">Box gốc</button>
+        <button data-v="khop"
+          title="Dán box vào đúng tấm được gán — sạch mắt, nhưng giấu sai số chiếu">Khớp tấm</button>
+        <button data-v="an" title="Ẩn hẳn box lỗi — phím M">Ẩn</button>
+      </div>
+    </div>
+
+    <div class="zoom">
+      <button onclick="phong(1.5)">+</button>
+      <button onclick="phong(1/1.5)">−</button>
+      <button onclick="veVua()" title="Vừa khung">⤢</button>
+    </div>
+    <button class="btChuGiai" id="btChuGiai" onclick="batChuGiai()"
+            title="Bảng màu — phím ?">Chú giải</button>
+    <div class="chuGiai" id="chuGiai" hidden></div>
+  </div>
+
+  <aside class="ben">
+    <h2>Tấm đang xét <b id="maTam">—</b> <span id="viTri" style="margin-left:auto"></span></h2>
+    <div class="than">
+      <div class="hai">
+        <div class="o"><canvas id="d_rgb" width="380" height="380"></canvas>
+          <div class="nhan">Màu — xác định tấm</div></div>
+        <div class="o"><canvas id="d_nh" width="380" height="380"></canvas>
+          <div class="nhan" id="nhanNhiet">Nhiệt — xác định lỗi</div>
+          <button class="nutNguon" id="nutNguon" onclick="doiNguon()"></button></div>
+      </div>
+
+      <div class="the" id="the"></div>
+      <div class="goiY" id="goiY"></div>
+
+      <button class="duyet" id="btDuyet" onclick="duyet()"></button>
+      <div class="muc" id="mucNhan">Tình trạng tấm này</div>
+      <div class="nut" id="nut"></div>
+
+      <div class="muc" id="mucVien">Viền tấm</div>
+      <div class="khoiSua" id="khoiSua">
+        <p id="tinhVien"></p>
+        <div class="nutSua" id="nutSua">
+          <button onclick="chuanHoaVien()">Về đúng cỡ một tấm<em>N</em></button>
+          <button onclick="coVien(1.04)">Nở<em>+</em></button>
+          <button onclick="coVien(1/1.04)">Thu<em>−</em></button>
+          <button onclick="xoayVien(-0.5)">Xoay ↺ 0,5°<em>&lt; ,</em></button>
+          <button onclick="xoayVien(0.5)">Xoay ↻ 0,5°<em>&gt; .</em></button>
+          <button onclick="ghiVien(sel,null)">Về viền gốc<em>R</em></button>
+        </div>
+        <button class="boChot" id="boChot" onclick="boChot()" hidden>🔓 Bỏ chốt để sửa lại</button>
+        <button class="xoaTay" id="btXoaTay" onclick="xoaTamTay()" hidden>🗑 Xoá hẳn tấm tự thêm này</button>
+        <p class="nho">Viền <b>luôn giữ hình chữ nhật</b> — tấm pin là tấm cứng,
+        kéo thành hình thang thì tâm và diện tích đều sai.<br>
+        Trên bản đồ: bấm phát một chỉ để <b>chọn</b>; muốn dịch thì <b>giữ rồi
+        kéo</b> trong lòng tấm. Kéo <b>núm góc</b> để co giãn (góc đối diện đứng
+        yên), <kbd>Alt</kbd>+kéo núm để <b>xoay</b>.<br>
+        Bằng phím: <kbd>←↑↓→</kbd> nhích 0,5 px (≈1,3 cm), thêm <kbd>Shift</kbd> thành 5 px ·
+        <kbd>&lt;</kbd> <kbd>&gt;</kbd> (hay <kbd>,</kbd> <kbd>.</kbd>) xoay 0,5° · <kbd>N</kbd> về đúng cỡ ·
+        <kbd>+</kbd> <kbd>−</kbd> nở/thu · <kbd>R</kbd> về viền gốc.</p>
+      </div>
+
+      <div class="muc">Ghi chú</div>
+      <textarea id="ghiChu" placeholder="tuỳ chọn — ghi lại cái gì khó phán"></textarea>
+
+      <div class="di">
+        <button onclick="di(-1)">← Trước</button>
+        <button onclick="di(1)">Sau →</button>
+        <button onclick="toiChuaXet()" title="Nhảy tới tấm chưa xét gần nhất trong danh sách">Chưa xét ⇥</button>
+      </div>
+      <div class="loc" id="loc"></div>
+
+      <div class="canh" id="canh"></div>
+
+      <div class="phim">
+        <b><kbd>Enter</kbd> · <kbd>Space</kbd> · <kbd>Ctrl</kbd>+<kbd>S</kbd> — chốt
+        tấm này</b> bằng nhãn model gợi ý. Viền vừa sửa lưu luôn.
+        <b>Không tự sang tấm sau</b> — tự đi bằng nút <b>← Trước / Sau →</b> hoặc
+        bấm trong danh sách bên trái.<br>
+        Model sai thì bấm phím lớp đúng:<br>
+        <kbd>1</kbd> tốt · <kbd>2</kbd> Single · <kbd>3</kbd> Multi · <kbd>4</kbd> Bypass ·
+        <kbd>5</kbd> OpenCircuit · <kbd>6</kbd> lỗi khác · <kbd>0</kbd> không rõ ·
+        <kbd>Backspace</kbd> xoá nhãn ·
+        <b><kbd>Ctrl</kbd>+<kbd>Z</kbd> hoàn tác · <kbd>Ctrl</kbd>+<kbd>Y</kbd> làm lại</b><br>
+        <kbd>Q</kbd> màu · <kbd>W</kbd> trộn · <kbd>E</kbd> nhiệt ·
+        <b>giữ <kbd>Shift</kbd></b> nháy sang nhiệt, thả ra về lại ·
+        <kbd>[</kbd><kbd>]</kbd> độ trộn từng 10%<br>
+        <kbd>G</kbd> ortho ↔ ảnh nhiệt gốc ·
+        <kbd>F</kbd> vừa khung · <kbd>B</kbd> ẩn/hiện rìa · <kbd>L</kbd> đóng/mở danh sách ·
+        <kbd>M</kbd> box lỗi: gốc → khớp tấm → ẩn ·
+        <kbd>K</kbd> khung tấm: có lỗi → tất cả → ẩn ·
+        <kbd>X</kbd> đổi giữa bản <b>sửa</b> và bản <b>đã chốt</b> ·
+        <kbd>A</kbd> thêm tấm best.pt dò sót<br>
+        <b>Viền tấm:</b> kéo trên bản đồ, hoặc <kbd>←↑↓→</kbd> nhích ·
+        <kbd>&lt;</kbd><kbd>&gt;</kbd> hay <kbd>,</kbd><kbd>.</kbd> xoay · <kbd>N</kbd> về đúng cỡ ·
+        <kbd>+</kbd><kbd>−</kbd> nở/thu · <kbd>R</kbd> về viền gốc
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+// ---------------------------------------------------------------- trạng thái
+// Bảng nhãn. BỐN lớp giữa là ĐỦ 4 lớp của `fault_obb_4class.pt`, giữ nguyên tên
+// để đối chiếu thẳng với `loi_4lop_cuoi.json` được.
+//
+// ModuleOpenCircuit phải có nút dù model ra 0 phát hiện trên bộ này: nếu người
+// soi gặp mà không có nút, họ nhét vào "Lỗi khác" và lúc đối chiếu sẽ đọc thành
+// "model bỏ sót một lớp lạ" thay vì "model bỏ sót đúng lớp thứ tư của chính nó".
+//
+// "khac" cho vệt nóng không thuộc lớp nào; "?" giữ lại thay vì ép chọn bừa — số
+// đo sau này bỏ nhóm này ra là biết ngay bao nhiêu ca thật sự không phán được.
+const NHAN = [
+  {ma:"tot",              ten:"Tấm tốt",          phim:"1", mau:"#3fb96b"},
+  {ma:"SingleHotSpot",    ten:"SingleHotSpot",    phim:"2", mau:"#e08a3a"},
+  {ma:"MultiHotSpot",     ten:"MultiHotSpot",     phim:"3", mau:"#e0575b"},
+  {ma:"Bypass",           ten:"Bypass",           phim:"4", mau:"#9a7ae0"},
+  {ma:"ModuleOpenCircuit",ten:"ModuleOpenCircuit",phim:"5", mau:"#c95fa8"},
+  {ma:"khac",             ten:"Lỗi khác",         phim:"6", mau:"#e0c23a"},
+  {ma:"?",                ten:"Không rõ",         phim:"0", mau:"#7c8794"},
+];
+const MAU = Object.fromEntries(NHAN.map(n => [n.ma, n.mau]));
+// Đổi khoá = làm sạch. Nhãn cũ vẫn nằm nguyên trong localStorage dưới khoá cũ,
+// chỉ là không đọc nữa — đổi lại chuỗi này là lấy về được.
+// Kho nhãn. Trang mẫu (soi recall) truyền khoá riêng qua DATA nên hai trang không
+// bao giờ lẫn nhãn của nhau, dù cùng chạy trên một origin file://.
+const KHOA = DATA.khoa || "gan_nhan_tam_v3";
+
+let   N       = DATA.ma.length;   // tăng lên khi người soi vẽ thêm tấm
+const N_GOC   = N;                // số tấm do best.pt dò ra, mốc phân biệt tấm tay
+const TOI_DA_THEM = 600;          // trần số tấm tự thêm, để còn chừa chỗ trong BBOX
+const KHOA_THEM = "gan_nhan_tam_them_v1";
+const POLY  = DATA.poly;
+
+// ---------------------------------------------------------- sửa viền tấm tay
+// `best.pt` dò tấm không chuẩn ở nhiều chỗ — 14% đa giác là mảnh bị cắt cụt ở
+// mép ô quét. Người soi sửa được thì viền mới đúng cái tấm đang phán.
+//
+// Sửa LUÔN BẬT, không có nút bật/tắt: chọn tấm nào là kéo được tấm đó ngay. Đổi
+// lại, khi đang đứng ở một tấm thì MỌI phím chỉnh hình (mũi tên, < >, N, R, + −)
+// đều ăn vào viền tấm đó, không phím nào nhảy sang tấm khác — đổi tấm là thao tác
+// bằng chuột: bấm trong danh sách bên trái, bấm trên bản đồ, hoặc nút ← Trước / Sau →.
+//
+// Viền sửa lưu theo MÃ TẤM trong `kq[ma].v`, xuất ra cùng file nhãn; POLY gốc
+// giữ nguyên để còn đối chiếu và để "về viền gốc" luôn quay lại được.
+const polyCua = i => {
+  const t = kq[DATA.ma[i]];
+  return (t && t.v) ? t.v : POLY[i];
+};
+// Đã chốt = KHOÁ viền. Chốt xong mà lỡ tay kéo một cái là hỏng việc đã làm mà
+// không hay biết. Muốn sửa lại thì bỏ chốt trước, thành một động tác có ý thức.
+const daChot = i => i >= 0 && !!(kq[DATA.ma[i]] && kq[DATA.ma[i]].n);
+const PHU   = DATA.phu;            // % diện tích tấm có dữ liệu nhiệt
+// Dưới ngưỡng này thì không nhìn ra vệt nóng được -> KHÔNG phán được, và "không
+// phán được" khác hẳn "tấm tốt". Tấm loại này bị loại khỏi danh sách Chưa xét,
+// vẽ riêng một màu, và nhãn nào lỡ gán cho nó vẫn xuất ra kèm % phủ để lọc lại.
+const NGUONG_NHIET = 50;
+const thieuNhiet = i => PHU[i] < NGUONG_NHIET;
+
+// Rìa nhà máy: có ảnh màu, không có ảnh nhiệt -> thấy tấm pin nhưng không phán
+// được gì. VUNG là hộp bao khối tấm CÓ nhiệt. Ẩn rìa đi thì bản đồ chỉ còn phần
+// soi được, nhưng dữ liệu vẫn nguyên — bật lại là thấy, không phải dựng lại.
+const VUNG = DATA.vung;                        // [x0,y0,x1,y1] px ảnh nền
+const RIA = DATA.ria;
+let anRiaBat = true;
+const ngoaiVung = i => tamAn.has(i) || (anRiaBat && RIA[i]);
+const IW    = DATA.nen.w, IH = DATA.nen.h;
+let   kq    = JSON.parse(localStorage.getItem(KHOA) || "{}");   // mã tấm -> {n, gc}
+
+// ------------------------------------------------------- tấm VẼ THÊM bằng tay
+// `best.pt` dò tấm pin không ra hết: tấm cụt ở mép ô quét, tấm bị cột/dây che, tấm
+// nằm ngoài rìa ô quét. Lỗi rơi đúng vào một tấm không được dò thì trước đây không
+// có chỗ nào để gán — người soi thấy mà đành bỏ. Chế độ "+ Thêm tấm" cho vẽ tay
+// một tấm mới (mã TAY-001, TAY-002...), sau đó gán nhãn / kéo viền y như tấm thường.
+//
+// Lưu ở khoá localStorage RIÊNG, không lẫn với nhãn: xoá hết nhãn thì tấm tự thêm
+// vẫn còn, và ngược lại. Mỗi mục: {ma, p:[8 số px nền], ll:[lon,lat]}.
+let themDS = [];
+try { themDS = JSON.parse(localStorage.getItem(KHOA_THEM) || "[]"); } catch (_) { themDS = []; }
+for (const t of themDS) {
+  DATA.ma.push(t.ma); DATA.poly.push(t.p); DATA.ll.push(t.ll || [null, null]);
+  DATA.phu.push(100); DATA.ria.push(0);
+  DATA.nguon.push(0); DATA.n_anh.push(0); DATA.n_anh_xau.push(0);
+}
+N = DATA.ma.length;
+const laTay = i => i >= N_GOC;
+const luuThem = () => localStorage.setItem(KHOA_THEM, JSON.stringify(themDS));
+// Tấm tự thêm bị xoá: không rút khỏi mảng (rút là lệch hết chỉ số), chỉ ghi vào
+// đây rồi lọc ra ở mọi chỗ — cùng cửa với `ngoaiVung`.
+const tamAn = new Set();
+
+let   sel   = -1;
+let   cheDo = "goi_y";
+let   danhSach = [];
+// Ba nấc khung tấm.
+//   loi — chỉ tấm model đánh dấu hoặc đã gán nhãn (mặc định). 6473 khung vẽ hết
+//         thì lưới kín đặc, chính mấy tấm cần soi lại chìm nghỉm trong đó.
+//   tat — vẽ hết, để rà tấm model bỏ sót.
+//   an  — không vẽ khung nào, nhìn ảnh trần.
+// Tấm ĐANG CHỌN luôn vẽ ở cả ba nấc, nếu không thì mất dấu đang đứng ở đâu.
+let   cheDoKhung = "loi";
+
+// ------------------------------------------------------------- chế độ BÀN GIAO
+// Cùng một trang, cùng một kho nhãn, chỉ khác cái nhìn thấy:
+//   Sửa     — công cụ đầy đủ (mặc định)
+//   Đã chốt — giấu box model, giấu tấm tốt / chưa xét / thiếu nhiệt, giấu cả cột
+//             sửa bên phải. Trên nền chỉ còn tấm đã chốt là CÓ LỖI, tô theo lớp.
+// Mọi hàm ghi đều chặn ở đầu bằng `if (banGiao) return;` — bấm nhầm không hỏng
+// được gì, nên qua lại thoải mái. Không đụng localStorage.
+let banGiao = false;
+const KHONG_LOI = new Set(["tot", "?"]);       // hai nhãn này KHÔNG phải lỗi
+const laLoi = i => {
+  const t = kq[DATA.ma[i]];
+  return !!(t && t.n && !KHONG_LOI.has(t.n));
+};
+
+// bao của từng tấm + lưới tra cứu, để cắt bớt lúc vẽ và bấm trúng lúc chọn
+const BBOX = new Float32Array((N_GOC + TOI_DA_THEM) * 4);
+function capBbox(i) {
+  const p = polyCua(i);
+  let x0 = p[0], y0 = p[1], x1 = p[0], y1 = p[1];
+  for (let k = 2; k < 8; k += 2) {
+    if (p[k]   < x0) x0 = p[k];   if (p[k]   > x1) x1 = p[k];
+    if (p[k+1] < y0) y0 = p[k+1]; if (p[k+1] > y1) y1 = p[k+1];
+  }
+  BBOX[i*4] = x0; BBOX[i*4+1] = y0; BBOX[i*4+2] = x1; BBOX[i*4+3] = y1;
+}
+for (let i = 0; i < N; i++) capBbox(i);
+
+// Cỡ chuẩn một tấm pin — số ĐẶT TAY (`--co-tam` của bộ dựng), không suy từ ảnh.
+// Trước đây lấy trung vị của chính các box best.pt dò ra, nhưng model dò hụt đều
+// tay thì "chuẩn" hụt theo, thành ra lấy sai làm mốc để nắn cái sai khác.
+const CM_PX = DATA.cua_so.cm_px;
+const CO_CHUAN = [DATA.co_tam_cm[0] / CM_PX, DATA.co_tam_cm[1] / CM_PX];
+const O = 256;                              // cạnh ô lưới, tính bằng px ảnh nền
+const NX = Math.ceil(IW / O), NY = Math.ceil(IH / O);
+const luoi = new Map();
+function vaoLuoi(i) {
+  const cx0 = Math.max(0, Math.floor(BBOX[i*4]   / O)), cy0 = Math.max(0, Math.floor(BBOX[i*4+1] / O));
+  const cx1 = Math.min(NX-1, Math.floor(BBOX[i*4+2] / O)), cy1 = Math.min(NY-1, Math.floor(BBOX[i*4+3] / O));
+  for (let cy = cy0; cy <= cy1; cy++)
+    for (let cx = cx0; cx <= cx1; cx++) {
+      const k = cy * NX + cx;
+      if (!luoi.has(k)) luoi.set(k, []);
+      if (!luoi.get(k).includes(i)) luoi.get(k).push(i);
+    }
+}
+for (let i = 0; i < N; i++) vaoLuoi(i);
+
+// lỗi model, gom theo ô lưới luôn — chấm dấu lúc vẽ bản đồ
+const LOI = DATA.loi;
+const luoiLoi = new Map();
+LOI.forEach((d, i) => {
+  const k = Math.min(NY-1, Math.max(0, Math.floor(d[1]/O))) * NX
+          + Math.min(NX-1, Math.max(0, Math.floor(d[0]/O)));
+  if (!luoiLoi.has(k)) luoiLoi.set(k, []);
+  luoiLoi.get(k).push(i);
+});
+
+// --------------------------------------------------------------- ảnh nền
+const im_rgb = document.getElementById("im_rgb");
+const im_nh  = document.getElementById("im_nh");
+let sanSang = 0;
+for (const [im, src] of [[im_rgb, DATA.nen.rgb], [im_nh, DATA.nen.nhiet]]) {
+  im.style.width = IW + "px"; im.style.height = IH + "px";
+  // Chỉ khung chi tiết cần ảnh; bản đồ và khung nhìn dựng được ngay từ toạ độ,
+  // nên KHÔNG gọi veVua() ở đây — gọi là nó nhảy về toàn cảnh, mất tấm đang xét.
+  im.onload  = () => { if (++sanSang === 2) veChiTiet(); };
+  im.onerror = () => bao("Không mở được <b>" + src + "</b>. File HTML phải nằm cạnh "
+    + "thư mục <b>nhan/</b> — chạy lại <b>py -3.13 lam_gan_nhan_tam.py</b> nếu thiếu.");
+  im.src = src;
+}
+
+// ------------------------------------------------------------- khung nhìn
+// screen = px_ảnh_nền * s + (ox, oy)
+const banDo = document.getElementById("banDo");
+const lop   = document.getElementById("lop");
+const cv    = document.getElementById("cv");
+const ctx   = cv.getContext("2d");
+let s = 1, ox = 0, oy = 0;
+
+function apDung() {
+  lop.style.transform = `translate(${ox}px,${oy}px) scale(${s})`;
+  ve();
+}
+function veVua() {
+  const w = banDo.clientWidth, h = banDo.clientHeight;
+  // ẩn rìa thì vừa khung theo VÙNG LÕI, không phải theo cả ảnh — nếu không, bấm
+  // "vừa khung" lại thu nhỏ ra tận rìa vừa ẩn, nhìn như hỏng
+  const [ax, ay, bx, by] = anRiaBat ? VUNG : [0, 0, IW, IH];
+  s = Math.min(w / (bx - ax), h / (by - ay));
+  ox = (w - (bx - ax) * s) / 2 - ax * s;
+  oy = (h - (by - ay) * s) / 2 - ay * s;
+  apDung();
+}
+function phong(k, cx, cy) {
+  const w = banDo.clientWidth, h = banDo.clientHeight;
+  cx = cx === undefined ? w / 2 : cx;
+  cy = cy === undefined ? h / 2 : cy;
+  const sMin = Math.min(w / IW, h / IH) * 0.9, s2 = Math.max(sMin, Math.min(14, s * k));
+  ox = cx - (cx - ox) * (s2 / s); oy = cy - (cy - oy) * (s2 / s);
+  s = s2; apDung();
+}
+// Thanh nút, nút zoom và chú giải nằm ĐÈ LÊN bản đồ, nên mọi sự kiện con trỏ
+// trên chúng đều bong bóng xuống đây. Phải bỏ qua, nếu không:
+//   - setPointerCapture kéo luôn pointerup về .banDo, trình duyệt bắn `click`
+//     vào .banDo chứ không vào nút -> bấm nút không ăn, kéo thanh trượt không ăn;
+//   - nhánh "bấm chứ không kéo" ở pointerup lại chọn nhầm tấm nằm dưới nút.
+const NGOAI = ".dieuKhien, .zoom, .chuGiai";
+
+banDo.addEventListener("wheel", e => {
+  if (e.target.closest(NGOAI)) return;
+  e.preventDefault();
+  const r = banDo.getBoundingClientRect();
+  phong(Math.exp(-e.deltaY * 0.0016), e.clientX - r.left, e.clientY - r.top);
+}, {passive:false});
+
+let keo = null, daKeo = 0, keoVien = null;
+let choKeo = null, hen = 0;            // đang chờ xem có phải "giữ để kéo" không
+const R_NUM = 9;                       // bán kính bắt núm góc, px màn hình
+const NGUONG_KEO = 3.5;                // px màn hình: quá mức này coi là cố ý kéo
+
+function batDauKeoVien(ct) {
+  clearTimeout(hen); hen = 0; choKeo = null;
+  if (keoVien) return;
+  ghiLichSu();                    // chụp TRƯỚC khi kéo, để hoàn tác về đúng chỗ cũ
+  keoVien = ct;
+  banDo.style.cursor = "move";
+}
+function thoiCho() { clearTimeout(hen); hen = 0; choKeo = null; }
+
+// vị trí con trỏ trong hệ px ảnh nền
+function viTri(e) {
+  const r = banDo.getBoundingClientRect();
+  return [(e.clientX - r.left - ox) / s, (e.clientY - r.top - oy) / s];
+}
+// đang sửa viền: bấm trúng núm góc nào? -1 = không trúng núm nào
+function numGoc(x, y) {
+  if (sel < 0 || daChot(sel)) return -1;
+  const p = polyCua(sel), r = R_NUM / s;
+  for (let k = 0; k < 8; k += 2)
+    if (Math.hypot(p[k] - x, p[k+1] - y) < r) return k;
+  return -1;
+}
+
+banDo.addEventListener("pointerdown", e => {
+  if (e.target.closest(NGOAI)) return;
+  banDo.setPointerCapture(e.pointerId);
+
+  // Sửa viền ngay trên bản đồ: kéo góc thì nắn góc đó, kéo trong lòng tấm thì
+  // dịch cả viền. Kéo ra ngoài tấm vẫn là kéo bản đồ như thường — không thì
+  // bật chế độ sửa lên là mất luôn khả năng đi lại.
+  if (sel >= 0 && !daChot(sel)) {         // đã chốt -> viền khoá, chỉ kéo bản đồ
+    const [x, y] = viTri(e);
+    const k = numGoc(x, y);
+    if (k >= 0 || trongTam(sel, x, y)) {
+      const p0 = polyCua(sel).slice(), r0 = raHinh(p0);
+      const ct = {k, x, y, p0, r0, xoay: e.altKey,
+                  // góc ĐỐI DIỆN đứng yên khi kéo góc -> co giãn kiểu chữ nhật
+                  co: k >= 0 ? [p0[(k+4)%8], p0[(k+5)%8]] : null};
+      // Bấm phát một CHỈ để chọn. Muốn dịch viền thì phải GIỮ rồi kéo — nếu ăn
+      // ngay thì tay hơi rung lúc bấm chọn là viền xê dịch mà không ai hay.
+      // Núm góc thì ăn ngay, vì nhắm trúng núm đã là chủ ý rồi.
+      if (k >= 0) { batDauKeoVien(ct); }
+      else { choKeo = ct; hen = setTimeout(() => batDauKeoVien(ct), 220); }
+      banDo.classList.add("keo");
+      return;
+    }
+  }
+  keo = {x:e.clientX, y:e.clientY, ox, oy}; daKeo = 0;
+  banDo.classList.add("keo");
+});
+
+banDo.addEventListener("pointermove", e => {
+  // đang chờ: nhích quá ngưỡng thì coi như đã cố ý kéo, vào việc luôn
+  if (choKeo) {
+    const [x, y] = viTri(e);
+    if (Math.hypot(x - choKeo.x, y - choKeo.y) * s > NGUONG_KEO) batDauKeoVien(choKeo);
+    else return;
+  }
+  if (keoVien) {
+    const [x, y] = viTri(e);
+    const dx = x - keoVien.x, dy = y - keoVien.y;
+    const r0 = keoVien.r0;
+    let p;
+    if (keoVien.xoay) {
+      // Alt + kéo = xoay quanh tâm, giữ nguyên cỡ
+      const g0 = Math.atan2(keoVien.y - r0.cy, keoVien.x - r0.cx);
+      const g1 = Math.atan2(y - r0.cy, x - r0.cx);
+      p = veHinh({...r0, a: r0.a + (g1 - g0)});
+    } else if (keoVien.k >= 0) {
+      // kéo góc = co giãn, góc đối diện đứng yên, GÓC XOAY GIỮ NGUYÊN
+      const ca = Math.cos(r0.a), sa = Math.sin(r0.a);
+      const ex = x - keoVien.co[0], ey = y - keoVien.co[1];
+      const lx =  ca*ex + sa*ey, ly = -sa*ex + ca*ey;   // về hệ trục của tấm
+      const w = Math.max(4, Math.abs(lx)), h = Math.max(4, Math.abs(ly));
+      const sx = lx < 0 ? -1 : 1, sy = ly < 0 ? -1 : 1;
+      p = veHinh({a: r0.a, w, h,
+                  cx: keoVien.co[0] + ca*(sx*w/2) - sa*(sy*h/2),
+                  cy: keoVien.co[1] + sa*(sx*w/2) + ca*(sy*h/2)});
+    } else {
+      p = keoVien.p0.slice();
+      for (let k = 0; k < 8; k += 2) { p[k] += dx; p[k+1] += dy; }
+    }
+    // trong lúc kéo chỉ vẽ lại bản đồ; ghi vào bộ nhớ và dựng lại danh sách
+    // chờ tới lúc thả tay, không thì mỗi pixel kéo là một lần dựng 6473 hàng
+    const t = kq[DATA.ma[sel]] || {};
+    t.v = p; kq[DATA.ma[sel]] = t;
+    capBbox(sel); ve();
+    return;
+  }
+  if (!keo) return;
+  const dx = e.clientX - keo.x, dy = e.clientY - keo.y;
+  daKeo = Math.max(daKeo, Math.abs(dx) + Math.abs(dy));
+  ox = keo.ox + dx; oy = keo.oy + dy; apDung();
+});
+
+banDo.addEventListener("pointerup", e => {
+  banDo.classList.remove("keo");
+  // thả tay trước khi kịp giữ đủ lâu -> đó chỉ là một cú bấm chọn, không dịch gì
+  if (choKeo) { thoiCho(); return; }
+  if (keoVien) {
+    // true = đừng chụp lịch sử nữa, đã chụp lúc pointerdown rồi
+    ghiVien(sel, kq[DATA.ma[sel]].v, true);
+    keoVien = null;
+    return;
+  }
+  if (keo && daKeo < 4) {                      // bấm chứ không kéo -> chọn tấm
+    const [x, y] = viTri(e);
+    if (themBat) { themTamTai(x, y); keo = null; return; }
+    const i = timTam(x, y);
+    // bản bàn giao: bấm vào tấm không có lỗi thì lờ đi, cột bên phải đang ẩn nên
+    // chọn nó chỉ để lại quầng trắng lơ lửng mà không nói được gì
+    if (i >= 0 && (!banGiao || laLoi(i))) chon(i);
+  }
+  keo = null;
+});
+
+// con trỏ đổi hình khi rê trúng chỗ sửa được
+banDo.addEventListener("pointermove", e => {
+  if (keo || keoVien || choKeo || sel < 0) return;
+  const [x, y] = viTri(e);
+  banDo.style.cursor = numGoc(x, y) >= 0 ? "crosshair"
+                     : trongTam(sel, x, y) ? "grab" : "";
+});
+addEventListener("resize", () => { chinhCanvas(); ve(); });
+
+function chinhCanvas() {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width  = Math.round(banDo.clientWidth  * dpr);
+  cv.height = Math.round(banDo.clientHeight * dpr);
+  cv.style.width = banDo.clientWidth + "px";
+  cv.style.height = banDo.clientHeight + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+// điểm có nằm trong tứ giác không (tứ giác lồi, thử dấu tích có hướng)
+function trongTam(i, x, y) {
+  if (x < BBOX[i*4] || x > BBOX[i*4+2] || y < BBOX[i*4+1] || y > BBOX[i*4+3]) return false;
+  const p = polyCua(i);
+  let am = 0, duong = 0;
+  for (let k = 0; k < 8; k += 2) {
+    const ax = p[k], ay = p[k+1], bx = p[(k+2)%8], by = p[(k+3)%8];
+    const d = (bx - ax) * (y - ay) - (by - ay) * (x - ax);
+    if (d > 0) duong++; else if (d < 0) am++;
+  }
+  return !(am && duong);
+}
+function timTam(x, y) {
+  const cx = Math.floor(x / O), cy = Math.floor(y / O);
+  if (cx < 0 || cy < 0 || cx >= NX || cy >= NY) return -1;
+  const ds = (luoi.get(cy * NX + cx) || []).filter(i => !ngoaiVung(i));
+  if (!ds.length) return -1;
+  for (const i of ds) if (trongTam(i, x, y)) return i;
+  // hụt viền một chút thì lấy tấm có tâm gần nhất trong ô, cho dễ bấm lúc thu nhỏ
+  let tot = -1, dmin = 1e18;
+  for (const i of ds) {
+    const mx = (BBOX[i*4] + BBOX[i*4+2]) / 2, my = (BBOX[i*4+1] + BBOX[i*4+3]) / 2;
+    const d = (mx - x) ** 2 + (my - y) ** 2;
+    if (d < dmin) { dmin = d; tot = i; }
+  }
+  return dmin < (O / 3) ** 2 ? tot : -1;
+}
+
+// ---------------------------------------------------------------- vẽ bản đồ
+// phủ mờ phần nằm ngoài vùng lõi, để mắt không bị hút ra chỗ không soi được
+function phuRia(w, h) {
+  if (!anRiaBat) return;
+  const x0 = VUNG[0] * s + ox, y0 = VUNG[1] * s + oy;
+  const x1 = VUNG[2] * s + ox, y1 = VUNG[3] * s + oy;
+  // Lúc SỬA thì phủ mờ 93%: vẫn thấy lờ mờ phần rìa để biết mình đang đứng đâu.
+  // Lúc BÀN GIAO thì che ĐẶC luôn — phủ mờ để lộ rìa nham nhở với mấy mảng đen
+  // nodata của ortho, nhìn như trang bị lỗi chứ không ra bản để đưa cho người khác.
+  // Che bằng ĐEN ĐẶC chứ không phải màu nền trang: vùng nodata của chính ortho
+  // cũng đen, hai màu lệch nhau một chút là hiện ra đúng cái khung chữ nhật mờ mờ
+  // giữa vùng đen — nhìn như trang vẽ hỏng. Cùng #000 thì không thấy mối nào.
+  ctx.fillStyle = banGiao ? "#000" : "rgba(13,17,22,.93)";
+  ctx.fillRect(0, 0, w, Math.max(0, y0));
+  ctx.fillRect(0, Math.min(h, y1), w, h);
+  ctx.fillRect(0, Math.max(0, y0), Math.max(0, x0), Math.min(h, y1) - Math.max(0, y0));
+  ctx.fillRect(Math.min(w, x1), Math.max(0, y0), w, Math.min(h, y1) - Math.max(0, y0));
+  if (banGiao) return;                 // bàn giao: không kẻ cả khung xám nữa
+  ctx.strokeStyle = "rgba(120,140,165,.45)"; ctx.lineWidth = 1;
+  ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+}
+
+function ve() {
+  const w = banDo.clientWidth, h = banDo.clientHeight;
+  ctx.clearRect(0, 0, w, h);
+  if (banGiao) { veBanGiao(w, h); phuRia(w, h); return; }
+  if (cheDoKhung === "an") { veLoi(w, h); phuRia(w, h); return; }
+
+  const x0 = Math.max(0, Math.floor((-ox / s) / O)), y0 = Math.max(0, Math.floor((-oy / s) / O));
+  const x1 = Math.min(NX-1, Math.floor(((w - ox) / s) / O));
+  const y1 = Math.min(NY-1, Math.floor(((h - oy) / s) / O));
+  const canh = (BBOX[2] - BBOX[0]) * s;             // bề rộng một tấm trên màn hình
+  const net  = canh > 7;                            // đủ to thì mới vẽ viền
+  ctx.lineWidth = Math.max(1, Math.min(2.4, canh * 0.05));
+
+  const daVe = new Set(), dsVe = [];
+  for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
+    const ds = luoi.get(cy * NX + cx);
+    if (!ds) continue;
+    for (const i of ds) {
+      if (daVe.has(i)) continue;
+      daVe.add(i);
+      if (ngoaiVung(i)) continue;
+      if (cheDoKhung === "loi" && !DATA.goi_y[i] && !daChot(i) && i !== sel) continue;
+      dsVe.push(i);
+    }
+  }
+  // THỨ TỰ VẼ: chưa chốt -> đã chốt -> tấm đang chọn.
+  // `best.pt` có 8 chỗ dò trùng MỘT tấm pin thật ra HAI đa giác gần khít nhau, mang
+  // hai mã khác nhau (nặng nhất là D09-T302 / D09-T308, trùng nhau 99,7%). Chốt một
+  // cái thì cái kia vẫn đang nợ, và nếu nó rơi vào lượt vẽ sau thì viền đứt của nó
+  // đè lên viền màu vừa chốt — nhìn ra "đã có dấu ✓ mà viền vẫn đứt". Xếp lại thứ tự
+  // thì trạng thái mới nhất luôn nằm trên cùng, không phụ thuộc thứ tự trong lưới.
+  const hang = i => i === sel ? 2 : daChot(i) ? 1 : 0;
+  dsVe.sort((a, b) => hang(a) - hang(b));
+
+  for (const i of dsVe) {
+    const p = polyCua(i), t = kq[DATA.ma[i]];
+    const nhan = t && t.n;
+    const goi  = DATA.goi_y[i];
+    ctx.beginPath();
+    ctx.moveTo(p[0]*s+ox, p[1]*s+oy);
+    for (let k = 2; k < 8; k += 2) ctx.lineTo(p[k]*s+ox, p[k+1]*s+oy);
+    ctx.closePath();
+    // Tấm đang chọn: viền trắng vẽ TRƯỚC và dày hơn một chút, để nó thành quầng
+    // bao ngoài. Vẽ sau thì nó đè mất viền màu trạng thái, thành ra tấm đang
+    // xem lại là tấm duy nhất không đọc được trạng thái ngay trên bản đồ.
+    if (i === sel) {
+      ctx.lineWidth = Math.max(2.5, Math.min(5, canh * 0.08));
+      ctx.strokeStyle = "#ffffff"; ctx.stroke();
+      ctx.lineWidth = Math.max(1, Math.min(2.4, canh * 0.05));
+    }
+
+    // Phóng đủ to thì CHỈ VẼ VIỀN, không tô nền: tô nền che mất chính cái vệt
+    // nóng và mặt tấm mà người soi đang cần nhìn. Chỉ lúc thu nhỏ — tấm dưới
+    // 7 px, có nhìn cũng không thấy gì — mới tô đặc, để bản đồ đọc được như
+    // một bức tranh tiến độ.
+    if (nhan) {
+      // Đã chốt -> viền DÀY hơn hẳn. Đây là thứ mắt phải bắt được ngay khi
+      // lướt bản đồ: chỗ nào xong, chỗ nào còn nợ.
+      if (net) {
+        ctx.lineWidth = Math.max(2, Math.min(4.5, canh * 0.09));
+        ctx.strokeStyle = MAU[nhan]; ctx.stroke();
+        ctx.lineWidth = Math.max(1, Math.min(2.4, canh * 0.05));
+        if (canh > 26) veTich(p);          // dấu ✓ khi tấm đủ to để nhìn thấy
+      } else { ctx.fillStyle = MAU[nhan] + "cc"; ctx.fill(); }
+    } else if (goi) {
+      // model có ý kiến mà người chưa chốt -> viền đứt, nhìn là biết còn nợ.
+      // Xanh dương mảnh chìm nghỉm trên mặt tấm pin — mặt tấm cũng xanh, cũng
+      // sáng. Nên vẽ hai lượt như viền tấm thường: một nét TỐI LIỀN dày làm nền,
+      // một nét SÁNG ĐỨT mảnh đè lên. Chỗ hở của nét đứt để lộ nền tối, nên viền
+      // đọc được trên cả ảnh màu lẫn ảnh nhiệt, mà vẫn giữ ý "đứt = chưa chốt".
+      if (net) {
+        ctx.strokeStyle = "rgba(6,12,20,.78)";
+        ctx.lineWidth = Math.max(2.6, Math.min(5, canh * 0.10));
+        ctx.stroke();
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "#4fd8ff";                 // xanh ngọc, không đụng màu nhãn nào
+        ctx.lineWidth = Math.max(1.6, Math.min(3, canh * 0.06));
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.lineWidth = Math.max(1, Math.min(2.4, canh * 0.05));
+      } else { ctx.fillStyle = "#3ec8f0cc"; ctx.fill(); }
+    } else if (thieuNhiet(i)) {
+      // không soi được -> giữ một lớp phủ rất nhạt, đủ báo "đừng mất công ở đây"
+      ctx.fillStyle = net ? "#5a647226" : "#5a6472aa";
+      ctx.fill();
+      if (net) { ctx.strokeStyle = "#7a8796"; ctx.stroke(); }
+    } else if (net || i === sel) {
+      // Viền tấm thường phải đọc được trên CẢ HAI nền: ảnh màu thì sáng, ảnh
+      // nhiệt thì tối. Một màu duy nhất luôn mất tăm ở một trong hai. Nên vẽ
+      // hai lượt: một nét tối dày hơn làm nền, một nét sáng mảnh đè lên.
+      ctx.strokeStyle = "rgba(8,14,22,.40)";
+      ctx.lineWidth = Math.max(2, Math.min(3.6, canh * 0.05 + 1.4));
+      ctx.stroke();
+      ctx.strokeStyle = i === sel ? "rgba(232,240,250,.95)" : "rgba(226,236,248,.72)";
+      ctx.lineWidth = Math.max(1, Math.min(2.4, canh * 0.05));
+      ctx.stroke();
+    }
+  }
+  veLoi(w, h);
+  veNum();
+  phuRia(w, h);
+}
+
+// ------------------------------------------------------------- vẽ BẢN BÀN GIAO
+// Không dùng chung nhánh với ve(): ở đây quy tắc ngược hẳn — không có khái niệm
+// "còn nợ", không vẽ box model, không vẽ tấm thường. Chỉ tấm đã chốt là CÓ LỖI,
+// tô nền theo lớp cho đọc được cả lúc thu nhỏ lẫn lúc phóng to.
+function veBanGiao(w, h) {
+  const canh = (BBOX[2] - BBOX[0]) * s;
+  const net = canh > 7;
+  for (let i = 0; i < N; i++) {
+    if (!laLoi(i) || ngoaiVung(i)) continue;
+    const bx = BBOX[i*4], by = BBOX[i*4+1], bX = BBOX[i*4+2], bY = BBOX[i*4+3];
+    if (bX*s+ox < 0 || bx*s+ox > w || bY*s+oy < 0 || by*s+oy > h) continue;
+    const p = polyCua(i), m = MAU[kq[DATA.ma[i]].n] || "#e0c23a";
+    ctx.beginPath();
+    ctx.moveTo(p[0]*s+ox, p[1]*s+oy);
+    for (let k = 2; k < 8; k += 2) ctx.lineTo(p[k]*s+ox, p[k+1]*s+oy);
+    ctx.closePath();
+    if (i === sel) {
+      ctx.lineWidth = Math.max(2.5, Math.min(5.5, canh * 0.09));
+      ctx.strokeStyle = "#ffffff"; ctx.stroke();
+    }
+    ctx.fillStyle = m + (net ? "3d" : "cc");
+    ctx.fill();
+    if (net) {
+      ctx.lineWidth = Math.max(1.6, Math.min(3.2, canh * 0.06));
+      ctx.strokeStyle = m; ctx.stroke();
+    }
+  }
+}
+
+// Dấu ✓ xanh giữa tấm đã chốt — nhìn lướt là biết chỗ nào xong, không phải đọc
+// màu viền rồi suy ra.
+function veTich(p) {
+  let cx = 0, cy = 0;
+  for (let k = 0; k < 8; k += 2) { cx += p[k]; cy += p[k+1]; }
+  cx = cx/4*s + ox; cy = cy/4*s + oy;
+  const r = Math.min(9, Math.max(4, (BBOX[2]-BBOX[0]) * s * 0.11));
+  ctx.beginPath();
+  ctx.moveTo(cx - r, cy);
+  ctx.lineTo(cx - r*0.25, cy + r*0.7);
+  ctx.lineTo(cx + r, cy - r*0.75);
+  ctx.lineWidth = Math.max(2, r * 0.42);
+  ctx.strokeStyle = "rgba(8,16,12,.65)"; ctx.stroke();
+  ctx.lineWidth = Math.max(1.2, r * 0.28);
+  ctx.strokeStyle = "#57e08c"; ctx.stroke();
+}
+
+// Núm bốn góc của tấm đang chọn — kéo được ngay, không cần bật chế độ nào.
+// Đổi màu khi viền đã bị sửa, để nhìn là biết tấm nào còn nguyên gốc.
+function veNum() {
+  if (sel < 0 || ngoaiVung(sel) || daChot(sel)) return;   // chốt rồi thì khoá
+  const p = polyCua(sel);
+  const daSua = !!(kq[DATA.ma[sel]] && kq[DATA.ma[sel]].v);
+  const r = 4.5;
+  ctx.lineWidth = 1.5;
+  for (let k = 0; k < 8; k += 2) {
+    const x = p[k]*s+ox, y = p[k+1]*s+oy;
+    if (x < -20 || y < -20 || x > banDo.clientWidth+20 || y > banDo.clientHeight+20) continue;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 6.284);
+    ctx.fillStyle = daSua ? "#e08a3a" : "#ffffff";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(8,14,22,.8)"; ctx.stroke();
+  }
+}
+
+// Ba cách vẽ box lỗi.
+//   goc  — đúng chỗ chuỗi chiếu đưa ra. Trung thực, và lệch tâm ~16 cm so với
+//          tấm nên nhìn rối; nhưng đó cũng là chỗ duy nhất thấy được sai số chiếu.
+//   khop — dán vào chính tấm được gán, thu nhỏ 6% cho khỏi trùng khít viền tấm.
+//          Sạch mắt khi soi, ĐỔI LẠI là giấu mất sai số chiếu — lỗi mồ côi
+//          (không gán được tấm) vẫn phải vẽ ở chỗ gốc vì không có tấm để dán.
+//   an   — tắt hẳn.
+let cheDoLoi = "goc";
+const maToIdx = new Map(DATA.ma.map((m, i) => [m, i]));
+
+// quad của tấm j, co về tâm theo hệ số k
+function quadCo(j, k) {
+  const p = polyCua(j);
+  let cx = 0, cy = 0;
+  for (let u = 0; u < 8; u += 2) { cx += p[u]; cy += p[u + 1]; }
+  cx /= 4; cy /= 4;
+  const r = new Array(8);
+  for (let u = 0; u < 8; u += 2) {
+    r[u] = cx + (p[u] - cx) * k;
+    r[u + 1] = cy + (p[u + 1] - cy) * k;
+  }
+  return r;
+}
+// quad dùng để vẽ một lỗi, theo chế độ đang chọn. null = không có gì để vẽ.
+function quadLoi(d) {
+  if (cheDoLoi === "khop") {
+    const j = maToIdx.get(d[4]);
+    if (j !== undefined) return quadCo(j, 0.94);
+  }
+  return d[7] || null;
+}
+document.querySelectorAll("#segLoi button").forEach(b => b.onclick = () => datCheDoLoi(b.dataset.v));
+function datCheDoLoi(v) {
+  cheDoLoi = v;
+  document.querySelectorAll("#segLoi button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x.dataset.v === v)));
+  ve(); veChiTiet();
+}
+
+// Box của model: đây là CHỖ MODEL THẤY, không phải kết luận.
+// Box bao gần trọn một tấm pin (0,95 x 1,85 m so với tấm 0,88 x 1,76 m) — model
+// phán ở mức TẤM, không chỉ vào ô nóng. Vẽ nguyên khung để khỏi hiểu nhầm; thu
+// nhỏ quá thì rơi về dấu chữ thập cho còn thấy được.
+function veLoi(w, h) {
+  if (cheDoLoi === "an") return;
+  const r = Math.max(2.5, Math.min(7, 3 * Math.sqrt(s / 0.12)));
+  const canh = (BBOX[2] - BBOX[0]) * s;
+  const veKhung = canh > 9;
+  ctx.lineWidth = veKhung ? Math.max(1, Math.min(2, canh * 0.035)) : 1.6;
+  if (veKhung) ctx.setLineDash([5, 3]);
+  for (const [k, ds] of luoiLoi) {
+    const cx = k % NX, cy = (k - cx) / NX;
+    if (cx*O*s+ox < -O*s || cx*O*s+ox > w + O*s) continue;
+    if (cy*O*s+oy < -O*s || cy*O*s+oy > h + O*s) continue;
+    for (const i of ds) {
+      const d = LOI[i], x = d[0]*s+ox, y = d[1]*s+oy;
+      if (anRiaBat && (d[0] < VUNG[0] || d[0] > VUNG[2]
+                       || d[1] < VUNG[1] || d[1] > VUNG[3])) continue;
+      // Tấm đã chốt thì bỏ luôn box dự đoán: người đã phán rồi, gợi ý của model
+      // hết việc. Còn lại đúng MỘT viền trên tấm đó, nhìn cho gọn.
+      if (d[4]) {
+        const j = maToIdx.get(d[4]);
+        if (j !== undefined && kq[DATA.ma[j]] && kq[DATA.ma[j]].n) continue;
+      }
+      ctx.strokeStyle = d[6] ? "#ff5f5f" : "#ffd24d";     // vàng = không rơi trong tấm nào
+      const q = quadLoi(d);
+      ctx.beginPath();
+      if (veKhung && q) {
+        ctx.moveTo(q[0]*s+ox, q[1]*s+oy);
+        for (let u = 2; u < 8; u += 2) ctx.lineTo(q[u]*s+ox, q[u+1]*s+oy);
+        ctx.closePath();
+      } else {
+        ctx.moveTo(x-r, y); ctx.lineTo(x+r, y);
+        ctx.moveTo(x, y-r); ctx.lineTo(x, y+r);
+      }
+      ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+}
+
+// ------------------------------------------------------------ khung chi tiết
+// Cắt thẳng từ hai ảnh nền -> hai khung luôn cùng một mảnh đất, gạt qua lại
+// không xê dịch. Không cần cắt ảnh riêng cho từng tấm.
+function veMot(canvas, img, i) {
+  const g = canvas.getContext("2d");
+  g.setTransform(1,0,0,1,0,0);
+  g.fillStyle = "#000"; g.fillRect(0, 0, canvas.width, canvas.height);
+  if (i < 0 || !img.naturalWidth) return;
+
+  const x0 = BBOX[i*4], y0 = BBOX[i*4+1], x1 = BBOX[i*4+2], y1 = BBOX[i*4+3];
+  const cx = (x0+x1)/2, cy = (y0+y1)/2;
+  const canh = Math.max(x1-x0, y1-y0) * 1.9;          // chừa lề để thấy tấm bên cạnh
+  const sx = cx - canh/2, sy = cy - canh/2;
+  const k = canvas.width / canh;
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+  g.drawImage(img, sx, sy, canh, canh, 0, 0, canvas.width, canvas.height);
+
+  // viền tấm đang xét
+  const p = polyCua(i);
+  g.beginPath();
+  g.moveTo((p[0]-sx)*k, (p[1]-sy)*k);
+  for (let q = 2; q < 8; q += 2) g.lineTo((p[q]-sx)*k, (p[q+1]-sy)*k);
+  g.closePath();
+  g.lineWidth = 2.5; g.strokeStyle = "#ffd54a"; g.stroke();
+
+  // hàng xóm mờ hơn, để biết mình đang đứng ở đâu trong dãy
+  const cgx = Math.floor(cx/O), cgy = Math.floor(cy/O);
+  // Gom ô lân cận có kiểm biên: (cy*NX + cx) mà cx tràn ra ngoài thì chỉ số rơi
+  // sang HÀNG KHÁC của lưới, vẽ nhầm tấm ở tận đầu kia nhà máy.
+  const oLanCan = ban => {
+    const r = [];
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const gx = cgx + dx, gy = cgy + dy;
+      if (gx < 0 || gy < 0 || gx >= NX || gy >= NY) continue;
+      const ds = ban.get(gy * NX + gx);
+      if (ds) r.push(...ds);
+    }
+    return r;
+  };
+
+  g.lineWidth = 1.2; g.strokeStyle = "rgba(255,255,255,.34)";
+  for (const j of oLanCan(luoi)) {
+    if (j === i) continue;
+    const q = polyCua(j);
+    g.beginPath();
+    g.moveTo((q[0]-sx)*k, (q[1]-sy)*k);
+    for (let u = 2; u < 8; u += 2) g.lineTo((q[u]-sx)*k, (q[u+1]-sy)*k);
+    g.closePath(); g.stroke();
+  }
+
+  // box model trong khung — nét đứt đỏ, phân biệt với viền vàng của tấm
+  if (cheDoLoi !== "an") {
+    g.lineWidth = 2; g.strokeStyle = "#ff6b6b"; g.setLineDash([6, 4]);
+    for (const j of oLanCan(luoiLoi)) {
+      const d = LOI[j];
+      if (d[0] < sx || d[0] > sx+canh || d[1] < sy || d[1] > sy+canh) continue;
+      if (d[4]) {                       // tấm đã chốt -> bỏ box dự đoán
+        const u = maToIdx.get(d[4]);
+        if (u !== undefined && kq[DATA.ma[u]] && kq[DATA.ma[u]].n) continue;
+      }
+      const q = quadLoi(d);
+      g.beginPath();
+      if (q) {
+        g.moveTo((q[0]-sx)*k, (q[1]-sy)*k);
+        for (let u = 2; u < 8; u += 2) g.lineTo((q[u]-sx)*k, (q[u+1]-sy)*k);
+        g.closePath();
+      } else {
+        const x = (d[0]-sx)*k, y = (d[1]-sy)*k, r = 11;
+        g.moveTo(x-r,y); g.lineTo(x+r,y); g.moveTo(x,y-r); g.lineTo(x,y+r);
+      }
+      g.stroke();
+    }
+    g.setLineDash([]);
+  }
+}
+// ------------------------------------------------------- ảnh nhiệt GỐC
+// Model detect trên ẢNH GỐC rồi mới chiếu lên ortho, mà ortho chỉ ghép từ 396
+// trong 416 ảnh detect chạy qua. Nên có lỗi nằm giữa vùng ortho đen — nhìn ortho
+// thì không có gì để phán, phải mở đúng khung ảnh gốc mà model đã nhìn.
+const GOC = DATA.goc;
+const anhGoc = new Map();
+let ucNguon = null;                    // null = tự chọn, "ortho" | "goc" = người chọn
+
+function nguonHienTai(i) {
+  if (i < 0 || !GOC[i]) return "ortho";
+  if (ucNguon) return ucNguon;
+  return thieuNhiet(i) ? "goc" : "ortho";   // ortho trống thì mặc định mở ảnh gốc
+}
+function layAnhGoc(i) {
+  if (!anhGoc.has(i)) {
+    const im = new Image();
+    im.onload = () => veChiTiet();
+    anhGoc.set(i, im);
+    im.src = DATA.goc_thu_muc + i + ".jpg";
+  }
+  return anhGoc.get(i);
+}
+function veGoc(canvas, i) {
+  const g = canvas.getContext("2d");
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = "#000"; g.fillRect(0, 0, canvas.width, canvas.height);
+  const im = layAnhGoc(i);
+  if (!im.naturalWidth) return;
+  g.imageSmoothingQuality = "high";
+  g.drawImage(im, 0, 0, canvas.width, canvas.height);
+  const q = GOC[i][1], W = canvas.width, H = canvas.height;
+  g.beginPath();
+  g.moveTo(q[0] * W, q[1] * H);
+  for (let k = 2; k < 8; k += 2) g.lineTo(q[k] * W, q[k + 1] * H);
+  g.closePath();
+  g.lineWidth = 2.5; g.strokeStyle = "#ffd54a"; g.stroke();
+}
+// Vì sao ảnh này bị loại. Phải nói rõ từng lý do: "ảnh đã bị loại" nói trống
+// không thì người soi tưởng ảnh mờ, trong khi phần lớn ảnh vẫn nét — chúng bị
+// loại vì ĐẶT SAI CHỖ (lệch nhiệt↔RGB), là chuyện khác hẳn.
+function lyDoNgan(seq) {
+  const a = DATA.anh[seq];
+  if (!a) return "không rõ";
+  const t = [];
+  if (a[2] & 1) t.push(a[0] != null ? `lệch ${a[0]} cm` : "lệch nhiệt/RGB");
+  if (a[2] & 2) t.push("drone rung");
+  if (a[2] & 4) t.push("đoạn quay đầu");
+  return t.join(" · ") || "không rõ";
+}
+function lyDoDai(seq) {
+  const a = DATA.anh[seq];
+  if (!a) return "";
+  const t = [];
+  if (a[2] & 1) {
+    // Ngưỡng chấm trên `lech_sau_bu_px` (lệch SAU khi bù bằng H_da_bu), mà
+    // H_da_bu thì ghep_ortho_nhiet.py đã bỏ không dùng. Nên có ảnh lệch THẬT
+    // dưới ngưỡng vẫn nằm trong danh sách loại — nói ra để người soi biết ảnh
+    // này có thể vẫn dùng tốt.
+    const duoi = a[0] != null && a[0] <= DATA.nguong_lech_cm;
+    t.push(`lệch giữa ảnh nhiệt và ảnh màu <b>${a[0]} cm</b> ` +
+      `(ngưỡng loại ${DATA.nguong_lech_cm} cm)` +
+      (duoi ? ` — <b>thật ra DƯỚI ngưỡng</b>; nó vào danh sách loại theo số đã bù, ` +
+              `mà phép bù đó pipeline không dùng. Ảnh này dùng được.` : ""));
+  }
+  if (a[2] & 2) t.push("hai cảm biến không nổ cùng lúc lúc drone lắc (đọc từ EXIF)");
+  if (a[2] & 4) t.push("chụp ở đoạn quay đầu, bay chậm");
+  if (a[1] != null) t.push(`độ nét phép đo lệch: ${a[1]}`);
+  return t.length ? `<br>Lý do loại ảnh ${seq}: ` + t.join("; ") + "." : "";
+}
+
+function doiNguon() {
+  if (sel < 0 || !GOC[sel]) return;
+  ucNguon = nguonHienTai(sel) === "goc" ? "ortho" : "goc";
+  veChiTiet();
+}
+
+function veChiTiet() {
+  veMot(document.getElementById("d_rgb"), im_rgb, sel);
+  const ng = nguonHienTai(sel);
+  if (ng === "goc") veGoc(document.getElementById("d_nh"), sel);
+  else              veMot(document.getElementById("d_nh"), im_nh, sel);
+
+  const nut = document.getElementById("nutNguon");
+  const nhan = document.getElementById("nhanNhiet");
+  nut.hidden = sel < 0 || !GOC[sel];
+  nut.textContent = ng === "goc" ? "xem ortho" : "xem ảnh gốc";
+  if (ng === "goc") {
+    const [seq, , datLoc] = GOC[sel];
+    nhan.innerHTML = `GỐC · ảnh ${seq}` +
+      (datLoc ? "" : ` <b style="color:#f0a04a">· loại</b>`);
+    nhan.title = datLoc ? `Ảnh nhiệt gốc ${seq}`
+                        : `Ảnh nhiệt gốc ${seq} — bị loại: ${lyDoNgan(seq)}`;
+  } else {
+    nhan.textContent = "Nhiệt (ortho)";
+    nhan.title = "Ortho nhiệt — xác định có lỗi thật hay không";
+  }
+}
+
+// -------------------------------------------------------------- danh sách
+// Trang MẪU: danh sách khoá cứng vào đúng mẫu đã bốc, không cho lọc kiểu khác —
+// bốc mẫu xong mà soi thêm tấm ngoài mẫu thì con số ước lượng ra hết ý nghĩa.
+const CHI_TAM = DATA.chi_tam ? new Set(DATA.chi_tam) : null;
+function dungDanhSach() {
+  const ds = [];
+  for (let i = 0; i < N; i++) {
+    if (ngoaiVung(i)) continue;             // đang ẩn rìa -> không đưa vào danh sách
+    const co = !!DATA.goi_y[i], da = !!(kq[DATA.ma[i]] && kq[DATA.ma[i]].n);
+    // "Chưa xét" cố tình BỎ tấm thiếu nhiệt: bắt người ta phán tấm không có ảnh
+    // nhiệt là ép đoán mò. Chúng nằm riêng ở tab "Thiếu nhiệt".
+    if (cheDo === "chot_loi" && !laLoi(i)) continue;   // bản bàn giao
+    if (cheDo === "tay"    && !laTay(i)) continue;
+    if (CHI_TAM && !CHI_TAM.has(i) && !laTay(i)) continue;
+    if (cheDo === "chua"   && thieuNhiet(i)) continue;
+    if (cheDo === "thieu"  && !thieuNhiet(i)) continue;
+    if (cheDo === "goi_y"  && !co) continue;
+    if (cheDo === "chua"   && da)  continue;
+    if (cheDo === "da"     && !da) continue;
+    ds.push(i);
+  }
+  // ưu tiên tấm model tin nhất — soi cái chắc trước, mắt chưa mỏi
+  if (cheDo === "goi_y" || cheDo === "chua")
+    ds.sort((a, b) => (DATA.goi_y[b] ? DATA.goi_y[b][1] : -1)
+                    - (DATA.goi_y[a] ? DATA.goi_y[a][1] : -1));
+  danhSach = ds;
+  veDanhSach();
+}
+// ---------------------------------------------------- danh sách tấm (cột trái)
+// Ba trạng thái, vì chúng là ba việc khác nhau khi rà lại:
+//   chưa chốt — còn nợ, phải quay lại
+//   đã chốt   — nhãn người trùng gợi ý model (bấm Duyệt hoặc tự chọn đúng lớp đó)
+//   đã sửa    — nhãn người KHÁC gợi ý; đây mới là chỗ model sai, đáng soi lại nhất
+//
+// Không dựng lại cả danh sách mỗi lần bấm nhãn: 6473 hàng thì giật. Dựng lại khi
+// đổi tab, còn lúc gán nhãn chỉ vá đúng một hàng.
+let locDsHien = "tat";
+
+// Hai trạng thái thôi: xong hay chưa. Trước có thêm "đã sửa" (nhãn người khác
+// gợi ý model) nhưng đó là thông tin để BÁO CÁO, không phải việc còn phải làm —
+// nó vẫn nằm nguyên trong file xuất ra ở cột `khop_model`.
+const trangThai = i => daChot(i) ? "chot" : null;
+function hopDs(i) {
+  return locDsHien === "tat" ? true
+       : locDsHien === "chua" ? !trangThai(i)
+       : !!trangThai(i);
+}
+function veDanhSach() {
+  const ds = danhSach.filter(hopDs);
+  document.getElementById("dsSo").textContent = ds.length;
+  const o = document.getElementById("cuonDs");
+  if (!ds.length) {
+    o.innerHTML = `<div class="rong">Không có tấm nào trong mục này.</div>`;
+    return;
+  }
+  o.innerHTML = ds.map(i => hangDs(i)).join("");
+  danhDauHang();
+}
+function hangDs(i) {
+  const t = kq[DATA.ma[i]], g = DATA.goi_y[i], xong = daChot(i);
+  const mau = xong ? MAU[t.n] : g ? MAU[g[0]] : "#3a424e";
+  return `<button class="hangDs" data-i="${i}"><i style="background:${mau}"></i>` +
+    `<span class="ma">${DATA.ma[i]}</span>` +
+    `<span class="tt ${xong ? "chot" : ""}">${xong ? "✓ đã xong" : "chưa xong"}` +
+    `</span></button>`;
+}
+function vaHang(i) {
+  const e = document.querySelector(`.hangDs[data-i="${i}"]`);
+  if (!e) return;
+  e.outerHTML = hangDs(i);
+  danhDauHang();
+}
+function danhDauHang() {
+  document.querySelectorAll(".hangDs").forEach(e =>
+    e.classList.toggle("chon", +e.dataset.i === sel));
+}
+document.getElementById("cuonDs").addEventListener("click", e => {
+  const h = e.target.closest(".hangDs");
+  if (h) chon(+h.dataset.i, "phong");
+});
+document.querySelectorAll("#locDs button").forEach(b => b.onclick = () => {
+  locDsHien = b.dataset.l;
+  document.querySelectorAll("#locDs button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  veDanhSach();
+});
+function batDs() {
+  const k = document.getElementById("khung");
+  k.classList.toggle("dong");
+  document.getElementById("moDs").hidden = !k.classList.contains("dong");
+  chinhCanvas(); veVua();
+}
+
+// keoToi:  false     giữ nguyên khung nhìn
+//          true      đưa tấm ra giữa, chỉ phóng thêm nếu đang thu quá xa
+//          "phong"   đưa ra giữa VÀ phóng hẳn vào tấm — dùng khi bấm từ danh sách,
+//                    vì lúc đó người ta muốn nhìn đúng tấm vừa bấm, không phải
+//                    đoán nó nằm chỗ nào trong khung
+function chon(i, keoToi) {
+  sel = i;
+  if (keoToi && i >= 0) {
+    const cx = (BBOX[i*4] + BBOX[i*4+2]) / 2, cy = (BBOX[i*4+1] + BBOX[i*4+3]) / 2;
+    const canh = (BBOX[i*4+2] - BBOX[i*4]);
+    // 5 = tấm chiếm khoảng 1/5 bề ngang khung, còn thấy được vài tấm bên cạnh
+    if (keoToi === "phong") s = Math.min(14, banDo.clientWidth / (canh * 5));
+    else if (s < 1.2) s = Math.min(14, Math.max(s, banDo.clientWidth / (canh * 14)));
+    ox = banDo.clientWidth / 2 - cx * s;
+    oy = banDo.clientHeight / 2 - cy * s;
+    apDung();
+  } else ve();
+  veChiTiet(); veBen();
+  danhDauHang();
+  const h = document.querySelector(".hangDs.chon");
+  if (h) h.scrollIntoView({block: "nearest"});
+}
+function di(b) {
+  if (!danhSach.length) return;
+  let k = danhSach.indexOf(sel);
+  if (k < 0) k = b > 0 ? -1 : 0;
+  chon(danhSach[Math.max(0, Math.min(danhSach.length - 1, k + b))], true);
+}
+function toiChuaXet() {
+  const k = Math.max(0, danhSach.indexOf(sel));
+  for (let j = k + 1; j < danhSach.length + k + 1; j++) {
+    const i = danhSach[j % danhSach.length];
+    if (!(kq[DATA.ma[i]] && kq[DATA.ma[i]].n)) { chon(i, true); return; }
+  }
+  bao("Danh sách này đã gán hết.");
+}
+
+// ------------------------------------------------------------------- bên
+function veBen() {
+  document.getElementById("maTam").textContent = sel < 0 ? "—" : DATA.ma[sel];
+  const k = danhSach.indexOf(sel);
+  document.getElementById("viTri").textContent =
+    k < 0 ? (sel < 0 ? "" : "ngoài danh sách") : (k + 1) + "/" + danhSach.length;
+
+  const the = document.getElementById("the"), gy = document.getElementById("goiY");
+  if (sel < 0) {
+    the.innerHTML = "<span>Bấm một tấm trên bản đồ, hoặc bấm <b>Sau →</b></span>";
+    gy.className = "goiY trong"; gy.textContent = "—";
+  } else {
+    const ll = DATA.ll[sel], g = DATA.goi_y[sel];
+    the.innerHTML =
+      (laTay(sel) ? `<span class="nhanTay">tấm tự thêm</span>`
+                  : `<span>dãy <b>${DATA.ma[sel].split("-")[0].slice(1)}</b></span>`) +
+      `<span>lon <b>${ll[0].toFixed(7)}</b></span>` +
+      `<span>lat <b>${ll[1].toFixed(7)}</b></span>`;
+    if (thieuNhiet(sel)) {
+      // Ba nhóm, ba việc phải làm khác hẳn nhau — nói thẳng ra nhóm nào, vì
+      // người soi không có cách nào tự nhìn mà biết.
+      const ng = DATA.nguon[sel], vi = [
+        `<b>Không một ảnh nhiệt nào chụp tới tấm này.</b> Không phải ortho bỏ sót — ` +
+        `drone không bay qua đây với camera nhiệt. <b>Chỉ bay lại mới soi được</b>, ` +
+        `không có cách nào moi ra từ dữ liệu hiện có.`,
+        `<b>Chỉ ${DATA.n_anh_xau[sel]} ảnh ĐÃ BỊ LOẠI nhìn thấy tấm này</b> ` +
+        `(trễ chụp, drone rung, hoặc đoạn quay đầu). Ortho không dùng chúng nên ` +
+        `ở đây trống — <b>khung nhiệt bên phải đã tự mở ẢNH GỐC</b>. Phán được, ` +
+        `nhưng ảnh kém tin, phán xong nên ghi chú.`,
+        `<b>Có ${DATA.n_anh[sel]} ảnh đạt bộ lọc nhìn thấy tấm này, nhưng ortho vẫn trống.</b> ` +
+        `<b>Khung nhiệt bên phải đã tự mở ẢNH GỐC</b> — phán bình thường; ` +
+        `còn ortho thì báo lại để dựng bù vùng này.`][ng];
+      gy.className = "goiY canhNhiet";
+      const chot = ng === 0
+        ? `<b>Đừng bấm “Tấm tốt”</b> — “không soi được” khác “đã soi và thấy lành”. ` +
+          `Bấm <b>Không rõ</b> hoặc bỏ qua.`
+        : `Nhãn vẫn xuất ra kèm <code>phan_duoc = false</code>, nhớ lọc lại lúc tính chỉ số.`;
+      gy.innerHTML = `Ortho nhiệt ở tấm này chỉ có <b>${PHU[sel]}%</b> dữ liệu.` +
+        `<br>${vi}` + (GOC[sel] && !GOC[sel][2] ? lyDoDai(GOC[sel][0]) : "") +
+        `<br>${chot}`;
+    } else if (g) {
+      gy.className = "goiY";
+      gy.innerHTML = `Model gợi ý <b style="color:${MAU[g[0]]||'#fff'}">${g[0]}</b> · ` +
+        `conf <b>${g[1].toFixed(2)}</b>` +
+        (g[2] > 1 ? ` · <b>${g[2]}</b> vệt trên tấm này` : "") +
+        `<br><span style="color:var(--mo);font-size:12px">thấy từ ${g[3]} ảnh nhiệt khác nhau</span>`;
+    } else {
+      gy.className = "goiY trong";
+      gy.textContent = "Model không đánh dấu tấm này. Nếu ảnh nhiệt vẫn có vệt nóng thì đây là ca model bỏ sót — cứ gán nhãn bình thường.";
+    }
+  }
+
+  const t = sel < 0 ? null : kq[DATA.ma[sel]];
+
+  // nút duyệt: chỉ có nghĩa khi model có ý kiến để mà duyệt
+  const g2 = sel < 0 ? null : DATA.goi_y[sel];
+  const bd = document.getElementById("btDuyet");
+  bd.hidden = !g2;
+  if (g2) {
+    const co = !!t && t.n;
+    const chu = !co ? `Duyệt — nhãn <b>${g2[0]}</b>`
+              : t.n === g2[0] ? `✓ Đã chốt <b>${g2[0]}</b>`
+              : `✓ Đã chốt <b>${t.n}</b> (model đoán ${g2[0]})`;
+    const mau = MAU[co ? t.n : g2[0]] || "#fff";
+    bd.innerHTML = `<i style="background:${mau}"></i>${chu}<em>Enter</em>`;
+    bd.style.borderColor = mau;
+    bd.classList.toggle("da", !!co);
+  }
+  document.getElementById("mucNhan").textContent =
+    g2 ? "Model sai thì chọn lại ở đây" : "Tình trạng tấm này";
+
+  document.querySelectorAll("#nut button").forEach(b =>
+    b.classList.toggle("on", !!t && t.n === b.dataset.v));
+  document.querySelectorAll("#nut button").forEach(b => {
+    b.style.borderColor = (!!t && t.n === b.dataset.v) ? MAU[b.dataset.v] : "";
+  });
+  // khối viền: nói cỡ tấm hiện tại so với cỡ hay gặp, để biết có phải mảnh cụt không
+  const tv = document.getElementById("tinhVien");
+  const khoa = daChot(sel);
+  document.getElementById("boChot").hidden = !khoa;
+  document.getElementById("btXoaTay").hidden = !laTay(sel);
+  document.getElementById("nutSua").style.display = khoa ? "none" : "";
+  if (sel < 0) {
+    tv.textContent = "Chưa chọn tấm nào.";
+  } else if (khoa) {
+    tv.innerHTML = `<b style="color:#7fd39a">✓ Tấm này đã chốt — viền khoá.</b> ` +
+      `Bấm bỏ chốt nếu cần sửa lại.`;
+  } else {
+    const p = polyCua(sel);
+    const a = Math.hypot(p[2]-p[0], p[3]-p[1]), b = Math.hypot(p[4]-p[2], p[5]-p[3]);
+    const ng = Math.min(a, b), da = Math.max(a, b);
+    const cut = ng * da < 0.5 * CO_CHUAN[0] * CO_CHUAN[1];
+    tv.innerHTML = (t && t.v ? `<b style="color:#e08a3a">Viền đã sửa tay.</b> ` : "") +
+      `Cỡ <b>${Math.round(ng*CM_PX)} × ${Math.round(da*CM_PX)} cm</b>. ` +
+      `<span title="Số đặt tay (--co-tam của bộ dựng), không suy từ ảnh. ` +
+      `Trung vị đo được từ 6473 box best.pt là ${DATA.co_do_duoc_cm[0]} × ` +
+      `${DATA.co_do_duoc_cm[1]} cm — model dò hụt hơn cỡ thật một chút.">` +
+      `Chuẩn <b>${DATA.co_tam_cm[0]} × ${DATA.co_tam_cm[1]} cm</b> ⓘ</span>` +
+      (cut ? ` <b style="color:#e08a3a">Nhỏ hơn nửa cỡ chuẩn — nhiều khả năng là ` +
+             `mảnh bị cắt cụt ở mép ô quét, bấm N để nắn về.</b>` : "");
+  }
+
+  document.getElementById("ghiChu").value = (t && t.gc) || "";
+  document.getElementById("ghiChu").disabled = sel < 0;
+
+  // tiến độ tính trên danh sách đang mở, không tính trên cả 6473 tấm:
+  // không ai gán tay hết 6473 tấm, tiến độ đó chỉ làm nản.
+  const xong = danhSach.filter(i => kq[DATA.ma[i]] && kq[DATA.ma[i]].n).length;
+  document.getElementById("thanh").style.width =
+    (danhSach.length ? 100 * xong / danhSach.length : 0) + "%";
+  const tong = Object.values(kq).filter(x => x.n).length;
+  document.getElementById("dem").textContent =
+    `${xong}/${danhSach.length} trong danh sách · ${tong} tấm đã gán / ${N}`;
+}
+
+// Duyệt = nhận nguyên nhãn model gợi ý. Không ghi thêm trường nào: lúc xuất file
+// `khop_model` đã cho biết nhãn người trùng gợi ý hay không, nên duyệt và tự tay
+// chọn đúng lớp đó là một, không cần phân biệt.
+// ------------------------------------------------ sửa viền tấm bằng tay
+// Viền LUÔN là hình chữ nhật. Kéo tự do từng góc ra hình thang là hình không tồn
+// tại ngoài thực địa: tấm pin là tấm cứng. Hình thang trông thì "khớp" nhưng tâm
+// và diện tích đều sai, mà tâm chính là thứ dùng để gán lỗi vào tấm.
+// Bốn bậc tự do đúng nghĩa: tâm (2), cỡ (2), góc xoay (1).
+function raHinh(p) {
+  return {cx: (p[0]+p[2]+p[4]+p[6])/4, cy: (p[1]+p[3]+p[5]+p[7])/4,
+          w: Math.hypot(p[2]-p[0], p[3]-p[1]),
+          h: Math.hypot(p[4]-p[2], p[5]-p[3]),
+          a: Math.atan2(p[3]-p[1], p[2]-p[0])};
+}
+function veHinh(r) {
+  const ca = Math.cos(r.a), sa = Math.sin(r.a), hw = r.w/2, hh = r.h/2, q = [];
+  for (const [u, v] of [[-1,-1],[1,-1],[1,1],[-1,1]])
+    q.push(r.cx + ca*hw*u - sa*hh*v, r.cy + sa*hw*u + ca*hh*v);
+  return q;
+}
+function xoayVien(do_) {
+  if (sel < 0) return;
+  const r = raHinh(polyCua(sel));
+  r.a += do_ * Math.PI / 180;
+  ghiVien(sel, veHinh(r));
+}
+
+// ------------------------------------------------------------ thêm / xoá tấm tay
+let themBat = false;
+function batThem(bat) {
+  if (banGiao) return;
+  themBat = bat === undefined ? !themBat : !!bat;
+  document.getElementById("btThem").setAttribute("aria-pressed", String(themBat));
+  banDo.classList.toggle("dangThem", themBat);
+  bao(themBat
+    ? "Đang <b>thêm tấm</b>: bấm vào giữa tấm pin cần thêm trên bản đồ. Tấm mới lấy "
+      + "đúng cỡ và hướng của tấm gần nhất, thêm xong chỉnh viền bằng chuột hay phím "
+      + "như tấm thường. Bấm <b>+ Thêm tấm</b> lần nữa hoặc phím <b>A</b> để thôi."
+    : "Thôi thêm tấm.");
+}
+// Mã tấm tự thêm: TAY-001, TAY-002... đánh tiếp từ số lớn nhất đang có, không đánh
+// theo độ dài mảng — xoá tấm giữa chừng rồi thêm lại là trùng mã ngay.
+function maTayMoi() {
+  let max = 0;
+  for (const t of themDS) {
+    const m = /^TAY-(\d+)$/.exec(t.ma);
+    if (m) max = Math.max(max, +m[1]);
+  }
+  return "TAY-" + String(max + 1).padStart(3, "0");
+}
+function themTamTai(x, y) {
+  if (banGiao) return;
+  if (themDS.length >= TOI_DA_THEM) {
+    bao("Đã chạm trần " + TOI_DA_THEM + " tấm tự thêm."); return;
+  }
+  // Hình dạng: CHÉP nguyên tấm gần nhất rồi dời về chỗ bấm. Tấm pin cùng dãy thì
+  // cùng cỡ, cùng góc nghiêng — chép hàng xóm sát hơn hẳn so với dựng hình chữ
+  // nhật thẳng đứng theo cỡ chuẩn. Không tìm được hàng xóm mới dựng cỡ chuẩn.
+  let gan = -1, min = Infinity;
+  const cx0 = Math.floor(x / O), cy0 = Math.floor(y / O);
+  for (let cy = cy0 - 1; cy <= cy0 + 1; cy++)
+    for (let cx = cx0 - 1; cx <= cx0 + 1; cx++) {
+      for (const i of (luoi.get(cy * NX + cx) || [])) {
+        if (tamAn.has(i)) continue;
+        const dx = (BBOX[i*4] + BBOX[i*4+2]) / 2 - x, dy = (BBOX[i*4+1] + BBOX[i*4+3]) / 2 - y;
+        const d = dx*dx + dy*dy;
+        if (d < min) { min = d; gan = i; }
+      }
+    }
+  let p;
+  if (gan >= 0) {
+    const q = polyCua(gan);
+    let mx = 0, my = 0;
+    for (let k = 0; k < 8; k += 2) { mx += q[k]; my += q[k+1]; }
+    mx /= 4; my /= 4;
+    p = [];
+    for (let k = 0; k < 8; k += 2) p.push(q[k] - mx + x, q[k+1] - my + y);
+  } else {
+    const a = CO_CHUAN[1] / 2, b = CO_CHUAN[0] / 2;
+    p = [x-a, y-b, x+a, y-b, x+a, y+b, x-a, y+b];
+  }
+  p = p.map(v => Math.round(v * 100) / 100);
+  // lon/lat nội suy thẳng từ cửa sổ cắt — ô nền phủ đúng khung lon0..lon1/lat0..lat1
+  const cs = DATA.cua_so;
+  const ll = [+(cs.lon0 + (x / IW) * (cs.lon1 - cs.lon0)).toFixed(7),
+              +(cs.lat0 + (y / IH) * (cs.lat1 - cs.lat0)).toFixed(7)];
+  const ma = maTayMoi();
+  themDS.push({ma: ma, p: p, ll: ll});
+  luuThem();
+  DATA.ma.push(ma); DATA.poly.push(p); DATA.ll.push(ll);
+  DATA.phu.push(100); DATA.ria.push(0);
+  DATA.nguon.push(0); DATA.n_anh.push(0); DATA.n_anh_xau.push(0);
+  const i = N++;
+  maToIdx.set(ma, i);
+  capBbox(i); vaoLuoi(i);
+  dungDanhSach(); chon(i); ve();
+  bao("Đã thêm <b>" + ma + "</b>. Chọn lớp lỗi ở cột bên phải, chỉnh viền bằng chuột "
+      + "hoặc <kbd>←↑↓→</kbd>.");
+}
+function xoaTamTay() {
+  if (sel < 0 || banGiao || !laTay(sel)) return;
+  const ma = DATA.ma[sel];
+  ghiLichSu();
+  delete kq[ma]; luu();
+  themDS = themDS.filter(t => t.ma !== ma); luuThem();
+  tamAn.add(sel);
+  sel = -1;
+  dungDanhSach(); ve(); veChiTiet(); veBen();
+  bao("Đã xoá hẳn tấm " + ma + ".");
+}
+
+function ghiVien(i, v, khongGhi) {
+  if (banGiao) return;                    // bản bàn giao: không sửa được gì
+  if (daChot(i) && !khongGhi) {
+    bao("Tấm này đã chốt nên viền bị khoá. Bấm <b>Bỏ chốt</b> để sửa lại.");
+    return;
+  }
+  if (!khongGhi) ghiLichSu("vien" + i);
+  const m = DATA.ma[i], t = kq[m] || {};
+  // Làm tròn 0,01 px, KHÔNG phải 0,1: tấm chỉ rộng ~33 px, xoay 0,5° mới dịch
+  // góc có 0,3 px — làm tròn 0,1 là ăn mất phần lớn phép xoay, và ăn đều đặn nên
+  // bấm mười lần vẫn thiếu. 0,01 px = 0,26 mm ngoài thực địa, thừa mịn.
+  if (v) t.v = v.map(x => +x.toFixed(2)); else delete t.v;
+  if (!t.n && !t.gc && !t.v) delete kq[m]; else kq[m] = t;
+  capBbox(i); luu(); ve(); veChiTiet(); veBen();
+  if (locDsHien === "tat") vaHang(i); else veDanhSach();
+}
+function bienDoi(f) {
+  if (sel < 0) return;
+  if (daChot(sel)) { bao("Tấm này đã chốt nên viền bị khoá. Bấm <b>Bỏ chốt</b> để sửa lại."); return; }
+  const p = polyCua(sel), r = new Array(8);
+  let cx = 0, cy = 0;
+  for (let k = 0; k < 8; k += 2) { cx += p[k]; cy += p[k+1]; }
+  cx /= 4; cy /= 4;
+  for (let k = 0; k < 8; k += 2) {
+    const [x, y] = f(p[k], p[k+1], cx, cy);
+    r[k] = x; r[k+1] = y;
+  }
+  ghiVien(sel, r);
+}
+const dichVien = (dx, dy) => bienDoi((x, y) => [x + dx, y + dy]);
+const coVien = k => bienDoi((x, y, cx, cy) => [cx + (x-cx)*k, cy + (y-cy)*k]);
+
+// Nắn về ĐÚNG CỠ MỘT TẤM, giữ nguyên tâm và hướng nằm. Đây là nút đáng dùng
+// nhất: 14% đa giác là mảnh bị cắt cụt ở mép ô quét, một phím là về cỡ chuẩn.
+function chuanHoaVien() {
+  if (sel < 0) return;
+  const r = raHinh(polyCua(sel));
+  // giữ nguyên tâm và góc xoay, chỉ ép hai cạnh về cỡ chuẩn — cạnh nào đang dài
+  // hơn thì nhận cạnh dài, để không xoay ngang tấm 90 độ
+  const [ng, da] = CO_CHUAN;
+  if (r.w >= r.h) { r.w = da; r.h = ng; } else { r.w = ng; r.h = da; }
+  ghiVien(sel, veHinh(r));
+}
+
+// Enter = "chốt tấm này", VÀ CHỈ THẾ. Không tự sang tấm sau: người soi tự đi
+// bằng , . hoặc bấm trong danh sách. Tự nhảy thì chốt xong là mất luôn cơ hội
+// nhìn lại cái vừa chốt, mà chốt sai thì phải mò ngược lại tìm.
+//   chưa gán -> nhận nhãn model gợi ý
+//   gán rồi  -> không làm gì, KHÔNG ghi đè nhãn người đã sửa
+function duyet() {
+  if (sel < 0 || banGiao) return;
+  const t = kq[DATA.ma[sel]];
+  if (t && t.n) { bao("Tấm này chốt rồi. Sang tấm khác bằng <b>,</b> <b>.</b> hoặc bấm trong danh sách."); return; }
+  const g = DATA.goi_y[sel];
+  if (g) dat(g[0]);
+  else bao("Model không gợi ý gì cho tấm này — chọn lớp ở bảng bên dưới.");
+}
+
+function dat(ma) {
+  if (sel < 0 || banGiao) return;
+  ghiLichSu();
+  const m = DATA.ma[sel], t = kq[m] || {};
+  if (t.n === ma) delete t.n; else t.n = ma;        // bấm lại nút cũ = bỏ nhãn
+  if (!t.n && !t.gc) delete kq[m]; else kq[m] = t;
+  luu(); ve(); veBen();
+  // lọc "chưa chốt"/"đã chốt" thì gán nhãn xong hàng đó phải rời khỏi danh sách,
+  // vá một hàng không đủ — dựng lại. Lọc "tất cả" thì vá đúng hàng cho nhẹ.
+  if (locDsHien === "tat") vaHang(sel); else veDanhSach();
+}
+function luu() { localStorage.setItem(KHOA, JSON.stringify(kq)); }
+
+// ------------------------------------------------------- hoàn tác / làm lại
+// Chụp ảnh nguyên cả `kq` trước mỗi thao tác. Nó chỉ chứa tấm ĐÃ gán nên nhỏ,
+// chụp nguyên đơn giản hơn nhiều so với ghi từng thay đổi, mà không sai được.
+//
+// `khoa` để GỘP: giữ mũi tên nhích viền 30 cái liên tiếp thì đó là MỘT ý định,
+// không phải 30 lần hoàn tác. Cùng khoá trong vòng 700 ms thì gộp làm một.
+const lichSu = [], tuongLai = [];
+let lanCuoi = 0, khoaCuoi = null;
+function ghiLichSu(khoa) {
+  const t = Date.now();
+  if (khoa && khoa === khoaCuoi && t - lanCuoi < 700) { lanCuoi = t; return; }
+  khoaCuoi = khoa || null; lanCuoi = t;
+  lichSu.push(JSON.stringify(kq));
+  if (lichSu.length > 200) lichSu.shift();
+  tuongLai.length = 0;             // làm việc mới -> nhánh làm lại hết giá trị
+}
+function apLichSu(s, tu, sang, ten) {
+  if (!tu.length) { bao("Không còn gì để " + ten + "."); return; }
+  sang.push(JSON.stringify(kq));
+  kq = JSON.parse(tu.pop());
+  khoaCuoi = null;
+  for (let i = 0; i < N; i++) capBbox(i);      // viền đổi -> bbox phải dựng lại
+  luu(); dungDanhSach(); ve(); veChiTiet(); veBen();
+  bao("Đã " + ten + ".");
+}
+const hoanTac = () => apLichSu(0, lichSu, tuongLai, "hoàn tác");
+const lamLai  = () => apLichSu(0, tuongLai, lichSu, "làm lại");
+
+document.getElementById("ghiChu").addEventListener("input", e => {
+  if (sel < 0) return;
+  const m = DATA.ma[sel], t = kq[m] || {};
+  t.gc = e.target.value;
+  if (!t.n && !t.gc) delete kq[m]; else kq[m] = t;
+  luu();
+});
+
+// ---------------------------------------------------------------- lớp nền
+const tron = document.getElementById("tron");
+function datTron(v) {
+  v = Math.max(0, Math.min(100, v));
+  tron.value = v;
+  im_nh.style.opacity = v / 100;
+  document.getElementById("tronSo").textContent = v + "%";
+  document.querySelectorAll("#segLop button").forEach(b =>
+    b.setAttribute("aria-pressed", String(+b.dataset.v === +v)));
+}
+tron.addEventListener("input", () => datTron(+tron.value));
+document.querySelectorAll("#segLop button").forEach(b =>
+  b.onclick = () => datTron(+b.dataset.v));
+function batChuGiai() {
+  const c = document.getElementById("chuGiai");
+  c.hidden = !c.hidden;
+  // bảng màu và nút mở nó không bao giờ cùng hiện — chúng nằm chồng chỗ nhau
+  document.getElementById("btChuGiai").hidden = !c.hidden;
+}
+function datCheDoKhung(v) {
+  cheDoKhung = v;
+  document.querySelectorAll("#segKhung button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x.dataset.v === v)));
+  ve();
+}
+document.querySelectorAll("#segKhung button").forEach(b =>
+  b.onclick = () => datCheDoKhung(b.dataset.v));
+function anRia(chiVeNhan) {
+  if (chiVeNhan !== true) anRiaBat = !anRiaBat;
+  const n = RIA.reduce((a, b) => a + b, 0);
+  const bt = document.getElementById("btRia");
+  bt.textContent = anRiaBat ? "Hiện rìa" : "Ẩn rìa";
+  bt.title = anRiaBat
+    ? `Đang ẩn ${n} tấm ở rìa — chỗ có ảnh màu mà không có ảnh nhiệt, soi cũng `
+      + `không phán được gì. Bấm để hiện lại.`
+    : `Đang hiện cả ${n} tấm ở rìa. Bấm để ẩn, chỉ còn vùng soi được.`;
+  if (chiVeNhan === true) return;
+  // tấm đang chọn nằm ở rìa mà vừa ẩn rìa -> bỏ chọn, không thì kẹt ở tấm vô hình
+  if (sel >= 0 && ngoaiVung(sel)) sel = -1;
+  dungDanhSach(); veVua(); veChiTiet(); veBen();
+}
+
+// ------------------------------------------------------------------ xuất
+function taiTep(ten, noiDung, kieu) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([noiDung], {type: kieu}));
+  a.download = ten; a.click();
+}
+function bangKetQua() {
+  const ra = [];
+  for (let i = 0; i < N; i++) {
+    const t = kq[DATA.ma[i]];
+    if (!t || (!t.n && !t.gc && !t.v)) continue;
+    const g = DATA.goi_y[i];
+    ra.push({
+      ma_tam: DATA.ma[i],
+      day: laTay(i) ? null : +DATA.ma[i].slice(1, 3),
+      tu_them: laTay(i),
+      tinh_trang: t.n || null,
+      ghi_chu: t.gc || null,
+      goi_y_model: g ? g[0] : null,
+      conf_model: g ? g[1] : null,
+      so_vet_model: g ? g[2] : 0,
+      khop_model: g ? (t.n === g[0]) : (t.n === "tot"),
+      // % diện tích tấm có dữ liệu nhiệt. Dưới 50 là nhãn được gán MÀ KHÔNG
+      // NHÌN ĐƯỢC ẢNH NHIỆT — lọc bỏ trước khi tính bất kỳ chỉ số nào.
+      // viền người sửa tay, px ảnh nền của cửa sổ cắt (xem `cua_so` trong DATA);
+      // null = giữ nguyên viền best.pt dò ra
+      vien_sua: t.v || null,
+      phu_nhiet: PHU[i],
+      phan_duoc: PHU[i] >= NGUONG_NHIET,
+      // 0 = không ảnh nhiệt nào chụp tới (phải bay lại)
+      // 1 = chỉ ảnh đã bị loại thấy (moi lại được, ảnh xấu)
+      // 2 = ảnh đạt lọc vẫn thấy (ortho bỏ sót, vá được)
+      nguon_nhiet: DATA.nguon[i],
+      so_anh_tot: DATA.n_anh[i], so_anh_bi_loai: DATA.n_anh_xau[i],
+      lon: DATA.ll[i][0], lat: DATA.ll[i][1],
+    });
+  }
+  return ra;
+}
+function taiJSON() {
+  const ra = bangKetQua();
+  taiTep("nhan_tam_pin.json", JSON.stringify({
+    nguon_goi_y: "loi_4lop_cuoi.json (fault_obb_4class.pt, conf 0,25)",
+    nen_nhiet: DATA.nguon_nhiet,
+    tong_tam: N, tam_model_danh_dau: Object.keys(DATA.goi_y).length,
+    tam_thieu_nhiet: PHU.filter(v => v < NGUONG_NHIET).length,
+    nguong_phu_nhiet: NGUONG_NHIET,
+    tam_da_gan: ra.filter(r => r.tinh_trang).length,
+    tam_da_gan_phan_duoc: ra.filter(r => r.tinh_trang && r.phan_duoc).length,
+    tam_sua_vien: ra.filter(r => r.vien_sua).length,
+    cua_so: DATA.cua_so,
+    nhan: ra
+  }, null, 1), "application/json");
+}
+const qCSV = v => v === null || v === undefined ? "" :
+  /[",\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+const raCSV = (c, ds) => "﻿" + c.join(",") + "\n" +
+  ds.map(r => c.map(k => qCSV(r[k])).join(",")).join("\n");
+
+function taiCSV() {
+  const c = ["ma_tam","day","tinh_trang","goi_y_model","conf_model","so_vet_model",
+             "khop_model","phu_nhiet","phan_duoc","nguon_nhiet","so_anh_tot",
+             "so_anh_bi_loai","lon","lat","ghi_chu"];
+  taiTep("nhan_tam_pin.csv", raCSV(c, bangKetQua()), "text/csv");
+}
+
+// DANH SÁCH BÀN GIAO — chỉ tấm phải xử lý, bỏ tấm tốt.
+//
+// Bỏ ở ĐÂY chứ không xoá nhãn `tot` đi: tấm bạn chốt "tốt" trong số model đánh dấu
+// CHÍNH LÀ ca model kêu sai. Xoá chúng khỏi dữ liệu là mất luôn cột `khop_model`,
+// tức mất khả năng tính precision — công soi 496 tấm coi như bỏ. Nên `nhan_tam_pin`
+// giữ nguyên đủ cả tốt lẫn lỗi để tính chỉ số, còn file này mới là thứ đem giao.
+//
+// Bỏ luôn nhãn "?" (không rõ): đó là việc CÒN NỢ, không phải tấm cần thay — nhét
+// vào danh sách bàn giao là bên nhận đi thay nhầm tấm chưa ai phán được.
+function taiCSVLoi() {
+  const c = ["ma_tam","day","tinh_trang","lon","lat","phu_nhiet","phan_duoc",
+             "goi_y_model","conf_model","so_vet_model","ghi_chu"];
+  const tat = bangKetQua().filter(r => r.tinh_trang);
+  const ds  = tat.filter(r => r.tinh_trang !== "tot" && r.tinh_trang !== "?");
+  if (!ds.length) { bao("Chưa có tấm nào được gán nhãn lỗi — không xuất gì cả."); return; }
+  const nTot = tat.filter(r => r.tinh_trang === "tot").length;
+  const nHoi = tat.filter(r => r.tinh_trang === "?").length;
+  const nMu  = ds.filter(r => !r.phan_duoc).length;
+  taiTep("tam_can_thay.csv", raCSV(c, ds), "text/csv");
+  bao(`Xuất <b>${ds.length}</b> tấm cần thay · bỏ ${nTot} tấm tốt, ${nHoi} chưa rõ.`
+    + (nMu ? ` <b>Lưu ý:</b> ${nMu} tấm trong danh sách có phu_nhiet dưới ${NGUONG_NHIET}%`
+           + ` — gán mà không nhìn được ảnh nhiệt trên ortho.` : "")
+    + ` Nhãn tấm tốt vẫn còn đủ trong Tải JSON / Tải CSV, đừng xoá.`);
+}
+document.getElementById("nap").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      const ds = Array.isArray(d) ? d : d.nhan;
+      if (!Array.isArray(ds)) throw 0;
+      ghiLichSu();
+      let n = 0;
+      for (const r of ds) {
+        if (!r.ma_tam) continue;
+        const t = {};
+        if (r.tinh_trang) t.n = r.tinh_trang;
+        if (r.ghi_chu) t.gc = r.ghi_chu;
+        if (r.vien_sua) t.v = r.vien_sua;
+        if (t.n || t.gc || t.v) { kq[r.ma_tam] = t; n++; }
+      }
+      for (let i = 0; i < N; i++) capBbox(i);
+      luu(); dungDanhSach(); ve(); veChiTiet(); veBen();
+      bao("Đã nạp " + n + " nhãn từ " + f.name + ".");
+    } catch (_) { bao("File không đọc được — cần file <b>nhan_tam_pin.json</b> đã tải ra từ chính công cụ này."); }
+  };
+  fr.readAsText(f);
+  e.target.value = "";
+});
+function boChot() {
+  if (sel < 0 || !daChot(sel) || banGiao) return;
+  dat(kq[DATA.ma[sel]].n);          // bấm lại đúng nhãn đang có = gỡ nhãn
+}
+function xoaHet() {
+  if (banGiao) return;
+  const n = Object.keys(kq).length;
+  if (!n) { bao("Chưa có nhãn nào để xoá."); return; }
+  if (!confirm("Xoá toàn bộ " + n + " tấm đã gán (kể cả viền đã sửa tay)?\n\n"
+    + "Ctrl+Z lấy lại được. Muốn chắc thì bấm Huỷ rồi Tải JSON trước.")) return;
+  ghiLichSu();
+  kq = {};
+  for (let i = 0; i < N; i++) capBbox(i);      // viền về gốc -> bbox phải dựng lại
+  luu(); dungDanhSach(); ve(); veChiTiet(); veBen();
+  bao("Đã xoá " + n + " nhãn. Tất cả về <b>chưa chốt</b>.");
+}
+function bao(s) {
+  const e = document.getElementById("canh");
+  e.innerHTML = s; e.classList.add("hien");
+  clearTimeout(bao._t); bao._t = setTimeout(() => e.classList.remove("hien"), 6000);
+}
+
+// ------------------------------------------------------------------ dựng
+document.getElementById("nut").innerHTML = NHAN.map(n =>
+  `<button data-v="${n.ma}" onclick="dat('${n.ma}')"><i style="background:${n.mau}"></i>` +
+  `${n.ten}<em>${n.phim}</em></button>`).join("");
+document.getElementById("chuGiai").innerHTML =
+  NHAN.map(n => `<span><i style="background:${n.mau}"></i>${n.ten}</span>`).join("") +
+  `<span><i style="background:none;border:2px dashed #4fd8ff"></i>model đánh dấu, chưa chốt</span>` +
+  `<span><i style="background:#5a6472"></i>không có ảnh nhiệt, không phán được</span>` +
+  `<span><i style="background:#e2ecf8"></i>tấm bình thường (viền = detect tấm pin)</span>` +
+  `<span style="color:#e8edf3">▭ viền trắng dày = tấm đang chọn</span>` +
+  `<span style="color:#ff8080">▭ đỏ đứt = box lỗi model (bao gần trọn một tấm)</span>` +
+  `<span style="color:#ffd24d">▭ vàng đứt = box lỗi không gán được vào tấm nào</span>`;
+document.querySelectorAll("#cheDo button").forEach(b => b.onclick = () => {
+  cheDo = b.dataset.q;
+  document.querySelectorAll("#cheDo button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  dungDanhSach(); veBen();
+});
+
+// ----------------------------------------------------- đổi giữa SỬA và ĐÃ CHỐT
+// Nhớ lại tab đang mở lúc rời chế độ sửa, quay về là đứng đúng chỗ cũ.
+let tabTruoc = "goi_y";
+function tomTatChot() {
+  const d = {};
+  let t = 0;
+  for (let i = 0; i < N; i++) {
+    if (!laLoi(i) || ngoaiVung(i)) continue;
+    const n = kq[DATA.ma[i]].n;
+    d[n] = (d[n] || 0) + 1; t++;
+  }
+  document.getElementById("thanhChot").innerHTML =
+    `<span><b>${t}</b> tấm đã chốt có lỗi</span>` +
+    NHAN.filter(n => d[n.ma]).map(n =>
+      `<span><i style="background:${n.mau}"></i>${d[n.ma]} ${n.ten}</span>`).join("");
+}
+function datCheDoXem(x) {
+  const moi = x === "chot";
+  if (moi === banGiao) return;
+  banGiao = moi;
+  if (banGiao && themBat) batThem(false);
+  document.body.classList.toggle("banGiao", banGiao);
+  document.querySelectorAll("#cheDoXem button").forEach(b =>
+    b.setAttribute("aria-pressed", String((b.dataset.x === "chot") === banGiao)));
+  if (banGiao) { tabTruoc = cheDo; cheDo = "chot_loi"; tomTatChot(); }
+  else cheDo = tabTruoc;
+  // giữ đuôi đường dẫn khớp chế độ, để bấm F5 hay chép link ra vẫn vào đúng chỗ
+  if (location.hash !== (banGiao ? "#chot" : ""))
+    history.replaceState(null, "", banGiao ? "#chot" : location.pathname);
+  dungDanhSach(); ve(); veBen();
+  bao(banGiao
+    ? "Bản <b>đã chốt</b> — chỉ xem, mọi thao tác sửa đều bị chặn. Bấm <b>✎ Sửa</b> hoặc phím <b>X</b> để quay lại."
+    : "Đã về bản <b>sửa</b>.");
+}
+document.querySelectorAll("#cheDoXem button").forEach(b =>
+  b.onclick = () => datCheDoXem(b.dataset.x));
+
+// Giữ Shift = nháy sang nhiệt, thả ra về lại lớp cũ. Cần khi so đi so lại một
+// chỗ: bấm qua bấm lại mất hai thao tác và mắt phải rời khỏi điểm đang nhìn.
+let nhay = null;
+function thoiNhay() {
+  // chỉ trả về lớp cũ nếu trong lúc giữ phím người dùng không tự đổi sang lớp khác
+  if (nhay !== null && +tron.value === 100) datTron(nhay);
+  nhay = null;
+}
+addEventListener("keyup", e => { if (e.key === "Shift") thoiNhay(); });
+addEventListener("blur", thoiNhay);
+
+addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+  if (e.key === "Shift") {
+    if (nhay === null) { nhay = +tron.value; datTron(100); }
+    return;                       // giữ nguyên Shift cho tổ hợp phím của trình duyệt
+  }
+  const k = e.key.toLowerCase();
+
+  // Mũi tên = nhích VIỀN tấm đang chọn. Đổi tấm thì dùng Enter (chốt xong tự
+  // sang), bấm trong danh sách bên trái, hoặc phím , và .
+  if (e.key.startsWith("Arrow") && sel >= 0) {
+    // 0,5 px ~ 1,3 cm ngoài thực địa — đủ mịn để nắn khít mà không phải bấm nhiều
+    const b = e.shiftKey ? 5 : 0.5;
+    dichVien(e.key === "ArrowLeft" ? -b : e.key === "ArrowRight" ? b : 0,
+             e.key === "ArrowUp"   ? -b : e.key === "ArrowDown"  ? b : 0);
+    e.preventDefault(); return;
+  }
+  // Cặp phím này chỉ còn đúng MỘT việc: xoay viền. , và . là cùng phím vật lý với
+  // < và > (chỉ khác Shift), nên nhận cả bốn — nhả Shift sớm hay muộn cũng ra cùng
+  // một kết quả, không còn cửa nào nhảy mất tấm đang nắn. Đổi tấm là thao tác
+  // chuột: danh sách bên trái, bấm trên bản đồ, hoặc nút ← Trước / Sau →.
+  if (e.key === "<" || e.key === ",") { xoayVien(-0.5);  e.preventDefault(); return; }
+  if (e.key === ">" || e.key === ".") { xoayVien(0.5);   e.preventDefault(); return; }
+  if (k === "n")                   { chuanHoaVien();     e.preventDefault(); return; }
+  if (k === "r")                   { ghiVien(sel, null); e.preventDefault(); return; }
+  if (e.key === "+" || e.key === "=") { coVien(1.04);    e.preventDefault(); return; }
+  if (e.key === "-" || e.key === "_") { coVien(1/1.04);  e.preventDefault(); return; }
+
+  if (e.ctrlKey && k === "z") { e.shiftKey ? lamLai() : hoanTac(); e.preventDefault(); return; }
+  if (e.ctrlKey && k === "y") { lamLai();  e.preventDefault(); return; }
+
+  const n = NHAN.find(x => x.phim === e.key);
+  // Ba phím cùng một nghĩa "xong tấm này": Enter, Space, Ctrl+S. Ctrl+S phải
+  // chặn mặc định, không thì trình duyệt mở hộp thoại lưu trang.
+  if (e.key === "Enter" || e.key === " " || (e.ctrlKey && k === "s")) {
+    duyet(); e.preventDefault();
+  }
+  else if (n)                 { dat(n.ma);            e.preventDefault(); }
+  else if (e.key === "Backspace") { const t = sel>=0 && kq[DATA.ma[sel]];
+                                    if (t && t.n) dat(t.n); e.preventDefault(); }
+  else if (k === "q")         { datTron(0);            e.preventDefault(); }
+  else if (k === "w")         { datTron(50);           e.preventDefault(); }
+  else if (k === "e")         { datTron(100);          e.preventDefault(); }
+  else if (k === "[")         { datTron(+tron.value - 10); e.preventDefault(); }
+  else if (k === "]")         { datTron(+tron.value + 10); e.preventDefault(); }
+  else if (k === "a")         { batThem();              e.preventDefault(); }
+  else if (k === "x")         { datCheDoXem(banGiao ? "sua" : "chot");
+                                e.preventDefault(); }
+  else if (k === "f")         { veVua();               e.preventDefault(); }
+  else if (k === "g")         { doiNguon();            e.preventDefault(); }
+  else if (k === "b")         { anRia();               e.preventDefault(); }
+  else if (k === "l")         { batDs();               e.preventDefault(); }
+  else if (k === "m")         { datCheDoLoi({goc:"khop", khop:"an", an:"goc"}[cheDoLoi]);
+                                e.preventDefault(); }
+  else if (k === "k")         { datCheDoKhung({loi:"tat", tat:"an", an:"loi"}[cheDoKhung]);
+                                e.preventDefault(); }
+  else if (e.key === "?" || e.key === "/") { batChuGiai(); e.preventDefault(); }
+});
+
+if (DATA.tieu_de) {
+  document.querySelector("h1").textContent = DATA.tieu_de;
+  document.title = DATA.tieu_de;
+}
+if (CHI_TAM) {
+  cheDo = "tat_ca";
+  document.getElementById("cheDo").hidden = true;
+  document.querySelectorAll("#cheDo button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.q === "tat_ca")));
+}
+chinhCanvas();
+datTron(0);
+anRia(true);            // chỉ vẽ nhãn nút, giữ nguyên trạng thái mặc định (ẩn rìa)
+dungDanhSach();
+veVua();
+veBen();
+if (danhSach.length) chon(danhSach[0], true);
+
+// Mở thẳng vào bản bàn giao bằng đuôi #chot trên đường dẫn — để trang chủ trỏ
+// được vào đúng chế độ mà vẫn chỉ có MỘT file công cụ.
+if (location.hash === "#chot") datCheDoXem("chot");
+addEventListener("hashchange", () => datCheDoXem(location.hash === "#chot" ? "chot" : "sua"));
+</script>

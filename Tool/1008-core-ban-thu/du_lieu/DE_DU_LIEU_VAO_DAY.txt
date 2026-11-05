@@ -1,0 +1,10 @@
+Bản core này KHÔNG kèm dữ liệu (bản gốc 24 GB).
+
+Cần đặt vào đây:
+  Thermal2_31M_full_export/   ortho.tif, dsm.tif, cameras.xml  (Metashape xuất từ ảnh RGB)
+  data_Thermel_2_31M/         ảnh gốc  *_T.JPG (nhiệt) + *_W.JPG (RGB) theo cặp
+  manifest_anh.csv            dựng bằng: py -3.13 ma/tao_manifest.py
+  colab/solar_cls4_nhom/      tập test YOLO — chỉ cần cho nhóm script val_*/danh_gia_*
+
+Chưa có mấy thứ trên thì các script trong ma/ sẽ báo thiếu file; phần UI trong
+cong_cu/ vẫn xem được bình thường vì ảnh nền đã nhúng sẵn.

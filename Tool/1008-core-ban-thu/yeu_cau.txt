@@ -1,0 +1,11 @@
+# pip install -r yeu_cau.txt
+# torch CPU: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+ultralytics>=8.3
+opencv-python
+numpy
+rasterio
+pyproj
+matplotlib
+scipy
+shapely
+pillow

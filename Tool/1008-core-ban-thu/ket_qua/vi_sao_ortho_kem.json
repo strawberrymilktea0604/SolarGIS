@@ -1,0 +1,55 @@
+{
+ "_cau_hoi": "ortho nhìn vẫn nét, sao model bắt được ít hơn?",
+ "_don_vi": "mức xám 0-255 trên ảnh xám; độ nét = var(Laplacian) cùng thang",
+ "ban_kinh_m": {
+  "trong": 0.45,
+  "vanh": [
+   0.7,
+   1.6
+  ]
+ },
+ "gsd_cm_per_px": {
+  "anh_le": 2.523,
+  "ortho": 2.871
+ },
+ "tuong_phan_nhiet": {
+  "anh_le": {
+   "n": 247,
+   "trung_vi": 46.01,
+   "p25": 33.0,
+   "p75": 64.46
+  },
+  "ortho_bat_duoc": {
+   "n": 286,
+   "trung_vi": 46.0,
+   "p25": 32.24,
+   "p75": 67.03
+  },
+  "ortho_bo_sot": {
+   "n": 253,
+   "trung_vi": 37.24,
+   "p25": 30.24,
+   "p75": 49.0
+  },
+  "ortho_tat_ca": {
+   "n": 539,
+   "trung_vi": 42.0,
+   "p25": 31.0,
+   "p75": 56.48
+  }
+ },
+ "do_net_cau_truc": {
+  "anh_le": {
+   "n": 247,
+   "trung_vi": 14361.97,
+   "p25": 11441.06,
+   "p75": 18583.42
+  },
+  "ortho": {
+   "n": 539,
+   "trung_vi": 14801.14,
+   "p25": 10594.02,
+   "p75": 19409.11
+  }
+ }
+}

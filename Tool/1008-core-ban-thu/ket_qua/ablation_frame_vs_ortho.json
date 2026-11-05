@@ -1,0 +1,44 @@
+{
+ "_cau_hoi": "cùng một model fault_obb_4class.pt, đổi mỗi đầu vào: mất bao nhiêu?",
+ "_moc_A": "603 lỗi trong loi_4lop_cuoi.json ĐỀU do chính model này bắt được trên ảnh lẻ ironbow gốc, nên điều kiện A = 100% theo định nghĩa. A không phải phép đo độc lập, nó là mốc.",
+ "conf": 0.25,
+ "hit_m": 1.0,
+ "gsd_cm_per_px": 2.871,
+ "so_loi_moc": 603,
+ "C_ortho_inferno": {
+  "_mo_ta": "cửa sổ 640x512 cắt quanh lỗi đã biết trên ortho nhiệt, tô INFERNO",
+  "o_thu": 539,
+  "bat_lai": 286,
+  "recall": 0.5306,
+  "bo_vi_thung": 64,
+  "bo_vi_mep": 0,
+  "conf_trung_vi": 0.776,
+  "lech_tam_trung_vi_cm": 16.2,
+  "dung_lop_tren_bat_duoc": 0.8811,
+  "giay": 130.1
+ },
+ "B_frame_inferno": {
+  "_mo_ta": "cùng ảnh nhiệt lẻ, chỉ thay ironbow gốc bằng xám->INFERNO. Đo riêng phần mất do ĐỔI BẢNG MÀU, chưa dính ghép ortho.",
+  "so_anh": 60,
+  "phat_hien_A_ironbow": 433,
+  "phat_hien_B_inferno": 397,
+  "giu_lai_duoc": 388,
+  "recall": 0.8961,
+  "nguong_khop_px": 34.8,
+  "conf_trung_vi": 0.897,
+  "giay": 27.5
+ },
+ "D_quet_truot_toan_ortho": {
+  "_mo_ta": "quét trượt cả ortho, gộp trùng 0.60 m, đối chiếu 603 lỗi nhánh frame",
+  "_canh_bao": "603 lỗi KHÔNG phải chân lý đầy đủ — chúng là đầu ra nhánh frame. Nên 'lạ' = không khớp nhánh frame, CẬN TRÊN của báo động giả, không phải FP đã kiểm. Muốn FP thật phải soi tay từng cái.",
+  "o_quet": 103,
+  "o_bo_vi_trong": 73,
+  "phat_hien_tho": 474,
+  "sau_gop_trung": 295,
+  "khop_moc_frame": 279,
+  "recall_so_voi_603": 0.4627,
+  "khong_khop_nhanh_frame": 9,
+  "ty_le_khop": 0.9458,
+  "giay": 23.9
+ }
+}

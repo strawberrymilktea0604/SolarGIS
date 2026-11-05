@@ -1,0 +1,2 @@
+4 bản ortho nhiệt .tif (61 MB) đã bị cắt khỏi bản core.
+Dựng lại bằng: py -3.13 ma/ghep_ortho_nhiet.py  (cần du_lieu/ đầy đủ)

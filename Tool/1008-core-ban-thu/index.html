@@ -1,0 +1,123 @@
+<!doctype html><html lang="vi"><meta charset="utf-8">
+<title>1008 · Định vị lỗi tấm pin từ ảnh nhiệt</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e1013;color:#e6e8ea;font:14px/1.6 "Segoe UI",system-ui,sans-serif;
+     padding:0 0 60px}
+.bao{max-width:1080px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid #262a31;background:#131519;padding:26px 0 22px;margin-bottom:28px}
+h1{font-size:22px;font-weight:600;letter-spacing:.2px}
+h1 span{color:#6f7883;font-weight:400}
+.duoi{color:#9aa3ad;margin-top:5px}
+h2{font-size:13px;font-weight:600;letter-spacing:1.4px;color:#7e8791;
+   margin:34px 0 12px;text-transform:uppercase}
+a{color:inherit;text-decoration:none}
+.the{display:block;background:#171a1f;border:1px solid #262a31;border-radius:10px;
+     padding:15px 17px;margin-bottom:11px;transition:.12s}
+a.the:hover{background:#1c2027;border-color:#3a4250}
+.dong{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ten{font-size:16px;font-weight:600}
+.tt{font-size:10.5px;font-weight:700;letter-spacing:.7px;padding:2px 7px;
+    border-radius:4px;border:1px solid}
+.nhan{font-size:11.5px;color:#8b939d;border:1px solid #2e343d;border-radius:4px;padding:1px 6px}
+.mt{color:#a8b0b9;margin-top:7px}
+.so{color:#7fb0e8;font-family:Consolas,monospace;font-size:12.5px;margin-top:6px}
+.meo{color:#6f7883;font-size:12px;margin-top:6px;font-family:Consolas,monospace}
+code{background:#22262d;padding:1px 5px;border-radius:4px;font-size:12.5px;color:#cfd5db}
+.luoi{display:grid;gap:12px}
+.luoi .the{margin:0}
+.luoi .ten{font-size:14.5px}
+.luoi .mt{font-size:12.5px;margin-top:4px}
+.hai{grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+.ba{grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+.bon{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.hinh{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:7px;
+      background:#0b0d10;margin:-3px 0 11px;border:1px solid #23272e}
+.hinh.trong{display:flex;align-items:center;justify-content:center;color:#4a525c;
+      font:600 12px/1 Consolas,monospace;letter-spacing:2px;
+      background:repeating-linear-gradient(135deg,#15181d,#15181d 9px,#191d23 9px,#191d23 18px)}
+.dungngay{border-color:#2f6fd0;box-shadow:0 0 0 1px #2f6fd044}
+.tay{color:#6f7883;font-size:12px}
+footer{color:#5f6874;font-size:12px;margin-top:38px;border-top:1px solid #1e2229;padding-top:14px}
+</style>
+<header><div class="bao">
+  <h1>Định vị lỗi tấm pin từ ảnh nhiệt drone <span>· 1008-stage1-rgb-thermal</span></h1>
+  <div class="duoi">Nhà máy Thermal2_31M · 598 ảnh nhiệt + RGB · 6473 tấm pin ·
+      ortho nhiệt khớp ortho màu ở mức 1,50 cm</div>
+</div></header>
+<div class="bao">
+<h2>Giao diện làm việc</h2><div class='luoi hai'>
+<a class="the" href="cong_cu/gan_nhan_tam.html">
+<img class="hinh" src="trang/gd_chua_chot.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Gán nhãn tấm pin — chế độ SỬA</span><span class="tt" style="background:#c98a2e22;color:#c98a2e;border-color:#c98a2e55">ĐANG LÀM</span><span class="nhan">sửa được</span></div>
+<div class="mt">Công cụ soi từng tấm trên ortho màu + ortho nhiệt, model chỉ gợi ý, người soi chốt lại bằng tay. Sửa nhãn, kéo viền, chốt/bỏ chốt đều ở đây. Nhãn nằm trong localStorage của trình duyệt — phải mở bằng <b>file://</b> đúng như lúc gán, mở qua http server là kho khác.</div>
+<div class="so">506/6473 tấm đã gán · 496 tấm model đánh dấu đã soi hết</div>
+<div class="meo">cong_cu/gan_nhan_tam.html · 928 KB · sửa 13/08/2026</div></a>
+<a class="the" href="cong_cu/gan_nhan_tam.html#chot">
+<img class="hinh" src="trang/gd_da_chot.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Cũng trang đó — chế độ ĐÃ CHỐT</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span><span class="nhan">chỉ xem</span></div>
+<div class="mt">Cùng một file, cùng kho nhãn, chỉ khác cái nhìn thấy: giấu box gợi ý của model, giấu tấm tốt / chưa xét / thiếu nhiệt, giấu luôn cột sửa bên phải. Còn lại đúng tấm đã chốt là có lỗi, tô theo lớp. Mọi thao tác ghi đều bị chặn nên bấm nhầm không hỏng được gì. Số liệu cập nhật ngay theo nhãn đang có, không phải chạy lại script nào.</div>
+<div class="so">438 tấm lỗi · 306 Single · 101 Multi · 31 Bypass</div>
+<div class="meo">cong_cu/gan_nhan_tam.html · 928 KB · sửa 13/08/2026</div></a>
+<a class="the" href="cong_cu/soi_mau_recall.html">
+<div class="hinh trong">CHƯA CÓ ẢNH</div>
+<div class="dong"><span class="ten">Soi mẫu đo recall</span><span class="tt" style="background:#6f788322;color:#6f7883;border-color:#6f788355">CHƯA LÀM</span><span class="nhan">để dành</span></div>
+<div class="mt">Cùng công cụ, cùng cách soi, nhưng danh sách khoá cứng vào 400 tấm bốc ngẫu nhiên (hạt 1008) trong 4916 tấm model KHÔNG đánh dấu, và dùng kho localStorage riêng nên không lẫn với nhãn chính. Soi xong bấm Tải JSON, để vào <code>ket_qua/nhan_mau_recall.json</code> rồi chạy <code>ma/do_recall_mau.py</code> ra recall kèm khoảng tin cậy.</div>
+<div class="so">chưa dùng — recall đã đo bằng quét tay toàn bản đồ</div>
+<div class="meo">cong_cu/soi_mau_recall.html · 930 KB · sửa 13/08/2026</div></a>
+</div>
+<h2>Ortho &amp; dữ liệu nền</h2><div class='luoi ba'>
+<div class="the">
+<img class="hinh" src="trang/o_mau.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho MÀU (Metashape)</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span></div>
+<div class="mt">Nền màu của cả dự án. Mã tấm pin, polygon 6473 tấm, toạ độ lỗi đều tính trên lưới này.</div>
+<div class="so">nền chuẩn — mọi thứ khác khớp về đây</div>
+<div class="meo">du_lieu/Thermal2_31M_full_export/ortho.tif<br>25354 × 14993 · 1.2 GB · sinh bởi export tay từ Metashape</div></div>
+<div class="the">
+<img class="hinh" src="trang/o_dsm.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">DSM (Metashape)</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span></div>
+<div class="mt">Mặt cao độ để bắn tia từ ảnh nhiệt xuống mặt đất. Không có nó thì không quy được pixel ảnh lẻ ra toạ độ.</div>
+<div class="so">—</div>
+<div class="meo">du_lieu/Thermal2_31M_full_export/dsm.tif<br>12677 × 7497 · 296.0 MB · sinh bởi export tay từ Metashape</div></div>
+<div class="the">
+<img class="hinh" src="trang/o_metashape.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho nhiệt (Metashape)</span><span class="tt" style="background:#8a5a5a22;color:#8a5a5a;border-color:#8a5a5a55">KHÔNG DÙNG</span></div>
+<div class="mt">KHÔNG dùng: nằm trên lưới toạ độ khác ortho màu (8600×3448, bước 2,405e-07 độ), chồng lên là phải nắn lại. Giữ để đối chứng.</div>
+<div class="so">lưới khác hẳn</div>
+<div class="meo">du_lieu/Thermal2_31M_full_export/thermal_ortho.tif<br>8600 × 3448 · 122.5 MB · sinh bởi export tay từ Metashape</div></div>
+<div class="the">
+<img class="hinh" src="trang/o_tu_lam.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho nhiệt tự ghép</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span></div>
+<div class="mt">Bản gốc: đưa từng ảnh nhiệt qua H sang khung RGB rồi dán lên lưới gấp 3 lần ortho màu. Đầu vào cho hai bản nắn bên dưới.</div>
+<div class="so">lệch trung vị 7,92 cm · RMSE 8,30 cm</div>
+<div class="meo">ket_qua/ortho/ortho_nhiet_tu_lam.tif<br>8451 × 4997 · 15.3 MB · sinh bởi ma/ghep_ortho_nhiet.py</div></div>
+<div class="the">
+<img class="hinh" src="trang/o_nan.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho nhiệt nắn theo RGB</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span></div>
+<div class="mt">Nắn TOÀN CỤC một phép cho cả tấm ortho. Đỡ hơn bản gốc nhưng không chữa được lệch riêng của từng ảnh — nên mới có bản bù dưới đây.</div>
+<div class="so">bản trung gian</div>
+<div class="meo">ket_qua/ortho/ortho_nhiet_nan.tif<br>8451 × 4997 · 16.1 MB · sinh bởi ma/nan_ortho_theo_rgb.py</div></div>
+<div class="the">
+<img class="hinh" src="trang/o_dan_xuoi.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho nhiệt dán xuôi</span><span class="tt" style="background:#8a5a5a22;color:#8a5a5a;border-color:#8a5a5a55">KHÔNG DÙNG</span></div>
+<div class="mt">Dán thẳng không nắn, làm ra để so cho thấy khác biệt. Đừng lấy ảnh minh hoạ <code>so_dan_xuoi.jpg</code> làm bằng chứng — script vẽ nó tra DSM sai chỉ số (cột nhận giá trị hàng).</div>
+<div class="so">đối chứng</div>
+<div class="meo">ket_qua/ortho/ortho_nhiet_dan_xuoi.tif<br>8451 × 4997 · 16.7 MB · sinh bởi ma/ghep_ortho_dan_xuoi.py</div></div>
+<div class="the dungngay">
+<img class="hinh" src="trang/o_bu_rgb.jpg" alt="" loading="lazy">
+<div class="dong"><span class="ten">Ortho nhiệt bù theo RGB</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span><span class="nhan">đang dùng</span></div>
+<div class="mt">BẢN ĐANG DÙNG. Cân sáng rồi bù lệch RIÊNG cho từng ảnh trước khi dán. Đây là lớp nhiệt trong cả hai giao diện gán nhãn.</div>
+<div class="so">lệch trung vị <b>1,50 cm</b> · RMSE 2,79 cm</div>
+<div class="meo">ket_qua/ortho/ortho_nhiet_bu_rgb.tif<br>8451 × 4997 · 15.3 MB · sinh bởi bu_theo_rgb.py → ghep_ortho_nhiet.py --bu-rgb</div></div>
+</div>
+<h2>Trang xem &amp; báo cáo</h2><div class='luoi hai'>
+<a class="the" href="tai_lieu/DANH_GIA_THEO_NHAN.html"><div class="hinh trong">HTML</div><div class="ten">Quy trình đánh giá model</div><div class="mt">Notebook đã chạy: từ nhãn tay ra precision/recall/F1, ma trận nhầm lớp, đánh đổi theo ngưỡng conf. Mọi số tính lại từ dữ liệu thô.</div><div class="meo">434 KB · 14/08/2026</div></a>
+<a class="the" href="cong_cu/so_sanh_model.html"><img class="hinh" src="trang/t_so_sanh_model.jpg" alt="" loading="lazy"><div class="ten">So sánh model</div><div class="mt">Đối chiếu đầu ra hai model trên cùng ảnh.</div><div class="meo">38.4 MB · 13/08/2026</div></a>
+<a class="the" href="tai_lieu/slide_thuat_ngu.html"><div class="hinh trong">HTML</div><div class="ten">Thuật ngữ</div><div class="mt">Giải nghĩa từ chuyên môn dùng trong dự án.</div><div class="meo">38 KB · 13/08/2026</div></a>
+</div>
+<h2>Đang làm &amp; còn thiếu</h2>
+<div class="the"><div class="dong"><span class="ten">Đánh giá model bằng nhãn tay</span><span class="tt" style="background:#3f9e6a22;color:#3f9e6a;border-color:#3f9e6a55">XONG</span></div><div class="mt">Precision <b>0,865</b> · Recall <b>0,968</b> · F1 <b>0,914</b> · đúng lớp <b>0,972</b>. Mốc là 511 tấm người soi chốt tay, đơn vị chấm là tấm pin. Recall đo bằng quét tay toàn bản đồ nên là số đếm hết, không phải ước lượng. Bảng đầy đủ trong <code>tai_lieu/DANH_GIA_THEO_NHAN.ipynb</code>, chạy lại bằng <code>ma/danh_gia_model_theo_nhan.py</code>.</div></div>
+<div class="the"><div class="dong"><span class="ten">Ba nhà máy mới của Khánh</span><span class="tt" style="background:#c98a2e22;color:#c98a2e;border-color:#c98a2e55">ĐANG LÀM</span></div><div class="mt">BIM 2 · Thuận Nam 19 · Thuận Nam Đức Long — dữ liệu còn đang tải trong <code>Data_Khánh_làm/</code>, chưa chạy pipeline lần nào.</div></div>
+<div class="the"><div class="dong"><span class="ten">Nhiệt độ thật từ ảnh 16-bit</span><span class="tt" style="background:#6f788322;color:#6f7883;border-color:#6f788355">CHƯA LÀM</span></div><div class="mt">Ảnh nhiệt có dữ liệu 16-bit nằm trong khối APP3 mà pipeline đang bỏ phí — chỉ đọc ảnh 8-bit đã tô màu. Mở ra thì tính được ΔT thật của từng vệt nóng, lọc lỗi theo chênh nhiệt chứ không chỉ theo hình dạng.</div></div>
+<div class="the"><div class="dong"><span class="ten">Hai bản ghép còn dang dở</span><span class="tt" style="background:#6f788322;color:#6f7883;border-color:#6f788355">CHƯA LÀM</span></div><div class="mt"><code>ghep_ortho_pha_tron.py</code> và <code>ghep_ortho_off_nadir.py</code> có script nhưng chưa dựng ra file .tif nào.</div></div>
+<footer>Trang này dựng bằng <code>lam_trang_chu.py</code> — số liệu đọc từ đĩa lúc dựng, phần trạng thái sửa tay ngay trong script. Dựng lúc 00:34 14/08/2026.</footer></div></html>

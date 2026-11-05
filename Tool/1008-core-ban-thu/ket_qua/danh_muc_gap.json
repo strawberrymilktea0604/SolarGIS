@@ -1,0 +1,1665 @@
+{
+ "_mo_ta": "166 gap do chinh tac gia neu, gom tu 62 bai trong kho pdf/. Truong trich_en la nguyen van tieng Anh.",
+ "gaps": [
+  {
+   "so_hieu": "48",
+   "bai": "Adimoolam, Poullis & Averkiou — \"Data Leakage Detection and De-duplication in Large Scale Geospatial Image Datasets\", tiền ấn phẩm arXiv:2304.02296v2 (bản trong kho ghi 2023)",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 7 (số trang in trong bài: 7), mục 5. Conclusion and Discussion",
+   "trich_en": "The issues of leakage and duplication discovered in the AICrowd Mapping Challenge dataset render it unsuitable for benchmarking building footprint extraction methods without removing the leakage and duplication instances. This also potentially invalidates the quantitative metrics reported on this dataset by several preceding works.",
+   "dich_vi": "Các vấn đề rò rỉ (leakage) và trùng lặp phát hiện trong bộ AICrowd Mapping Challenge khiến nó không dùng được để đo chuẩn (benchmark) các phương pháp trích xuất dấu chân công trình nếu chưa loại bỏ các trường hợp rò rỉ và trùng lặp. Điều này cũng có khả năng làm mất hiệu lực các chỉ số định lượng mà nhiều công trình trước đó đã báo cáo trên bộ dữ liệu này.",
+   "y_nghia": "Đây là câu neo trực tiếp cho việc mAP 0,965 của dự án được đo trên chính dữ liệu train (81% \"tập test\" nằm trong train): tác giả nói thẳng rằng chỉ số đo trên bộ có rò rỉ là mất hiệu lực, nên dự án không cần tự bào chữa mà chỉ cần trích và tự sửa.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "48",
+   "bai": "Adimoolam, Poullis & Averkiou — \"Data Leakage Detection and De-duplication in Large Scale Geospatial Image Datasets\", tiền ấn phẩm arXiv:2304.02296v2",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 8 (số trang in trong bài: 8), tiểu mục \"Limitations\"",
+   "trich_en": "In the present pipeline, although the perceptual hashing algorithm is invariant to radiometric augmentations (such as brightness & contrast changes), it is not inherently invariant to geometric augmentations such as rotation or flips. […] These limitations could be addressed in future research by developing more robust hashing algorithms that are inherently invariant to strong geometric & radiometric transformations.",
+   "dich_vi": "Trong pipeline hiện tại, tuy thuật toán perceptual hashing bất biến với các phép tăng cường bức xạ (radiometric augmentation, ví dụ đổi độ sáng và tương phản), nó không tự thân bất biến với các phép tăng cường hình học như xoay hay lật. […] Những hạn chế này có thể được giải quyết trong nghiên cứu tương lai bằng cách phát triển các thuật toán hashing bền vững hơn, tự thân bất biến với các phép biến đổi hình học và bức xạ mạnh.",
+   "y_nghia": "Đúng vào chỗ đau của dự án: các ô cắt từ ortho là cùng một tấm pin nhìn ở hướng cảnh xoay (ablation đã đo 53%→83% khi xoay ô lại), nên pHash thô sẽ không bắt được trùng lặp — muốn dùng phải tự bổ sung vòng xoay 90/180/270 đúng như tác giả đề nghị.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "49",
+   "bai": "Kapoor & Narayanan — \"Leakage and the Reproducibility Crisis in ML-based Science\", tiền ấn phẩm arXiv:2207.07048v1, 14/7/2022 (bản trong kho ghi 2023; sau đăng ở Patterns)",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 6, mục 2.3 [L3.2] Nonindependence between train and test samples",
+   "trich_en": "Handling nonindependence between the training and test sets in general--i.e., without any assumptions about independence in the data--is a hard problem, since we might not know the underlying dependency structure of the task in many cases (Malik, 2020).",
+   "dich_vi": "Xử lý sự không độc lập giữa tập huấn luyện và tập kiểm tra một cách tổng quát — tức là không đặt bất kỳ giả định nào về tính độc lập trong dữ liệu — là một bài toán khó, vì trong nhiều trường hợp ta có thể không biết cấu trúc phụ thuộc nền tảng của bài toán (Malik, 2020).",
+   "y_nghia": "Tác giả tự nhận đây là bài toán KHÓ chưa giải xong, nên dự án có quyền đặt vấn đề: 6473 tấm pin cùng một nhà máy, cùng một ngày bay, chồng phủ ảnh — cấu trúc phụ thuộc là hiển nhiên và chưa ai chuẩn hoá cách chia cho bài toán ortho UAV.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "49",
+   "bai": "Kapoor & Narayanan — \"Leakage and the Reproducibility Crisis in ML-based Science\", tiền ấn phẩm arXiv:2207.07048v1, 2022",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 6, mục [L3.3] Sampling bias in test distribution",
+   "trich_en": "One example of sampling bias is spatial bias, which refers to choosing the test data from a geographic location but making claims about model performance in other geographic locations as well.",
+   "dich_vi": "Một ví dụ của thiên lệch lấy mẫu là thiên lệch không gian (spatial bias), tức là chọn dữ liệu kiểm tra từ một vị trí địa lý nhưng lại đưa ra khẳng định về hiệu năng mô hình cho cả những vị trí địa lý khác.",
+   "y_nghia": "Chính là tình huống 511 tấm nhãn tay của dự án: nhãn chỉ nằm trong vùng ảnh nhiệt phủ được, còn 1066/6473 tấm ở rìa chưa từng quét — mọi con số recall/precision đang được phát biểu cho cả nhà máy trong khi chỉ đo trên một vùng.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "49",
+   "bai": "Kapoor & Narayanan — \"Leakage and the Reproducibility Crisis in ML-based Science\", tiền ấn phẩm arXiv:2207.07048v1, 2022",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 9, mục [D4] Lack of standardization",
+   "trich_en": "Several applied ML fields, such as engineering applications and modeling contests, have adopted practices such as standardized train-test splits, evaluation metrics, and modeling tasks to ensure the validity of the modeling and evaluation process (Russakovsky et al., 2015; Koh et al., 2021). However, many of these have not yet been adopted widely in ML-based science. This leads to subtle errors in the modeling process that can be hard to detect.",
+   "dich_vi": "Một số lĩnh vực ML ứng dụng, như các ứng dụng kỹ thuật và các cuộc thi mô hình hoá, đã áp dụng các thông lệ như chia train-test chuẩn hoá, chỉ số đánh giá chuẩn hoá và tác vụ mô hình hoá chuẩn hoá để bảo đảm tính hợp lệ của quá trình mô hình hoá và đánh giá (Russakovsky và cs., 2015; Koh và cs., 2021). Tuy nhiên, nhiều thông lệ trong số đó vẫn CHƯA được áp dụng rộng rãi trong khoa học dựa trên ML. Điều này dẫn tới những sai sót tinh vi trong quá trình mô hình hoá, rất khó phát hiện.",
+   "y_nghia": "Cho phép dự án lập luận rằng lĩnh vực phát hiện lỗi tấm pin bằng UAV chưa có quy ước chia bộ chuẩn — và đề xuất một quy ước (chia theo khối không gian / theo dãy panel) chính là đóng góp được, không phải chỉ là sửa lỗi của mình.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "61",
+   "bai": "Stroner, Urban, Seidl, Reindl & Broucek (2021) — \"Photogrammetry Using UAV-Mounted GNSS RTK: Georeferencing Strategies without GCPs\", Remote Sensing 13(7):1336, MDPI",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 15/17 (trang PDF 15), mục 5. Conclusions",
+   "trich_en": "UAVs equipped with onboard GNSS RTK receivers are becoming financially more accessible. Their usage for SfM modeling without the need for GCPs seems to be a natural path to take; however, the usual flight configuration with nadiral image acquisition and self-calibration often produces results with significant systematic elevation error.",
+   "dich_vi": "UAV gắn máy thu GNSS RTK trên khoang đang ngày càng rẻ. Việc dùng chúng cho mô hình hoá SfM mà không cần GCP có vẻ là con đường tự nhiên; tuy nhiên, cấu hình bay thông thường với chụp ảnh phương thẳng đứng (nadir) kèm tự hiệu chuẩn (self-calibration) thường cho kết quả có sai số độ cao hệ thống đáng kể.",
+   "y_nghia": "Mô tả đúng y nguyên cấu hình dự án — ZH20T bay nadir 31 m, 0 GCP, Metashape tự hiệu chuẩn — và tác giả tự nói cấu hình đó thường sinh sai số độ cao hệ thống, tức DSM dùng để chiếu tia nhiệt có nguy cơ lệch chưa được kiểm.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "61",
+   "bai": "Stroner và cs. (2021), Remote Sensing 13(7):1336",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 14/17 (trang PDF 14), mục 4. Discussion, kết luận đánh số 1",
+   "trich_en": "Performing duplicate flights, even if the second flight is perpendicular to the first one (double-grid), brings only a minor improvement; however, the accuracy still remains above the expected limit of 1-2 GSD. In some cases, it may still fail with a systematic shift of up to 0.18 m.",
+   "dich_vi": "Bay lặp lại, kể cả khi tuyến bay thứ hai vuông góc với tuyến thứ nhất (lưới đôi — double-grid), chỉ mang lại cải thiện nhỏ; độ chính xác vẫn vượt quá giới hạn kỳ vọng 1–2 GSD. Trong một số trường hợp, vẫn có thể hỏng với độ dịch hệ thống lên tới 0,18 m.",
+   "y_nghia": "Con số 0,18 m là mức dịch hệ thống ngay cả khi bay lưới đôi — trong khi dự án chỉ bay lưới đơn nadir; đặt cạnh bậc DSM 1,33 m ở mép tấm, đây là bằng chứng bên ngoài cho rủi ro sai số chiếu tia mà dự án chưa đo được vì không có checkpoint.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "61",
+   "bai": "Stroner và cs. (2021), Remote Sensing 13(7):1336",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 15/17 (trang PDF 15), cuối mục 4. Discussion",
+   "trich_en": "In our experiment, only relatively small camera angles (15 and 30 from the vertical direction) were used to prevent disruption of image alignment, which could pose problems in rugged terrain (i.e. terrain with sloped surfaces). […] The possible angles and their effect on the resulting accuracy should be subject to further research.",
+   "dich_vi": "Trong thí nghiệm của chúng tôi, chỉ dùng các góc camera tương đối nhỏ (15° và 30° so với phương thẳng đứng) để tránh phá vỡ việc căn chỉnh ảnh (image alignment), vốn có thể gây rắc rối trên địa hình gồ ghề (tức địa hình có bề mặt dốc). […] Các góc khả dĩ và ảnh hưởng của chúng lên độ chính xác kết quả nên là đối tượng của nghiên cứu tiếp theo.",
+   "y_nghia": "Tác giả tự chừa chỗ trống: chưa ai đo góc chụp xiên tối ưu trên bề mặt gồ ghề dốc — mà dãy tấm pin nghiêng có bậc 1,33 m chính là loại bề mặt đó, mở đúng một nhánh thí nghiệm cho dự án nếu bay lại được.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "62",
+   "bai": "Forlani, Dall'Asta, Diotri, Morra di Cella, Roncella & Santise (2018) — \"Quality Assessment of DSMs Produced from UAV Flights Georeferenced with On-Board RTK Positioning\", Remote Sensing 10(2):311, MDPI",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16/22 (trang PDF 16), mục 5. Conclusions",
+   "trich_en": "However, dispensing entirely with GCPs makes block orientation unreliable, as significant biases, especially in elevations, can arise. Indeed, in three of the eight repetitions, an elevation bias of about 10 cm and more was registered.",
+   "dich_vi": "Tuy nhiên, bỏ hẳn GCP khiến việc định hướng khối ảnh (block orientation) trở nên không đáng tin, vì có thể phát sinh những độ chệch (bias) đáng kể, đặc biệt về độ cao. Thực tế, ở ba trong tám lần bay lặp, đã ghi nhận độ chệch độ cao khoảng 10 cm trở lên.",
+   "y_nghia": "Bằng chứng số cứng cho tình huống 0 GCP của dự án: 3/8 chuyến bay RTK lệch cao ≥10 cm dù RTK hoạt động bình thường — nghĩa là RtkFlag=50 trên 598/598 ảnh KHÔNG bảo đảm độ cao đúng, và dự án chưa có gì để kiểm chứng điều đó.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "62",
+   "bai": "Forlani và cs. (2018), Remote Sensing 10(2):311",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16/22 (trang PDF 16), mục 5. Conclusions",
+   "trich_en": "Moreover, though the benefits of a very dense control from the camera stations are clearly apparent from the simulations in Santise and James et al. [35, 36], more experience should be gained about the effect of GNSS systematic errors and residual inner orientation errors.",
+   "dich_vi": "Hơn nữa, dù lợi ích của việc khống chế rất dày từ các trạm camera (camera stations) đã thấy rõ qua các mô phỏng của Santise và James và cs. [35, 36], vẫn cần thu thập thêm kinh nghiệm về ảnh hưởng của sai số hệ thống GNSS và sai số định hướng trong (inner orientation) còn dư.",
+   "y_nghia": "Tác giả tự nói mảng \"sai số hệ thống GNSS + sai số định hướng trong còn dư\" chưa đủ kinh nghiệm — đúng hai nguồn sai số mà dự án đang gánh khi Metashape tự hiệu chuẩn ZH20T mà không GCP nào ràng buộc.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "62",
+   "bai": "Forlani và cs. (2018), Remote Sensing 10(2):311",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16/22 (trang PDF 16), mục 5. Conclusions",
+   "trich_en": "It is not yet clear whether AAT will supersede GCPs to become the standard referencing technique for UAV blocks.",
+   "dich_vi": "Vẫn chưa rõ liệu AAT (GNSS-Assisted Aerial Triangulation — tam giác ảnh hàng không có trợ giúp GNSS) có thay thế được GCP để trở thành kỹ thuật định chuẩn tiêu chuẩn cho các khối ảnh UAV hay không.",
+   "y_nghia": "Câu \"chưa rõ\" này (năm 2018) là chỗ neo để dự án đặt câu hỏi ở phạm vi hẹp mà mình trả lời được: với nhà máy điện mặt trời phẳng, có bề mặt nhân tạo đồng đều, AAT thuần RTK đủ chưa — và đo bằng gì.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "63",
+   "bai": "Ekaso, Nex & Kerle (2020) — \"Accuracy assessment of real-time kinematics (RTK) measurements on unmanned aerial vehicles (UAV) for direct geo-referencing\", Geo-spatial Information Science, Taylor & Francis",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16 (số trang in trong bài; trang PDF 17), mục 5. Conclusion",
+   "trich_en": "On the other hand, the contribution of the gimbal movements during the flights is still uncertain and makes the determination of the gimbal position much more complicated. Although it should return a more stable acquisition, the impression is that it is often late and introduces imprecise attitude changes, adding another source of error.",
+   "dich_vi": "Mặt khác, đóng góp của các chuyển động gimbal trong khi bay vẫn còn chưa xác định được, và làm cho việc xác định vị trí gimbal phức tạp hơn nhiều. Dù về nguyên tắc gimbal phải cho thu nhận ổn định hơn, cảm nhận là nó thường trễ và đưa vào những thay đổi tư thế (attitude) thiếu chính xác, tạo thêm một nguồn sai số nữa.",
+   "y_nghia": "Cực sát dự án: ZH20T treo RGB và nhiệt trên CÙNG một gimbal, và ortho nhiệt tự dựng chiếu tia từ tư thế camera — tác giả tự nhận đóng góp sai số của gimbal vẫn chưa xác định được, tức là phần dư 2,56 cm của dự án có một nguồn chưa ai bóc tách.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "63",
+   "bai": "Ekaso, Nex & Kerle (2020), Geo-spatial Information Science",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16 (số trang in trong bài; trang PDF 17), mục 5. Conclusion",
+   "trich_en": "A residual time delay of 0.28 seconds estimated at a speed of 4 m/s resulted in an offset value of 1.12 m in the first flight.",
+   "dich_vi": "Một độ trễ thời gian còn dư 0,28 giây, ước lượng ở tốc độ 4 m/s, đã dẫn tới độ lệch 1,12 m trong chuyến bay thứ nhất.",
+   "y_nghia": "Cho dự án một hệ số quy đổi dùng ngay: lệch (m) = tốc độ bay × độ trễ đồng bộ — nghĩa là có thể tự kiểm bằng EXIF tốc độ bay của 598 ảnh xem phần dư định vị có tương quan với tốc độ không, một phép thử chưa từng chạy.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "63",
+   "bai": "Ekaso, Nex & Kerle (2020), Geo-spatial Information Science",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 2 (số trang in trong bài; trang PDF 3), cuối mục 1. Introduction",
+   "trich_en": "This paper, however, does not consider the uncertainties arising from initial measurement errors or operator errors when computing the lever arm offset (i.e. considering perfect measurement), which can also affect the final result.",
+   "dich_vi": "Tuy nhiên, bài báo này KHÔNG xét tới các bất định phát sinh từ sai số đo ban đầu hoặc sai sót của người vận hành khi tính độ lệch cánh tay đòn (lever arm offset) — tức là giả định phép đo hoàn hảo — dù những thứ đó cũng ảnh hưởng tới kết quả cuối.",
+   "y_nghia": "Tác giả tự loại một nguồn sai số ra khỏi phạm vi; dự án có thể chỉ ra rằng với ZH20T thì lever arm giữa tâm pha ăng-ten và tâm chiếu của camera nhiệt (khác camera RGB) chưa từng được ai công bố hay đo, nên bài toán vẫn hở.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "65",
+   "bai": "Stott, Williams & Hoey (2020) — \"Ground Control Point Distribution for Accurate Kilometre-Scale Topographic Mapping Using an RTK-GNSS Unmanned Aerial Vehicle and SfM Photogrammetry\", Drones 4(3):55, MDPI",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 16/21 (trang PDF 16), mục 4.1 Discussion",
+   "trich_en": "Conversely, there is also a lack of assessment of errors from RTK-GNSS UAV aerial surveys in geographic settings with very high topographic roughness, such as mountain torrents and landslides. Rigorous analyses are therefore needed to determine the extent to which topographic roughness influences DSM accuracy and whether errors are significantly worse in areas with very high topographic roughness.",
+   "dich_vi": "Ngược lại, cũng đang THIẾU việc đánh giá sai số của các đợt khảo sát UAV RTK-GNSS trong những bối cảnh địa lý có độ gồ ghề địa hình rất cao, như suối núi và sạt lở. Do đó cần những phân tích chặt chẽ để xác định mức độ mà độ gồ ghề địa hình ảnh hưởng tới độ chính xác DSM, và liệu sai số có tệ hơn đáng kể ở những vùng có độ gồ ghề địa hình rất cao hay không.",
+   "y_nghia": "Đây là gap tự nêu khớp nhất với phát hiện \"vết lỗi xiên do bậc DSM mép tấm\": cánh đồng pin là bề mặt gồ ghề nhân tạo với bậc đứng 1,33 m, đúng loại địa hình mà tác giả nói chưa ai đánh giá sai số RTK-không-GCP — dự án đã có sẵn số IoU 0,726→0,478 để lấp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "65",
+   "bai": "Stott, Williams & Hoey (2020), Drones 4(3):55",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 17/21 (trang PDF 17), mục 5. Conclusions",
+   "trich_en": "However, when the spatial distribution of z-axis errors is examined, clusters of higher absolute vertical errors are observed, with a range of approximately 0.1 m dependent on the GCP configuration used. This more complex pattern of spatially distributed errors highlights the need for a distributed set of independent check points across a study area to provide confidence in SfM results and to identify, or rule out, the influence of vertical systematic errors.",
+   "dich_vi": "Tuy nhiên, khi xem xét phân bố không gian của sai số trục z, quan sát thấy các cụm sai số đứng tuyệt đối cao hơn, với biên độ khoảng 0,1 m tuỳ theo cấu hình GCP được dùng. Kiểu phân bố sai số phức tạp hơn theo không gian này làm nổi bật nhu cầu phải có một tập điểm kiểm tra (check point) độc lập, phân bố rải khắp khu vực nghiên cứu, để tạo niềm tin vào kết quả SfM và để nhận diện — hoặc loại trừ — ảnh hưởng của sai số hệ thống theo phương đứng.",
+   "y_nghia": "Bài này ủng hộ bỏ GCP nhưng lại tự nêu điều kiện bắt buộc: phải có checkpoint độc lập rải đều — mà dự án hiện có 0 GCP VÀ 0 checkpoint, nên không thể loại trừ sai số hệ thống đứng; đây là hạn chế phải khai báo, đồng thời là việc làm được nếu đo bổ sung vài điểm.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "65",
+   "bai": "Stott, Williams & Hoey (2020), Drones 4(3):55",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 17/21 (trang PDF 17), mục 5. Conclusions",
+   "trich_en": "It should also be noted that this result is specific for the acquisition of images in strips flown in opposing directions to achieve locally convergent imagery geometry.",
+   "dich_vi": "Cũng cần lưu ý rằng kết quả này chỉ đúng riêng cho việc thu nhận ảnh theo các dải bay ngược chiều nhau nhằm đạt hình học ảnh hội tụ cục bộ (locally convergent imagery geometry).",
+   "y_nghia": "Chặn đường trích dẫn ẩu: kết luận \"RTK không cần GCP\" của bài chỉ có hiệu lực với lưới đôi ảnh xiên 20°, còn dự án bay lưới đơn nadir — nên không được mượn kết luận này để biện minh cho 0 GCP.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "66",
+   "bai": "Zhang, Aldana-Jague, Clapuyt, Wilken, Vanacker & Van Oost (2019) — \"Evaluating the potential of post-processing kinematic (PPK) georeferencing for UAV-based structure-from-motion (SfM) photogrammetry and surface change detection\", Earth Surface Dynamics 7:807-827, Copernicus/EGU",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 820 (số trang in trong bài; trang PDF 14), mục 4.1 Discussion",
+   "trich_en": "Nevertheless, there might be biases in the PPK GNSS position estimation due to false solutions that can remain undetected (e.g., false fix in resolving ambiguities). […] Given that it is difficult to assess the quality of the PPK solution without independent observation, we recommend that using one GCP (or one single fixed point throughout the monitoring) provides a robust way to detect perturbations of the GPS signal.",
+   "dich_vi": "Dù vậy, vẫn có thể tồn tại độ chệch trong ước lượng vị trí GNSS PPK do các lời giải sai vẫn KHÔNG bị phát hiện (ví dụ \"fix giả\" khi giải đa trị — false fix in resolving ambiguities). […] Vì rất khó đánh giá chất lượng lời giải PPK nếu không có quan trắc độc lập, chúng tôi khuyến nghị dùng một GCP (hoặc một điểm cố định duy nhất xuyên suốt quá trình quan trắc) như một cách bền vững để phát hiện nhiễu loạn tín hiệu GPS.",
+   "y_nghia": "Câu này đánh thẳng vào lập luận \"598/598 RtkFlag=50 nên yên tâm\" của dự án: cờ fix có thể là fix GIẢ mà không ai phát hiện, và không có quan trắc độc lập thì không thể đánh giá — dự án đang không có điểm độc lập nào.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "66",
+   "bai": "Zhang và cs. (2019), Earth Surface Dynamics 7:807-827",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 820 (số trang in trong bài; trang PDF 14), mục 4.1 Discussion",
+   "trich_en": "It should be noted that applying one GCP only moves the overall project to the approximate location without internal georeferencing.",
+   "dich_vi": "Cần lưu ý rằng việc áp một GCP duy nhất chỉ dịch toàn bộ dự án tới vị trí gần đúng, chứ không thực hiện định chuẩn địa lý nội tại (internal georeferencing).",
+   "y_nghia": "Giải thích vì sao mọi phép \"dịch toàn cục\" đều vô ích với biến dạng nội tại — trùng khớp kết luận của dự án rằng không phép biến đổi toàn cục nào cứu nổi ortho nhiệt Metashape lệch 2,68 m so với RGB.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "66",
+   "bai": "Zhang và cs. (2019), Earth Surface Dynamics 7:807-827",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "trang 821 (số trang in trong bài; trang PDF 15), mục 4.4 Surface change detection",
+   "trich_en": "It is also important to understand the effect of different types of surfaces on the SfM output, particularly in a region with a \"complex\" surface, e.g., vegetation area, rough objects and a surface with few key features.",
+   "dich_vi": "Cũng rất quan trọng phải hiểu ảnh hưởng của các loại bề mặt khác nhau lên đầu ra SfM, đặc biệt ở vùng có bề mặt \"phức tạp\", ví dụ vùng thực vật, các vật thể gồ ghề, và bề mặt có ÍT đặc trưng then chốt (key features).",
+   "y_nghia": "\"Bề mặt ít đặc trưng then chốt\" mô tả chính xác mặt kính tấm pin — đồng nhất, phản xạ gương; tác giả tự nói chưa hiểu ảnh hưởng của loại bề mặt này lên SfM, mở đúng chỗ cho dự án báo cáo mật độ tie point trên cánh đồng pin.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "68",
+   "bai": "Fan, Feng & Biljecki (2025) — \"Coverage and bias of street view imagery in mapping the urban environment\", Computers, Environment and Urban Systems 117:102253, Elsevier (bản Accepted Manuscript, arXiv:2409.15386v3)",
+   "chu_de": "do-phu",
+   "trang": "trang 9 (trang PDF 9), mục 2.3 Complexity in real-world environment",
+   "trich_en": "In summary, the complexity of the urban environment introduces additional uncertainty in SVI coverage of environmental elements. However, compared to data quality problems or impact from SVI usage practices discussed in previous sections, it has not been given enough attention. There is a notable research gap concerning the extent to which SVI accurately covers the spatial instances in the environment, corresponding to the visual elements it aims to represent in the im[ages].",
+   "dich_vi": "Tóm lại, độ phức tạp của môi trường đô thị đưa thêm bất định vào độ phủ của SVI (ảnh phố) đối với các phần tử môi trường. Tuy nhiên, so với các vấn đề chất lượng dữ liệu hay ảnh hưởng từ thói quen sử dụng SVI bàn ở các mục trước, nó CHƯA được chú ý đủ mức. Có một khoảng trống nghiên cứu đáng kể về mức độ mà SVI phủ chính xác được các thực thể không gian trong môi trường, tương ứng với các phần tử thị giác mà nó nhắm biểu diễn trong ảnh.",
+   "y_nghia": "Chuyển thẳng sang bài toán dự án: \"độ phủ ở cấp thực thể\" chính là câu hỏi bao nhiêu trong 6473 tấm pin thực sự bị camera nhiệt nhìn thấy — tác giả tuyên bố đây là khoảng trống, còn dự án đã có sẵn con số 1066 tấm chưa từng quét.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "68",
+   "bai": "Fan, Feng & Biljecki (2025), Computers, Environment and Urban Systems 117:102253",
+   "chu_de": "do-phu",
+   "trang": "trang 28 (trang PDF 28), mục 6.1 Uneven SVI coverage at element level",
+   "trich_en": "However, using limited SVI data to characterize an entire region may over-represent frequently covered elements and under-represent others. This implicit prioritization of certain environmental elements in SVI can be considered a form of spatial weighting, which has been largely overlooked in previous urban studies and adds uncertainty to interpretations of SVI-based urban perception studies.",
+   "dich_vi": "Tuy nhiên, dùng dữ liệu SVI hạn chế để đặc trưng hoá cả một vùng có thể làm biểu diễn THỪA các phần tử được phủ nhiều lần và biểu diễn THIẾU các phần tử khác. Việc ngầm ưu tiên một số phần tử môi trường trong SVI có thể xem là một dạng trọng số hoá không gian (spatial weighting), điều mà các nghiên cứu đô thị trước đây phần lớn đã BỎ QUA, và nó làm tăng bất định cho việc diễn giải các nghiên cứu cảm nhận đô thị dựa trên SVI.",
+   "y_nghia": "Đúng cơ chế \"số ảnh nhìn thấy\" của dự án: tấm nào bị nhiều ảnh nhiệt phủ thì dễ được phát hiện hơn hẳn (n≥3 cho P 0,968), nên tỉ lệ lỗi tính trên toàn nhà máy đang bị trọng số hoá không gian mà chưa ai gọi tên.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "68",
+   "bai": "Fan, Feng & Biljecki (2025), Computers, Environment and Urban Systems 117:102253",
+   "chu_de": "do-phu",
+   "trang": "trang 31 (trang PDF 31), mục 7. Conclusion, đoạn limitations",
+   "trich_en": "Next, to balance detail and scalability, the study does not fully account for variations in building heights within the SVI coverage estimation workflow. […] Incorporating 3D urban data, such as Digital Surface Models (DSM) and LiDAR point clouds, along with 3D isovist analysis, presents opportunities to enhance analytic precision in future developments.",
+   "dich_vi": "Tiếp theo, để cân bằng giữa mức chi tiết và khả năng mở rộng, nghiên cứu này KHÔNG xét đầy đủ biến thiên chiều cao công trình trong quy trình ước lượng độ phủ SVI. […] Việc đưa vào dữ liệu đô thị 3D, như Mô hình số bề mặt (DSM) và đám mây điểm LiDAR, cùng phân tích isovist 3D, mở ra cơ hội nâng cao độ chính xác phân tích trong các phát triển tương lai.",
+   "y_nghia": "Tác giả để ngỏ đúng thứ dự án đã có sẵn: DSM. Tính độ phủ bằng tia chiếu qua DSM (đúng cách ortho nhiệt của dự án đang dựng) là bản 3D của thứ họ mới làm được ở 2D — một đóng góp phương pháp lấy ngay từ hạ tầng hiện có.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "69",
+   "bai": "Meyer & Pebesma — \"Predicting into unknown space? Estimating the area of applicability of spatial prediction models\", tiền ấn phẩm arXiv:2005.07939v1 (19/5/2020); bản đăng: Methods in Ecology and Evolution 2021, 12:1620-1633",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 11 (trang PDF 11), mục 4. Discussion",
+   "trich_en": "For spatially clustered data, the \"default\" random cross-validation error is not meaningful, because it indicates the ability of the model to reproduce the within-cluster variability in the training data rather than the ability to make predictions beyond the data used for model training, leading to overly optimistic performance estimates.",
+   "dich_vi": "Với dữ liệu phân cụm theo không gian, sai số kiểm chứng chéo (cross-validation) ngẫu nhiên \"mặc định\" là VÔ NGHĨA, bởi vì nó chỉ cho biết khả năng mô hình tái tạo biến thiên trong nội bộ cụm của dữ liệu huấn luyện, chứ không phải khả năng dự đoán vượt ra ngoài dữ liệu đã dùng để huấn luyện, dẫn tới ước lượng hiệu năng lạc quan quá mức.",
+   "y_nghia": "Chẩn đoán chính xác căn bệnh của dự án: 598 ảnh cùng một nhà máy một ngày là một cụm không gian duy nhất, nên mAP 0,965 chia ngẫu nhiên chỉ đo khả năng tái tạo nội cụm — giải thích được vì sao con số sạch ước chỉ còn ~0,70.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "69",
+   "bai": "Meyer & Pebesma, arXiv:2005.07939v1 (2020) / Methods Ecol. Evol. 2021, 12:1620-1633",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 11 (trang PDF 11), mục 4. Discussion",
+   "trich_en": "Second, (cross-) validation estimates are based on the sampling data only, but spatial sampling is usually biased […] and is unlikely to cover the entire environmental conditions of heterogeneous environments even when a sampling design is planned with the aim to cover the range of the predictor space […]. Subsequently the validation that is based on independent subsets of the samples will be biased as well.",
+   "dich_vi": "Thứ hai, các ước lượng kiểm chứng (chéo) chỉ dựa trên dữ liệu đã lấy mẫu, nhưng việc lấy mẫu không gian thường bị thiên lệch […] và khó có khả năng phủ hết toàn bộ điều kiện môi trường của những môi trường không đồng nhất, ngay cả khi thiết kế lấy mẫu được lập ra với mục tiêu phủ hết dải của không gian biến dự báo […]. Kéo theo đó, việc kiểm chứng dựa trên các tập con độc lập của mẫu cũng sẽ bị thiên lệch.",
+   "y_nghia": "Cho phép dự án nói rằng ngay cả tập nhãn tay 511 tấm \"độc lập\" cũng thiên lệch, vì nó chỉ rút từ vùng ảnh nhiệt phủ được — tức con số đánh giá cuối cùng vẫn còn một lớp bias chưa gỡ.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "69",
+   "bai": "Meyer & Pebesma, arXiv:2005.07939v1 (2020) / Methods Ecol. Evol. 2021, 12:1620-1633",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 12 (trang PDF 12), mục 4. Discussion, danh sách các điểm còn để ngỏ",
+   "trich_en": "The method to estimate the AOA as presented here should be considered a first attempt and contains a number of aspects that are up for discussion. […] Predicting into unknown space will remain an uncertain adventure, and we believe that experiments across realistic simulation models may guide us into learning what this means.",
+   "dich_vi": "Phương pháp ước lượng AOA (area of applicability — vùng áp dụng được) trình bày ở đây nên được xem là một nỗ lực ĐẦU TIÊN và chứa một số khía cạnh còn để ngỏ tranh luận. […] Dự đoán vào không gian chưa biết sẽ vẫn còn là một chuyến phiêu lưu bất định, và chúng tôi tin rằng các thí nghiệm trên những mô hình mô phỏng thực tế có thể dẫn dắt chúng ta hiểu điều đó nghĩa là gì.",
+   "y_nghia": "Tác giả tự nhận AOA mới là nỗ lực đầu; ứng dụng AOA cho phát hiện dị thường nhiệt trên ảnh UAV (vùng nào của nhà máy mô hình thực sự có quyền phát biểu) chưa ai làm — một nhánh mới mà dự án có đủ dữ liệu để mở.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "70",
+   "bai": "Meyer & Pebesma (2022) — \"Machine learning-based global maps of ecological variables and the challenge of assessing them\", Nature Communications 13:2208 (bài COMMENT)",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 3 (số trang in trong bài; trang PDF 3), mục \"Map quality: global or local assessment?\"",
+   "trich_en": "In the extreme case where all reference data come from a single cluster, this is impossible. When all reference data come from a small number of clusters, larger distances are available between clusters but do not provide substantial independent information about variation associated with these distances. Lack of information about larger distances means that we cannot assess the quality of predictions associated with such distances and cannot properly estimate global quality measures.",
+   "dich_vi": "Trong trường hợp cực đoan khi toàn bộ dữ liệu tham chiếu đến từ MỘT cụm duy nhất, việc này là bất khả. Khi toàn bộ dữ liệu tham chiếu đến từ một số ít cụm, các khoảng cách lớn hơn giữa các cụm tuy có sẵn nhưng không cung cấp thông tin độc lập đáng kể về biến thiên gắn với những khoảng cách đó. Thiếu thông tin về các khoảng cách lớn hơn nghĩa là chúng ta KHÔNG THỂ đánh giá chất lượng các dự đoán gắn với những khoảng cách đó và không thể ước lượng đúng các chỉ số chất lượng toàn cục.",
+   "y_nghia": "Câu \"bất khả\" này định nghĩa đúng giới hạn cứng của dự án: dữ liệu chỉ từ một nhà máy Thuận Nam 19, một ngày bay — nên không có cách nào ước lượng hợp lệ hiệu năng cho nhà máy khác, và 13 sortie nhiệt còn trên Drive chính là lối thoát duy nhất.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "70",
+   "bai": "Meyer & Pebesma (2022), Nature Communications 13:2208",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 3 (số trang in trong bài; trang PDF 3), mục \"Limits to accuracy assessment\"",
+   "trich_en": "Predictions far beyond reference data, however, often lead to extrapolation situations in the predictor space and models produce typically meaningless predictions when provided with predictor values that do not resemble the training data.",
+   "dich_vi": "Tuy nhiên, các dự đoán ở xa hẳn dữ liệu tham chiếu thường dẫn tới tình huống ngoại suy trong không gian biến dự báo, và mô hình thường sinh ra những dự đoán VÔ NGHĨA khi được cấp các giá trị biến dự báo không giống dữ liệu huấn luyện.",
+   "y_nghia": "Nền lý thuyết cho việc dự án phải gạch bỏ (chứ không phải báo cáo) kết quả model ở 1066 tấm rìa không được nhiệt phủ, và cho việc model 8 lớp recall 45,7% không được suy rộng ra ngoài điều kiện đã huấn luyện.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "70",
+   "bai": "Meyer & Pebesma (2022), Nature Communications 13:2208",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "trang 4 (số trang in trong bài; trang PDF 4), đoạn kết",
+   "trich_en": "We argue that showing predicted values on global maps without reliable indication of global and local prediction errors or the limits of the area of applicability, and distributing these for reuse, is not congruent with basic scientific integrity. […] We call for global maps of ecological variables to be published only when they are accompanied by properly derived local and global accuracy measures.",
+   "dich_vi": "Chúng tôi lập luận rằng việc trình bày các giá trị dự đoán trên bản đồ toàn cầu mà không có chỉ dấu đáng tin cậy về sai số dự đoán toàn cục và cục bộ, hoặc về giới hạn của vùng áp dụng được (area of applicability), rồi phân phối chúng để tái sử dụng, là KHÔNG phù hợp với liêm chính khoa học cơ bản. […] Chúng tôi kêu gọi các bản đồ toàn cầu về biến sinh thái chỉ nên được công bố khi kèm theo các chỉ số độ chính xác cục bộ và toàn cục được suy ra đúng cách.",
+   "y_nghia": "Chuẩn công bố mà dự án nên tự áp: bản đồ 211 lỗi tấm pin phải đi kèm lớp mặt nạ độ phủ (tấm nào được nhiệt nhìn thấy, mấy lần) và sai số định vị cục bộ — nếu không, theo tiêu chí này, bản đồ chưa đủ điều kiện phát hành.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "25",
+   "bai": "Acorsi, Gimenez & Martello (2020), \"Assessing the Performance of a Low-Cost Thermal Camera in Proximal and Aerial Conditions\", Remote Sensing 12(21):3591 (MDPI)",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 3 (3/24)",
+   "trich_en": "Moreover, the blending mode used to generate the orthomosaic can also influence the final results [13,22]. To assign pixel values, overlapping images with distinct viewing angles can be combined in different ways, based on the blending configuration [39]. As a result, temperature values from the same target might change according to the blending mode. Although some studies have discussed the effects of the blending configuration on thermal data [13,22,28,40], it has not been investigated how it can affect the overall precision and accuracy of temperature readings.",
+   "dich_vi": "Hơn nữa, chế độ trộn (blending mode) dùng để tạo orthomosaic cũng ảnh hưởng tới kết quả cuối [13,22]. Để gán giá trị pixel, các ảnh chồng phủ với góc nhìn khác nhau có thể được kết hợp theo nhiều cách, tuỳ cấu hình blending [39]. Do đó, giá trị nhiệt độ của cùng một đối tượng có thể thay đổi tuỳ chế độ trộn. Mặc dù một số nghiên cứu đã bàn về ảnh hưởng của cấu hình blending lên dữ liệu nhiệt [13,22,28,40], VẪN CHƯA CÓ AI KHẢO SÁT nó ảnh hưởng thế nào tới độ chính xác (precision) và độ đúng (accuracy) tổng thể của số đo nhiệt độ.",
+   "y_nghia": "Neo trực tiếp cho việc dự án tự dựng ortho nhiệt winner-take-all: cách chọn pixel từ ảnh nào là một biến chưa được đo tác động, và dự án có thể đo tác động đó lên tỉ lệ phát hiện lỗi thay vì lên độ chính xác nhiệt độ.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "25",
+   "bai": "Acorsi, Gimenez & Martello (2020), Remote Sensing 12(21):3591",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 12 (12/24)",
+   "trich_en": "The orthomosaic was not successfully generated because some images covering a significant part of the area of study could not be aligned and further covered by the orthomosaic. Since the 35-m missions take at least twice the time required by other flight altitudes to complete image acquisition and targets in the early morning particularly experience dramatic increases in temperature values (Figure 5a), the process of stitching images performed by the SfM algorithm might be affected, because DN values from the same object extracted of images derived of a parallel flight line can change abruptly, and the algorithm may not recognize that these two values belong to the same target.",
+   "dich_vi": "Orthomosaic không dựng được vì một số ảnh phủ phần đáng kể vùng nghiên cứu KHÔNG THỂ ALIGN và do đó không được ortho phủ tới. Vì các chuyến bay 35 m mất ít nhất gấp đôi thời gian chụp so với các độ cao khác, và các đích ngắm buổi sáng sớm tăng nhiệt độ rất mạnh (Hình 5a), quá trình ghép ảnh của thuật toán SfM có thể bị ảnh hưởng, bởi giá trị DN của cùng một vật thể trích từ ảnh của một đường bay song song có thể thay đổi đột ngột, và thuật toán có thể không nhận ra hai giá trị đó thuộc cùng một đích.",
+   "y_nghia": "Đây là lý do được chính tác giả nêu vì sao SfM chạy trực tiếp trên ảnh nhiệt hay hỏng — biện minh mạnh cho lựa chọn của dự án: không align ảnh nhiệt, mà chiếu qua DSM/H từ RGB.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "25",
+   "bai": "Acorsi, Gimenez & Martello (2020), Remote Sensing 12(21):3591",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 19 (19/24); câu tương ứng ở tr. 14",
+   "trich_en": "However, the visual result from orthomosaics obtained with the blending mode disabled (Figure 7c) can be an issue for applications aiming at the spatial distribution of TIR data, since the seamlines from the individual images used in the composition become apparent as a result of abrupt changes in temperature values from one image to another due to different viewing geometries [13].",
+   "dich_vi": "Tuy nhiên, kết quả trực quan của orthomosaic tạo ở chế độ blending TẮT (Hình 7c) có thể là vấn đề với các ứng dụng nhắm vào phân bố không gian của dữ liệu TIR, vì các đường mối ghép (seamline) của từng ảnh dùng trong bố cục trở nên lộ rõ, do nhiệt độ thay đổi đột ngột từ ảnh này sang ảnh kia bởi hình học góc nhìn khác nhau [13].",
+   "y_nghia": "Chính là chế độ ortho nhiệt của dự án (winner-take-all = blending disabled): tác giả tự nêu rằng nó để lộ mối ghép và nhảy nhiệt độ — khớp với quan sát 18,1→17,7 và đứt đoạn ở mép của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "26",
+   "bai": "Malbêteau, Johansen, Aragon, Al-Mashhawari & McCabe (2021), \"Overcoming the Challenges of Thermal Infrared Orthomosaics Using a Swath-Based Approach\", Remote Sensing 13(16):3255",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 18 (18/23)",
+   "trich_en": "Commercial software packages used to generate orthomosaics were explicitly developed for optical-based systems. Thus, the blending modes proposed are generally not suited to thermal data [31]. Moreover, none of the software packages can retrieve the temperature variability between orthophotos, limiting our understanding of errors in order to correct them or integrate them when used in models.",
+   "dich_vi": "Các gói phần mềm thương mại dùng để tạo orthomosaic được phát triển rõ ràng cho hệ thống quang học. Do đó, các chế độ blending mà chúng đề xuất nhìn chung KHÔNG PHÙ HỢP với dữ liệu nhiệt [31]. Hơn nữa, KHÔNG GÓI PHẦN MỀM NÀO truy xuất được độ biến thiên nhiệt độ giữa các orthophoto, làm hạn chế hiểu biết của chúng ta về sai số để hiệu chỉnh hoặc để tích hợp khi dùng trong mô hình.",
+   "y_nghia": "Biện minh học thuật cho quyết định bỏ ortho nhiệt Metashape của dự án (lệch RGB 2,68 m, mất DN gốc) và tự viết bộ chiếu riêng.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "26",
+   "bai": "Malbêteau và cộng sự (2021), Remote Sensing 13(16):3255",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 18 (18/23)",
+   "trich_en": "The Disable and Mosaic methods were found to be sensitive to flight conditions: for instance, both methods generated striping effects parallel to the flight direction (Figure 10). Additionally, the Mosaic method smoothed the retrieved temperature in areas with high temperature gradients, particularly for the white irrigation tanks and shaded areas (Figure 10), causing erroneous temperatures to be retrieved.",
+   "dich_vi": "Hai phương pháp Disable và Mosaic được thấy là nhạy với điều kiện bay: chẳng hạn, cả hai đều sinh hiệu ứng SỌC SONG SONG VỚI HƯỚNG BAY (Hình 10). Ngoài ra, phương pháp Mosaic làm trơn (smooth) nhiệt độ truy xuất ở những vùng có gradient nhiệt lớn, đặc biệt với các bồn tưới màu trắng và vùng bóng râm (Hình 10), khiến nhiệt độ truy xuất bị sai.",
+   "y_nghia": "Cảnh báo hai chiều cho dự án: winner-take-all (≈ Disable) sinh sọc theo hướng bay, còn trộn trung bình lại làm trơn mất chính cái gradient nhiệt mà bài toán dò hotspot tấm pin cần giữ.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "26",
+   "bai": "Malbêteau và cộng sự (2021), Remote Sensing 13(16):3255",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 20 (20/23); ý tương tự ở tr. 18",
+   "trich_en": "To date, there is still a lack of specific UAV-based thermal processing protocols and quality assurance steps for quantifying data uncertainties. [...] The integration of coincident optical and thermal UAV data may also lead to potential improvements. For example, an RGB-derived digital elevation model may assist the orthorectification process of thermal data to take into consideration off-nadir information to remove directional viewing effects.",
+   "dich_vi": "Cho đến nay VẪN CÒN THIẾU các quy trình xử lý nhiệt chuyên biệt cho UAV và các bước bảo đảm chất lượng để định lượng độ bất định của dữ liệu. [...] Việc tích hợp dữ liệu quang học và nhiệt thu đồng thời từ UAV cũng có thể mang lại cải thiện. Ví dụ, một mô hình số độ cao (DEM) dẫn xuất từ RGB có thể hỗ trợ quá trình nắn ảnh trực giao (orthorectification) cho dữ liệu nhiệt, nhằm tính đến thông tin off-nadir để loại bỏ hiệu ứng góc nhìn có hướng.",
+   "y_nghia": "Đây gần như là mô tả chính xác pipeline của dự án (chiếu ảnh nhiệt qua DSM RGB + ma trận H) — tác giả nêu nó như VIỆC TƯƠNG LAI chưa làm, nên dự án có thể tự nhận là hiện thực hoá gap này.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "30",
+   "bai": "Mesas-Carrascosa, Pérez-Porras, Meroño de Larriva và cộng sự (2018), \"Drift Correction of Lightweight Microbolometer Thermal Sensors On-Board UAVs\", Remote Sensing 10(4):615",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 14 (14/17)",
+   "trich_en": "The UAV flights were performed under stable weather conditions and were of short duration (20 min) and as such, there were no changes in the surface temperature. However, UAV flights with longer duration (longer than 30 min) and/or under unstable weather conditions must be evaluated in future work due to changes in atmospheric or sunlight conditions. In these cases, in addition to the drift correction, it would be necessary to have an instantaneous atmospheric correction adapted to the UAV flight conditions.",
+   "dich_vi": "Các chuyến bay UAV được thực hiện trong điều kiện thời tiết ổn định và thời lượng ngắn (20 phút), do đó không có thay đổi nhiệt độ bề mặt. Tuy nhiên, các chuyến bay UAV dài hơn (trên 30 phút) và/hoặc trong điều kiện thời tiết bất ổn PHẢI ĐƯỢC ĐÁNH GIÁ TRONG NGHIÊN CỨU TƯƠNG LAI do biến động khí quyển hoặc ánh nắng. Trong các trường hợp đó, ngoài hiệu chỉnh trôi (drift correction), còn cần một hiệu chỉnh khí quyển tức thời thích ứng với điều kiện bay của UAV.",
+   "y_nghia": "Nếu chuyến bay 598 ảnh của dự án vượt 20-30 phút thì trôi nhiệt trong chuyến là biến chưa ai xử lý — dữ liệu 16-bit trong APP3 cộng với timestamp EXIF cho phép dự án kiểm chứng gap này.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "30",
+   "bai": "Mesas-Carrascosa và cộng sự (2018), Remote Sensing 10(4):615",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 14 (14/17)",
+   "trich_en": "In this study, the cubic drift model offered the best results. However, the authors recommend exploring the behavior of a particular uncooled thermal sensor to determine which model would best describe the drift effect using the proposed methodology.",
+   "dich_vi": "Trong nghiên cứu này, mô hình trôi bậc ba (cubic drift model) cho kết quả tốt nhất. Tuy nhiên, các tác giả KHUYẾN NGHỊ phải khảo sát riêng hành vi của từng cảm biến nhiệt không làm lạnh cụ thể để xác định mô hình nào mô tả tốt nhất hiệu ứng trôi theo phương pháp đề xuất.",
+   "y_nghia": "Mô hình trôi không chuyển giao được giữa các cảm biến — giống hệt kết luận của dự án rằng ma trận H phải chấm tay cho từng model drone; đều là bằng chứng \"không có tham số toàn cục\".",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "30",
+   "bai": "Mesas-Carrascosa và cộng sự (2018), Remote Sensing 10(4):615",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 2 (2/17)",
+   "trich_en": "However, temperature drift continues to be a disadvantage causing unwanted detector gain and offset non-uniformity in registered temperature data. [...] Without this correction, the temperature error would increase by approximately 0.7 °C per minute [29]. [...] At the cost of useful UAV flight time, radiometric calibration coefficients are calculated so that the UAV can repeatedly fly over the nearest ground target and thus eliminate thermal drift [38,39].",
+   "dich_vi": "Tuy nhiên, trôi nhiệt VẪN CÒN LÀ MỘT NHƯỢC ĐIỂM, gây ra sai lệch gain của đầu dò và độ bất đồng nhất (non-uniformity) offset trong dữ liệu nhiệt độ ghi được. [...] Nếu không có hiệu chỉnh này, sai số nhiệt độ sẽ tăng khoảng 0,7 °C mỗi phút [29]. [...] Với cái giá là thời gian bay hữu ích của UAV, các hệ số hiệu chuẩn bức xạ được tính bằng cách cho UAV bay lặp qua đích mặt đất gần nhất để triệt tiêu trôi nhiệt [38,39].",
+   "y_nghia": "Con số 0,7 °C/phút cho phép dự án ước lượng biên độ trôi trong một chuyến 598 ảnh và lập luận vì sao ngưỡng ΔT tuyệt đối không dùng được, chỉ nên dùng tương phản cục bộ trong khung.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "31",
+   "bai": "Yuan & Hua (2022), \"A Case Study of Vignetting Nonuniformity in UAV-Based Uncooled Thermal Cameras\", Drones 6(12):394 — dùng DJI Zenmuse XT2",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 3 (3/22)",
+   "trich_en": "Most studies that utilized UAV-based thermal cameras simply did not acknowledge the influence of nonuniformity on temperature measurement accuracy, and very few studies addressed the issue.",
+   "dich_vi": "Phần lớn các nghiên cứu dùng camera nhiệt trên UAV ĐƠN GIẢN LÀ KHÔNG THỪA NHẬN ảnh hưởng của độ bất đồng nhất (nonuniformity) lên độ chính xác đo nhiệt độ, và RẤT ÍT nghiên cứu xử lý vấn đề này.",
+   "y_nghia": "Câu tự nêu \"rất ít ai làm\" mạnh nhất trong nhóm, lại đúng trên chính dòng camera DJI (XT2, cùng họ với ZH20T của dự án).",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "31",
+   "bai": "Yuan & Hua (2022), Drones 6(12):394",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 18 (18/22)",
+   "trich_en": "For thermal images with low contrast or scene temperature variation, such as the ones captured at night or under cloudy conditions [41], vignetting can reduce image stitching accuracy and orthomosaic quality. [...] A critical assumption in this study was the linear microbolometer response to temperature; hence, for vignetting correction purposes, the calibration target temperature is irrelevant as long as the calibration target surface temperature is uniform and close to scene temperatures. However, for a large scene temperature range, the assumption will no longer hold true, as we discussed in Section 3.2.1.",
+   "dich_vi": "Với ảnh nhiệt có độ tương phản hoặc biến thiên nhiệt độ cảnh thấp, như ảnh chụp ban đêm hoặc trời nhiều mây [41], vignetting có thể LÀM GIẢM ĐỘ CHÍNH XÁC GHÉP ẢNH và chất lượng orthomosaic. [...] Một giả định then chốt trong nghiên cứu này là đáp ứng tuyến tính của microbolometer theo nhiệt độ; do đó, cho mục đích hiệu chỉnh vignetting, nhiệt độ của tấm chuẩn là không quan trọng miễn là bề mặt tấm chuẩn đồng đều và gần với nhiệt độ cảnh. Tuy nhiên, với DẢI NHIỆT ĐỘ CẢNH RỘNG, giả định này KHÔNG CÒN ĐÚNG, như đã bàn ở Mục 3.2.1.",
+   "y_nghia": "Nhà máy điện mặt trời chính là ca \"dải nhiệt độ cảnh rộng\" (tấm nền ~50 °C, hotspot >80 °C) mà tác giả tự nói phương pháp của họ hỏng — chỗ trống này chưa ai lấp cho ảnh nhiệt tấm pin.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "31",
+   "bai": "Yuan & Hua (2022), Drones 6(12):394",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 19-20 (mục 3.5 Future Work)",
+   "trich_en": "Theoretically, the best vignetting correction results can be achieved by a dedicated NUC for every single captured thermal image. When large scene temperature variation is present, considering the nonlinear microbolometer response will be necessary for more accurate vignetting correction [33]. However, if extreme temperatures only need to be detected rather than measured, such as fire detection, pixels with extreme values in a scene image can be segmented out through thresholding and vignetting of the other pixels can still be corrected based on the linear microbolometer response assumption for better image contrast.",
+   "dich_vi": "Về lý thuyết, kết quả hiệu chỉnh vignetting tốt nhất đạt được bằng một NUC riêng cho từng ảnh nhiệt chụp được. Khi có biến thiên nhiệt độ cảnh lớn, việc xét đáp ứng PHI TUYẾN của microbolometer sẽ LÀ CẦN THIẾT để hiệu chỉnh vignetting chính xác hơn [33]. Tuy nhiên, nếu chỉ cần PHÁT HIỆN các nhiệt độ cực trị chứ không cần ĐO chúng, chẳng hạn phát hiện cháy, thì các pixel có giá trị cực trị trong ảnh cảnh có thể được tách ra bằng ngưỡng, còn vignetting của các pixel còn lại vẫn hiệu chỉnh được theo giả định đáp ứng tuyến tính để tăng tương phản ảnh.",
+   "y_nghia": "Cho phép dự án lập luận hợp pháp rằng vì bài toán là ĐỊNH VỊ/PHÁT HIỆN chứ không phải ĐO nhiệt độ tuyệt đối, việc bỏ qua hiệu chuẩn bức xạ tuyệt đối là chấp nhận được — chính tác giả nêu ngoại lệ này.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "32",
+   "bai": "Elfarkh, Johansen, Angulo, Lopez Camargo & McCabe (2023), \"Quantifying Within-Flight Variation in Land Surface Temperature from a UAV-Based Thermal Infrared Camera\", Drones 7(10):617",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 15 (15/18)",
+   "trich_en": "Regarding the generation of a LST orthomosaic, the observed variation in LSTs may complicate the identification of matching points during the dense point-cloud generation and hence decrease the quality of the orthorectification.",
+   "dich_vi": "Về việc tạo orthomosaic LST (nhiệt độ bề mặt đất), biến thiên LST quan sát được có thể LÀM PHỨC TẠP việc xác định các điểm khớp (matching point) trong quá trình dựng đám mây điểm dày, và do đó LÀM GIẢM CHẤT LƯỢNG nắn ảnh trực giao.",
+   "y_nghia": "Xác nhận độc lập (cùng ý với bài 25) rằng tie point trên ảnh nhiệt không đáng tin — củng cố lựa chọn không chạy SfM nhiệt của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "32",
+   "bai": "Elfarkh và cộng sự (2023), Drones 7(10):617",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 15 (15/18)",
+   "trich_en": "To minimize the effect of temperature variation in the orthomosaic, the disabled method may be the best option, as it assigns a single value to each pixel and preserves the original characteristics of each image. However, the disabled method may generate an orthomosaic with abrupt temperature variations, whereas the mosaic and average methods produce an orthomosaic depicting smoother LST variations.",
+   "dich_vi": "Để giảm thiểu ảnh hưởng của biến thiên nhiệt độ trong orthomosaic, phương pháp DISABLED có thể là lựa chọn tốt nhất, vì nó gán MỘT giá trị duy nhất cho mỗi pixel và giữ nguyên đặc trưng gốc của từng ảnh. Tuy nhiên, phương pháp disabled có thể sinh ra orthomosaic với các BIẾN ĐỔI NHIỆT ĐỘ ĐỘT NGỘT, trong khi mosaic và average tạo ra orthomosaic thể hiện biến thiên LST mượt hơn.",
+   "y_nghia": "Mô tả chính xác đánh đổi của ortho nhiệt winner-take-all mà dự án đang dùng: giữ được DN gốc từng ảnh (tốt cho ΔT) nhưng để lại nhảy bậc ở mối ghép — nên trích khi biện minh mục 7.3/8/10.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "32",
+   "bai": "Elfarkh và cộng sự (2023), Drones 7(10):617",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 16 (16/18)",
+   "trich_en": "[...] flight direction on LST measurements, as assessed by Malbêteau et al. [13], is an additive effect not evaluated herein. [...] While this study provides new insights into the temporal variation in UAV-based LST and environmental factors affecting LST, further research is required to test new lightweight cooled thermal sensors and understand the effect of rapid LST variation in applications such as crop stress detection and evapotranspiration estimation.",
+   "dich_vi": "[...] ảnh hưởng của HƯỚNG BAY lên số đo LST, như Malbêteau và cộng sự [13] đã đánh giá, là một hiệu ứng cộng thêm KHÔNG ĐƯỢC ĐÁNH GIÁ Ở ĐÂY. [...] Dù nghiên cứu này mang lại hiểu biết mới về biến thiên theo thời gian của LST từ UAV và các yếu tố môi trường ảnh hưởng tới LST, CẦN NGHIÊN CỨU THÊM để thử nghiệm các cảm biến nhiệt làm lạnh nhẹ mới và để hiểu tác động của biến thiên LST nhanh trong các ứng dụng như phát hiện stress cây trồng và ước tính bốc thoát hơi.",
+   "y_nghia": "Hướng bay là biến chưa đánh giá — dự án đã có phát hiện gần kề (mất 47% do HƯỚNG CẢNH xoay 90°, xoay ô lại thì 53%→83%), có thể chạy thêm phân tích theo hướng đường bay để lấp gap này.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "33",
+   "bai": "Wan, Brede, Smigaj & Kooistra (2021), \"Factors Influencing Temperature Measurements from Miniaturized Thermal Infrared (TIR) Cameras: A Laboratory-Based Approach\", Sensors 21(24):8466",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 14 (14/20)",
+   "trich_en": "Previous research dealt with the calibration of miniaturized TIR camera models by setting the NUC execution to manual mode [39,47,51]. The influence of automated NUCs was rarely mentioned. [...] During flight campaigns, it is likely that the camera experiences dynamic changes in environmental variables such as ambient temperature, wind, or solar radiation. These changes can bring uncertainty to the temperature difference between camera parts, and the speed of the change may be faster than the execution frequency of NUCs. Accordingly, the effectiveness of NUCs would be significantly affected outdoors.",
+   "dich_vi": "Các nghiên cứu trước xử lý hiệu chuẩn các mẫu camera TIR thu nhỏ bằng cách đặt NUC ở chế độ thủ công [39,47,51]. Ảnh hưởng của NUC TỰ ĐỘNG HIẾM KHI ĐƯỢC NHẮC TỚI. [...] Trong các đợt bay, camera nhiều khả năng trải qua thay đổi động của các biến môi trường như nhiệt độ không khí, gió, hay bức xạ mặt trời. Những thay đổi này gây bất định cho chênh lệch nhiệt độ giữa các bộ phận camera, và tốc độ thay đổi có thể NHANH HƠN tần suất thực thi NUC. Do đó, hiệu quả của NUC sẽ bị ảnh hưởng đáng kể khi ở ngoài trời.",
+   "y_nghia": "ZH20T chạy NUC tự động và người dùng không tắt được — đây là gap tự nêu cho phép dự án đặt vấn đề về nhảy DN giữa các khung ảnh liên tiếp trong dữ liệu 16-bit APP3.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "33",
+   "bai": "Wan và cộng sự (2021), Sensors 21(24):8466",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 16 (16/20)",
+   "trich_en": "For cameras of which the automatic corrections are executed periodically, there is a trade-off between ensuring the data consistency and diminishing temperature drifts in flight campaigns. If the former is chosen, then longer-period NUCs will make a larger sequence of collected imagery comparable to each other upon using drift correction methods. Otherwise, image mosaic will be a major problem with the choice of frequent NUCs.",
+   "dich_vi": "Với những camera thực thi hiệu chỉnh tự động theo chu kỳ, có một ĐÁNH ĐỔI giữa việc bảo đảm tính nhất quán của dữ liệu và việc giảm trôi nhiệt trong các đợt bay. Nếu chọn vế trước, NUC chu kỳ dài sẽ làm một chuỗi ảnh dài hơn có thể so sánh được với nhau khi dùng các phương pháp hiệu chỉnh trôi. Ngược lại, GHÉP ẢNH (image mosaic) SẼ LÀ MỘT VẤN ĐỀ LỚN nếu chọn NUC tần suất cao.",
+   "y_nghia": "Nối trực tiếp NUC với chất lượng ghép ortho: nếu ortho nhiệt của dự án có đứt đoạn DN giữa các dải, NUC tự động là nghi phạm được tài liệu chống lưng, bên cạnh nguyên nhân hình học.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "33",
+   "bai": "Wan và cộng sự (2021), Sensors 21(24):8466",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 16 (16/20)",
+   "trich_en": "Generally, the temperature retrieval process must include an atmospheric correction in satellite remote sensing, while insufficient attention has been paid to this in the UAV-based research [57]. [...] In previous practices, the fixed pattern noise of the TIR cameras and the change of vignetting effects over time was monitored by completely covering the FOV of the cameras with a blackbody. The temperature differences between pixels in the center and at the edge of the sensor can reach up to more than 2 °C [37]. This problem arises in the ortho-mosaic creation based on collected UAV images [58].",
+   "dich_vi": "Nhìn chung, quá trình truy hồi nhiệt độ BẮT BUỘC phải có hiệu chỉnh khí quyển trong viễn thám vệ tinh, trong khi CHƯA ĐƯỢC CHÚ Ý ĐÚNG MỨC trong nghiên cứu dựa trên UAV [57]. [...] Trong các thực hành trước, nhiễu mẫu cố định (fixed pattern noise) của camera TIR và sự thay đổi hiệu ứng vignetting theo thời gian được theo dõi bằng cách phủ kín toàn bộ FOV của camera bằng một vật đen (blackbody). Chênh lệch nhiệt độ giữa pixel ở tâm và ở rìa cảm biến có thể lên tới HƠN 2 °C [37]. Vấn đề này nảy sinh khi tạo orthomosaic từ ảnh UAV thu được [58].",
+   "y_nghia": "Cho dự án con số neo: chênh tâm-rìa >2 °C nghĩa là cùng một tấm pin nằm ở rìa khung sẽ đọc lệch hơn 2 °C so với khi nằm ở tâm — trực tiếp giải thích vì sao ngưỡng ΔT toàn cục trên ortho winner-take-all là không an toàn.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "51",
+   "bai": "del Prado Santamaría, dos Reis Benatto, Dhimish, Koc, Friansyah, Kari, Mahmood, Poulsen & Spataru (2025), \"Influence of irradiance and drone altitude in infrared thermography inspections of photovoltaic plants\", EPJ Photovoltaics 16, 31 (DTU)",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 2",
+   "trich_en": "These models focus on classifying the modules into defective and non-defective classes by identifying hotspots. However, hotspots can have different shapes and thermal signatures depending on the root cause. Furthermore, these models are often tailored to specific defects and rarely evaluated under suboptimal conditions. In particular, the influence of irradiance and drone altitude on the thermal response of PV modules affected by some defects has not been studied. [...] The influence of windspeed was not evaluated in this work due to constraints for drone flying safety.",
+   "dich_vi": "Các mô hình này tập trung phân loại tấm pin thành hai lớp lỗi và không lỗi bằng cách nhận diện hotspot. Tuy nhiên, hotspot có hình dạng và chữ ký nhiệt khác nhau tuỳ nguyên nhân gốc. Hơn nữa, các mô hình này thường được may đo cho các lỗi cụ thể và HIẾM KHI ĐƯỢC ĐÁNH GIÁ trong điều kiện dưới mức tối ưu. Đặc biệt, ảnh hưởng của bức xạ và độ cao bay drone lên đáp ứng nhiệt của tấm pin bị một số loại lỗi CHƯA ĐƯỢC NGHIÊN CỨU. [...] Ảnh hưởng của TỐC ĐỘ GIÓ KHÔNG ĐƯỢC ĐÁNH GIÁ trong công trình này do ràng buộc an toàn bay.",
+   "y_nghia": "Neo cho phần đánh giá của dự án: mô hình 8 lớp cũng chưa từng được kiểm tra dưới điều kiện bức xạ/độ cao khác nhau, và gió (yếu tố Thuận Nam 19 có nhiều) vẫn là ô trống ngay cả trong bài mới nhất.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "51",
+   "bai": "del Prado Santamaría và cộng sự (2025), EPJ Photovoltaics 16, 31",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 13",
+   "trich_en": "Although we did not explore altitudes beyond 20 m, our focus was on the range most representative of detailed inspections (<1 cm/pixel), up to the maximum recommended by the technical specification (3 cm/pixel). Future works should explore beyond this threshold of drone altitudes.",
+   "dich_vi": "Mặc dù chúng tôi KHÔNG KHẢO SÁT các độ cao trên 20 m, trọng tâm của chúng tôi là dải tiêu biểu nhất cho kiểm tra chi tiết (<1 cm/pixel), lên tới mức tối đa mà đặc tả kỹ thuật khuyến nghị (3 cm/pixel). CÁC CÔNG TRÌNH TƯƠNG LAI NÊN KHẢO SÁT VƯỢT NGƯỠNG độ cao bay này.",
+   "y_nghia": "Gap giá trị nhất của cả lô: dự án bay 31 m (GSD nhiệt ≈ 3,6 cm/pixel), tức nằm ĐÚNG bên ngoài ngưỡng 20 m / 3 cm-pixel mà bài 2025 tự nói chưa ai khảo sát — dự án là lời đáp trực tiếp cho câu future work này.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "51",
+   "bai": "del Prado Santamaría và cộng sự (2025), EPJ Photovoltaics 16, 31",
+   "chu_de": "khac",
+   "trang": "tr. 14-15",
+   "trich_en": "Taken together, these results emphasize that IRT detectability is strongly dependent on both the size and severity of the defect, as well as inspection conditions. While IRT is effective for large or severe faults, it has notable limitations in identifying small-scale or subtle defects, especially when inspections are conducted under low irradiance. [...] In contrast, subtle and localized faults such as cell cracks and ribbon disconnections are inherently difficult to detect by IRT, even under optimal imaging conditions, which emphasizes the need for complementary inspection techniques.",
+   "dich_vi": "Gộp lại, các kết quả này nhấn mạnh rằng khả năng phát hiện bằng IRT phụ thuộc mạnh vào cả KÍCH THƯỚC lẫn MỨC ĐỘ NẶNG của lỗi, cũng như điều kiện kiểm tra. Trong khi IRT hiệu quả với các lỗi lớn hoặc nặng, nó CÓ NHỮNG HẠN CHẾ ĐÁNG KỂ trong việc nhận diện các lỗi quy mô nhỏ hoặc tinh vi, đặc biệt khi kiểm tra dưới bức xạ thấp. [...] Ngược lại, các lỗi tinh vi và cục bộ như nứt cell và đứt ribbon VỐN DĨ KHÓ phát hiện bằng IRT, ngay cả trong điều kiện chụp tối ưu, điều này nhấn mạnh nhu cầu về các kỹ thuật kiểm tra bổ trợ.",
+   "y_nghia": "Đặt trần vật lý cho recall của dự án: recall thấp ở các lớp lỗi nhỏ không hẳn là lỗi mô hình mà là giới hạn của chính IRT — cần trích khi giải thích recall 45,7% của model 8 lớp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "53",
+   "bai": "Winkel, Wilbert, Röger và cộng sự (2024), \"Cell-Resolved PV Soiling Measurement Using Drone Images\", Remote Sensing 16(14):2617 (DLR)",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "tr. 3 (3/40)",
+   "trich_en": "The approach is very promising and is mainly limited by the training dataset. All images were captured from the same perspective from the same camera of the same module. The module was artificially soiled. The developed model could therefore not simply be applied to any image of a soiled PV module of a given PV park. [...] However, otherwise, the study suffers from the same limitations as the work by Mehta et. al. The three studies mentioned above analyze images that were captured by static cameras. Consequently, the scalability of their methods to commercial-scale power plants is questionable.",
+   "dich_vi": "Cách tiếp cận này rất hứa hẹn nhưng BỊ GIỚI HẠN CHỦ YẾU BỞI TẬP DỮ LIỆU HUẤN LUYỆN. Toàn bộ ảnh được chụp từ CÙNG MỘT GÓC NHÌN, bằng CÙNG MỘT CAMERA, của CÙNG MỘT TẤM PIN. Tấm pin bị bẩn nhân tạo. Do đó mô hình phát triển ra KHÔNG THỂ áp dụng đơn giản cho bất kỳ ảnh tấm pin bẩn nào của một nhà máy điện mặt trời cho trước. [...] Tuy nhiên, ngoài ra, nghiên cứu đó mắc CÙNG NHỮNG HẠN CHẾ như công trình của Mehta và cộng sự. Ba nghiên cứu nêu trên phân tích ảnh chụp bằng camera tĩnh. Do đó, khả năng mở rộng của các phương pháp này lên nhà máy quy mô thương mại LÀ ĐÁNG NGỜ.",
+   "y_nghia": "Tiền lệ được xuất bản cho việc phê phán rò rỉ dữ liệu trong lĩnh vực PV-drone — đúng cùng loại lỗi mà dự án đã tự phát hiện (mAP 0,965 đo trên chính dữ liệu train, 81% \"tập test\" nằm trong train).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "53",
+   "bai": "Winkel và cộng sự (2024), Remote Sensing 16(14):2617",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "tr. 13-14 (13-14/40)",
+   "trich_en": "There is no obvious benchmark model that could be compared with the proposed model because of its novelties. [...] Yang et al. used the same camera and the same perspectives for all images. Additionally, the same modules were used for training and evaluation. All in all, both methods should be tested under various conditions to allow a fair comparison. [...] There are not yet enough data to state whether the bias error of the method is systematic or not.",
+   "dich_vi": "KHÔNG CÓ mô hình chuẩn đối sánh (benchmark) hiển nhiên nào để so với mô hình đề xuất, do tính mới của nó. [...] Yang và cộng sự dùng cùng một camera và cùng các góc nhìn cho toàn bộ ảnh. Ngoài ra, CÙNG NHỮNG TẤM PIN được dùng cho cả huấn luyện lẫn đánh giá. Tựu trung, cả hai phương pháp NÊN ĐƯỢC KIỂM TRA trong nhiều điều kiện khác nhau để cho phép so sánh công bằng. [...] CHƯA ĐỦ DỮ LIỆU để khẳng định sai số bias của phương pháp có hệ thống hay không.",
+   "y_nghia": "Cho phép dự án viết mục \"vì sao đánh giá bằng nhãn tay 511 tấm chứ không dùng mAP\" với hai câu chống lưng: lĩnh vực chưa có benchmark, và train/eval trùng tấm là hạn chế đã được thừa nhận.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "53",
+   "bai": "Winkel và cộng sự (2024), Remote Sensing 16(14):2617",
+   "chu_de": "da-goc-nhin-gop-bang-chung",
+   "trang": "tr. 1 (Abstract) và tr. 14 (14/40)",
+   "trich_en": "Soiling can be erroneously interpreted as PV module defects and hence spatially resolved soiling measurements can improve the results of IR-based PV inspection. So far, soiling measurements are mostly performed only locally in PV fields, thus not supporting the above-mentioned IR inspections. [...] A combination of this method with thermography measurements enables the distinction of soiling-based and defect-based hotspots. Near-future plans consist of testing the method on a larger scale.",
+   "dich_vi": "Bụi bẩn (soiling) CÓ THỂ BỊ DIỄN GIẢI NHẦM THÀNH LỖI TẤM PIN, do đó phép đo soiling phân giải theo không gian có thể cải thiện kết quả kiểm tra PV dựa trên hồng ngoại. CHO ĐẾN NAY, các phép đo soiling phần lớn chỉ được thực hiện cục bộ trong cánh đồng PV, do đó KHÔNG HỖ TRỢ được các đợt kiểm tra IR nói trên. [...] Kết hợp phương pháp này với phép đo nhiệt ảnh cho phép PHÂN BIỆT hotspot do bẩn với hotspot do lỗi. Kế hoạch gần là thử nghiệm phương pháp ở quy mô lớn hơn.",
+   "y_nghia": "Dự án có sẵn cả ortho RGB (bộ Mapping1 phủ 16,6 ha) lẫn ortho nhiệt cùng site cùng ngày — đủ nguyên liệu để hiện thực hoá đúng phép kết hợp RGB-soiling × nhiệt mà tác giả mới chỉ nêu như kế hoạch.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "20",
+   "bai": "Sangjan 2026 (MatchPlant), Smart Agric. Technol. 15:102421",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 3–4",
+   "trich_en": "However, a key limitation arises when using an orthomosaic—a composite of orthorectified UAV images—for training DL models. Orthorectification can introduce artifacts, distort object geometry, and stretch or shrink plant outlines, ultimately reducing detection precision (C. Lu & Yu, 2024; Zheng et al., 2023). (tr. 3) … A key innovation in MatchPlant is training models directly on undistorted images rather than an orthomosaic to preserve spatial precision. Detected objects are then projected onto the orthomosaic, mitigating the geometric distortions introduced by orthorectification and improving detection accuracy. (tr. 4)",
+   "dich_vi": "Tuy nhiên, một hạn chế then chốt nảy sinh khi dùng orthomosaic — một sản phẩm ghép từ các ảnh UAV đã orthorectify — để huấn luyện các mô hình học sâu (DL). Orthorectification có thể đưa vào các artifact, làm méo hình học vật thể, và kéo giãn hoặc co lại đường bao của cây, rốt cuộc làm giảm độ chính xác phát hiện (C. Lu & Yu, 2024; Zheng et al., 2023). (tr. 3) … Một đổi mới then chốt trong MatchPlant là huấn luyện mô hình trực tiếp trên ảnh đã khử méo thay vì trên orthomosaic để giữ được độ chính xác vị trí. Các vật thể phát hiện được sau đó được chiếu lên orthomosaic, làm giảm nhẹ các méo hình học do orthorectification gây ra và cải thiện độ chính xác phát hiện. (tr. 4)",
+   "y_nghia": "Đây đúng là kiến trúc detect-trên-frame-rồi-chiếu của dự án, nhưng họ làm trên RGB cây ngô nên chỗ trống cho ảnh nhiệt PV vẫn còn.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "19",
+   "bai": "Manzini 2025, IEEE RO-MAN",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 2 và tr. 5",
+   "trich_en": "This paper establishes that spatial misalignment in sUAS orthomosaics is more severe than in satellite imagery, and not as correctable, therefore posing challenges to robotic systems and human-robot interfaces that utilize geospatial data. (tr.2) … The orthomosaic generation process is another area where errors may be introduced in sUAS imagery. […] During construction, the orthomosaic generation software may manipulate each image by rotating, scaling, skewing, and translating. This process represents another opportunity for errors to arise [5]. (tr.2) … These values suggest a single linear transformation of the locations of building polygons will not be sufficient to capture the variety of alignment errors observed. (tr.5)",
+   "dich_vi": "Bài báo này xác lập rằng độ lệch khớp không gian trong orthomosaic của sUAS nghiêm trọng hơn so với trong ảnh vệ tinh, và không dễ hiệu chỉnh bằng, do đó đặt ra thách thức cho các hệ thống robot và các giao diện người-robot có sử dụng dữ liệu địa không gian. (tr.2) … Quá trình tạo orthomosaic là một khâu khác nơi sai số có thể bị đưa vào ảnh sUAS. […] Trong quá trình dựng, phần mềm tạo orthomosaic có thể tác động lên từng ảnh bằng cách xoay, thay đổi tỉ lệ, làm trượt méo và tịnh tiến. Quá trình này là một cơ hội nữa để sai số phát sinh [5]. (tr.2) … Các giá trị này gợi ý rằng một phép biến đổi tuyến tính duy nhất áp lên vị trí của các polygon nhà sẽ không đủ để nắm bắt hết sự đa dạng của các sai số căn khớp đã quan sát được. (tr.5)",
+   "y_nghia": "Tiền lệ độc lập cho phát hiện của dự án rằng ortho nhiệt Metashape lệch 2,68 m và không phép biến đổi toàn cục nào cứu nổi.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "27",
+   "bai": "Wang 2020, Front. Plant Sci.",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 2, tr. 8, tr. 9",
+   "trich_en": "Specifically, the illustrations presented above raised questions about the information contained in plot-level orthomosaic images generated by the photogrammetry process, as it was perceived to fail to accurately reflect trait variation that was directly apparent on plot-level observations originated from orthorectified images. Our concern is that the blending of pixel information that underlies the photogrammetry generation of orthomosaic images could lead to loss of information, thus undermining the quality of phenotypic data. (tr.9) … However, during the generation of the orthomosaic image through SfM photogrammetry, pixels within the overlapped area from multiple raw images are blended. […] The blending of pixel values has the potential to introduce changes in values intrinsic to the raw images. (tr.2) … As observed, plot-level CT observations extracted from orthorectified images can disagree with the information available from the orthomosaic image, although not all orthorectified images reveal huge difference from the orthomosaic image on a given plot. (tr.8)",
+   "dich_vi": "Cụ thể, các minh hoạ trình bày ở trên đặt ra câu hỏi về thông tin chứa trong ảnh orthomosaic ở cấp ô thí nghiệm do quá trình photogrammetry sinh ra, vì nó được cho là đã không phản ánh chính xác biến thiên chỉ tiêu vốn hiện rõ trực tiếp trên các quan trắc cấp ô lấy từ ảnh đã orthorectify. Mối lo của chúng tôi là việc trộn thông tin pixel — vốn là nền tảng của quá trình photogrammetry tạo ra ảnh orthomosaic — có thể dẫn tới mất thông tin, do đó làm giảm chất lượng dữ liệu kiểu hình. (tr.9) … Tuy nhiên, trong quá trình tạo ảnh orthomosaic bằng SfM photogrammetry, các pixel nằm trong vùng chồng phủ đến từ nhiều ảnh gốc được trộn với nhau. […] Việc trộn giá trị pixel có khả năng làm thay đổi những giá trị vốn có của ảnh gốc. (tr.2) … Như đã quan sát được, các quan trắc CT ở cấp ô trích từ ảnh đã orthorectify có thể không khớp với thông tin có được từ ảnh orthomosaic, mặc dù không phải mọi ảnh orthorectify đều cho khác biệt lớn so với ảnh orthomosaic trên cùng một ô.  (tr.8)",
+   "y_nghia": "Cảnh báo ngược cho dự án: ortho nhiệt tự dựng của dự án là winner-take-all một ảnh/pixel chứ không trộn trung bình, nên lập luận mất thông tin do blending KHÔNG áp dụng được và không được trích theo hướng đó.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "13",
+   "bai": "Zefri 2018, Drones 2(4):41",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 17",
+   "trich_en": "The GSD of the thermal orthomosaic was 13.4 cm. At this scale, modules' edges were distinguishable but cells were not so. No defect has been detected.",
+   "dich_vi": "GSD của orthomosaic nhiệt là 13.4 cm. Ở tỉ lệ này, biên của các tấm pin phân biệt được nhưng các cell thì không. Không phát hiện được lỗi nào.",
+   "y_nghia": "Ortho nhiệt ở 13,4 cm/px mất hẳn mức cell và không phát hiện được lỗi nào — dự án bay 31 m nên GSD nhiệt tốt hơn cả bậc độ lớn, dùng để biện minh lựa chọn độ cao bay.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "13",
+   "bai": "Zefri 2018, Drones 2(4):41",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 17",
+   "trich_en": "All other thermal datasets failed the processing workflow. They either gave a deformed result or failed to pass the initial processing step.",
+   "dich_vi": "Tất cả các bộ dữ liệu nhiệt còn lại đều thất bại trong quy trình xử lý. Chúng hoặc cho ra kết quả bị biến dạng, hoặc không vượt qua được bước xử lý ban đầu.",
+   "y_nghia": "Bằng chứng do chính tác giả ghi lại rằng chuỗi ortho-trước GÃY ngay ở khâu ghép với ảnh nhiệt độ phân giải thấp — trùng đúng triệu chứng ortho nhiệt Metashape của dự án lệch 2,68 m.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "21",
+   "bai": "Cui 2025 (PRISM), Proc. IJCAI 2025",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 6",
+   "trich_en": "Manual annotation of palm crowns and isolated leaves faced challenges from vegetation overlap and orthomosaic distortions.",
+   "dich_vi": "Việc gán nhãn thủ công tán cọ và các lá riêng lẻ gặp khó khăn do thảm thực vật chồng lấn và do các méo của orthomosaic.",
+   "y_nghia": "Méo do ghép ortho làm nhiễu ngay cả nhãn tay — liên quan trực tiếp tới 511 nhãn tay của dự án và tới việc nhãn tay bị mỏ neo bởi gợi ý model.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "47",
+   "bai": "Corley 2025 (Zeitview), arXiv:2503.02128",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 5",
+   "trich_en": "This approach enables precise detection of panel corners with varying orientations, mitigating errors caused by perspective distortions and alignment inconsistencies in the captured orthomosaics. (tr. 5) … post-process erroneous rotation predictions by averaging the rotation angle of all panels in a table and then snapping the angles to the orientation of the corresponding table (tr. 5)",
+   "dich_vi": "Cách tiếp cận này cho phép phát hiện chính xác các góc của tấm pin ở những hướng khác nhau, giảm nhẹ các sai số gây ra bởi méo phối cảnh và sự thiếu nhất quán trong căn chỉnh ở các orthomosaic thu được. (tr. 5) … hậu xử lý các dự đoán góc xoay bị sai bằng cách lấy trung bình góc xoay của tất cả các tấm trong một table rồi ép (snap) các góc đó về hướng của table tương ứng (tr. 5)",
+   "y_nghia": "Phe ortho phải đổi sang detector CÓ HƯỚNG và phải ép góc bằng tay chính vì ortho gây méo phối cảnh — ăn khớp với phát hiện của dự án rằng OBB trên frame nhiệt vẫn là chữ nhật còn trên ortho thì IoU tụt 0,726→0,478.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "14",
+   "bai": "Cardoso 2024, Applied Energy 367:123242",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 5 (bảng gap của DUONG_GHEP_H ghi tr. 4)",
+   "trich_en": "Still, fusing them with thermal datasets requires the reconstruction of orthophotos which, again, leads to photogrammetry and alignment failures in low-resolution imagery (this will be noticeable even in our thermal orthophoto).",
+   "dich_vi": "Dù vậy, việc hợp nhất chúng với các tập dữ liệu nhiệt đòi hỏi phải tái dựng orthophoto, điều này, một lần nữa, dẫn tới các lỗi trắc lượng ảnh và lỗi căn chỉnh trên ảnh độ phân giải thấp (điều này sẽ thấy rõ ngay cả trong orthophoto nhiệt của chính chúng tôi).",
+   "y_nghia": "Tác giả tự nhận hỏng nhưng KHÔNG đo bằng số — dự án đo được phần dư đó (14,1 → 4,3 cm sau bù theo từng ảnh), nên đây là chỗ xoáy định lượng.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "04",
+   "bai": "Zefri 2022 (layer-3), Int. J. Appl. Earth Obs. Geoinf.",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 3 và tr. 6",
+   "trich_en": "the first is that thermal infrared cameras produce low-resolution images with smooth textures, which complicates the distinction of modules' edges on the generated orthomosaics (Diaz et al., 2020) (tr. 3) … producing thermal orthomosaics requires high overlaps and a large image scale range for keypoints computation and matching. Disregarding these requirements may severely compromise the SfM-MVS workflow. It produces several artifacts that start from the initial calibration phase and develop affecting all the posterior processing outputs (DSM, orthomosaic, etc.). (tr. 6)",
+   "dich_vi": "thứ nhất là camera hồng ngoại nhiệt cho ra ảnh độ phân giải thấp với kết cấu bề mặt mịn, làm cho việc phân biệt cạnh của các tấm pin trên orthomosaic đã dựng trở nên phức tạp (Diaz et al., 2020) (tr. 3) … việc tạo ra orthomosaic nhiệt đòi hỏi độ chồng phủ cao và một dải tỉ lệ ảnh rộng để tính toán và so khớp keypoint. Bỏ qua những yêu cầu này có thể làm hỏng nghiêm trọng quy trình SfM-MVS. Nó sinh ra nhiều artifact bắt đầu từ giai đoạn hiệu chuẩn ban đầu rồi phát triển và ảnh hưởng đến tất cả các đầu ra xử lý phía sau (DSM, orthomosaic, v.v.). (tr. 6)",
+   "y_nghia": "Chính bài BÊNH phe ortho tự nhận biên tấm trên ortho nhiệt nhoè tới mức phải khoanh tay ở cả 28 nhà máy — cái giá vận hành mà dự án tránh được vì detect trên frame.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "34",
+   "bai": "de Oliveira 2022 (review 183 bài), Energies",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 15",
+   "trich_en": "For the task of performing the orthomosaicking of aIRT images to facilitate the localization of the faults in the field, four papers employed existing software to perform the task, while ten studies approached the development of algorithms to create the orthomosaic of the PV plant. However, most of the proposed methods are based on DIP techniques; therefore, the resulting mosaic consists of a simple image, without additional GPS information. The correlation of orthomosaic images with GPS coordinates and the identification of modules and strings according to the site nomenclature are areas that require further investigation.",
+   "dich_vi": "Đối với nhiệm vụ ghép orthomosaic các ảnh aIRT nhằm hỗ trợ việc định vị lỗi ngoài hiện trường, bốn bài báo dùng phần mềm sẵn có để thực hiện nhiệm vụ này, trong khi mười nghiên cứu đi theo hướng phát triển thuật toán để tạo orthomosaic của nhà máy PV. Tuy nhiên, phần lớn các phương pháp được đề xuất đều dựa trên kỹ thuật DIP; do đó, ảnh mosaic thu được chỉ là một ảnh đơn thuần, không có thêm thông tin GPS. Việc gắn ảnh orthomosaic với toạ độ GPS và việc định danh các module và các string theo danh pháp của hiện trường là những mảng cần được nghiên cứu thêm.",
+   "y_nghia": "Câu quý nhất cho bản thảo: một review ngành tuyên bố thẳng rằng gắn ortho với toạ độ GPS và gọi tên tấm/dây theo danh pháp hiện trường VẪN CÒN LÀ KHOẢNG TRỐNG — đúng cái pipeline RTK không GCP + gán nhãn 6473 tấm của dự án lấp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "01",
+   "bai": "Bommes 2022, Prog. Photovolt.",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 1",
+   "trich_en": "Another method for module localization is the creation of an orthophoto from a few high-altitude images [14]-[16]. Orthophotos allow visualizing the temperature distribution of the entire PV plant. One issue with this approach is that it is not always possible to take images from high altitudes, e.g. if there are nearby streets. Furthermore, a low spatial resolution and possible visual artefacts impede accurate detection of abnormal modules based on the orthophoto alone.",
+   "dich_vi": "Một phương pháp khác để định vị tấm pin là tạo một orthophoto từ một vài ảnh chụp ở độ cao lớn [14]-[16]. Orthophoto cho phép hiển thị trực quan phân bố nhiệt độ của toàn bộ nhà máy PV. Một vấn đề của cách tiếp cận này là không phải lúc nào cũng có thể chụp ảnh từ độ cao lớn, ví dụ khi có đường phố ở gần. Hơn nữa, độ phân giải không gian thấp và các artefact thị giác có thể xuất hiện làm cản trở việc phát hiện chính xác các tấm pin bất thường chỉ dựa trên orthophoto.",
+   "y_nghia": "Tác giả nói thẳng rằng chỉ dựa vào orthophoto thì không phát hiện chính xác được tấm bất thường — chống lưng cho lựa chọn detect trên frame của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "02",
+   "bai": "Bommes 2021, Prog. Photovolt.",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 2",
+   "trich_en": "Several works [36-38] create an orthophoto of the entire PV plant from a higher altitude. This requires nadiral images with a suitable overlap which may not always be feasible in case of nearby power lines, streets or train tracks. Spatial resolution of a high-altitude image is low making fine-grained anomaly classification of PV modules difficult.",
+   "dich_vi": "Một số công trình [36-38] tạo một orthophoto của toàn bộ nhà máy PV từ độ cao lớn hơn. Việc này đòi hỏi ảnh nadir với độ chồng phủ phù hợp, điều không phải lúc nào cũng khả thi khi gần đó có đường dây điện, đường phố hoặc đường ray xe lửa. Độ phân giải không gian của ảnh chụp ở độ cao lớn là thấp, khiến việc phân loại dị thường chi tiết của các tấm PV trở nên khó khăn.",
+   "y_nghia": "Ràng buộc vận hành của đường ortho-trước: bắt buộc phải bay nadir chồng phủ cao, thứ không phải hiện trường nào cũng cho phép.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "09",
+   "bai": "Løfstad-Lie 2025, IEEE J. Photovolt. 15(5)",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 1 và tr. 9",
+   "trich_en": "Another approach is to create an orthophoto from high-altitude images, which is mainly suitable for smaller PV plants [15]. (tr. 1) … As the PV power plant sizes increase globally, storing images of the entire plant for postprocessing will become impractical. (tr. 9)",
+   "dich_vi": "Một cách tiếp cận khác là tạo orthophoto từ ảnh chụp ở độ cao lớn, cách này chủ yếu phù hợp với các nhà máy điện mặt trời nhỏ hơn [15]. (tr. 1) … Khi quy mô các nhà máy điện mặt trời tăng lên trên toàn cầu, việc lưu trữ ảnh của toàn bộ nhà máy để hậu xử lý sẽ trở nên bất khả thi trên thực tế. (tr. 9)",
+   "y_nghia": "Lý lẽ quy mô chống lại ortho-first: phải lưu toàn bộ ảnh để hậu xử lý là tiền đề bắt buộc của mọi chuỗi ghép ortho.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "08",
+   "bai": "Barraz 2025, Cleaner Eng. Technol.",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 2, tr. 10, tr. 13",
+   "trich_en": "Previous studies have adopted orthorectification (Zefri et al., 2023b) or SFM-MVS process (Bommes et al., 2022) process to estimate the geolocation of each installation. Nevertheless, these methods are not suitable for running in real-time inference and the orthorectification require nadiral images with high overlap (Buerhop et al., 2022). (tr. 2) … Nevertheless, geolocation from raw images improves adaptability to real-time applications, in contrast to SfM-MVS (Bommes et al., 2022) or orthorectification methods (Hernández-López et al., 2023). (tr. 10) … By integrating segmentation and geolocation in the same step, directly from raw images, the proposed approach overcomes the need for manual labeling and orthorectification. (tr. 13)",
+   "dich_vi": "Các nghiên cứu trước đã áp dụng orthorectification (Zefri et al., 2023b) hoặc quy trình SFM-MVS (Bommes et al., 2022) để ước lượng vị trí địa lý của từng hệ thống lắp đặt. Tuy nhiên, các phương pháp này không phù hợp để chạy suy luận thời gian thực và orthorectification đòi hỏi ảnh chụp thẳng đứng (nadir) với độ chồng phủ cao (Buerhop et al., 2022). (tr. 2) … Tuy nhiên, định vị địa lý từ ảnh thô cải thiện khả năng thích ứng với các ứng dụng thời gian thực, trái ngược với SfM-MVS (Bommes et al., 2022) hay các phương pháp orthorectification (Hernández-López et al., 2023). (tr. 10) … Bằng cách tích hợp phân đoạn và định vị địa lý vào cùng một bước, trực tiếp từ ảnh thô, cách tiếp cận được đề xuất khắc phục được nhu cầu gán nhãn thủ công và orthorectification. (tr. 13)",
+   "y_nghia": "Đối thủ gần nhất của dự án về mặt kiến trúc: họ đã bỏ ortho nhưng chạy GPS tuyệt đối nên sai số 2,51 m, còn dự án bay RTK fix 598/598.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "45",
+   "bai": "Kozák 2025, arXiv 2501.14587",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "tr. 7",
+   "trich_en": "In [16] and [17], SfM and multi-view stereo techniques were used to create terrain and surface models of the area and generate orthoimages. In both works, the detection of defective PV modules was performed on these orthoimages by applying different contour detection and thresholding operations. However, these systems rely on pre-planned flight paths at higher altitudes, they suffer from limited autonomy, and fail to acquire detailed thermal images.",
+   "dich_vi": "Trong [16] và [17], các kỹ thuật SfM và multi-view stereo đã được dùng để tạo các mô hình địa hình và mô hình bề mặt của khu vực và sinh ra các orthoimage. Trong cả hai công trình, việc phát hiện các tấm pin PV bị lỗi được thực hiện trên các orthoimage này bằng cách áp dụng các phép phát hiện đường bao và phân ngưỡng khác nhau. Tuy nhiên, các hệ thống này phụ thuộc vào những đường bay được lập kế hoạch trước ở độ cao lớn hơn, chúng chịu hạn chế về khả năng tự hành, và không thu được các ảnh nhiệt chi tiết.",
+   "y_nghia": "Ba cái giá của ortho-first do một bài 2025 gọi tên: đường bay lập sẵn, kém tự hành, và ảnh nhiệt không đủ chi tiết.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "47",
+   "bai": "Corley 2025 (Zeitview), arXiv:2503.02128",
+   "chu_de": "roi-bo-ortho",
+   "trang": "tr. 8",
+   "trich_en": "For future work, we plan to investigate the feasibility of creating an image-level pipeline instead of ortho-level, which can be deployed at the edge on a sUAS or drone. This would allow for any immediate safety risks to be identified quickly before the pilot even finishes data acquisition of the site of interest.",
+   "dich_vi": "Trong hướng nghiên cứu tiếp theo, chúng tôi dự định khảo sát tính khả thi của việc tạo ra một pipeline ở mức ảnh thay vì ở mức ortho, thứ có thể được triển khai tại biên trên một sUAS hoặc drone. Điều này sẽ cho phép nhận diện nhanh mọi rủi ro an toàn tức thời trước cả khi phi công kịp hoàn tất việc thu thập dữ liệu của khu vực quan tâm.",
+   "y_nghia": "Đội lớn nhất của phe ghép-ortho (6.155 nhà máy) tự viết ra rằng bước tiếp theo của họ là BỎ mức-ortho về mức-ảnh — câu mạnh nhất để mở Related Work, đồng thời là hạn chót vì họ đã tuyên bố ý định.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "17",
+   "bai": "Zhu 2025, arXiv 2509.12400",
+   "chu_de": "roi-bo-ortho",
+   "trang": "tr. 6",
+   "trich_en": "A natural extension is to combine mixed-domain training with inference on raw images. The detected crown centers can be georeferenced using the same transformations applied in orthomosaic generation, enabling spatial mapping without constructing full mosaics. This facilitates on-field and near-real-time monitoring, which traditional orthomosaic-based pipelines cannot achieve.",
+   "dich_vi": "Một hướng mở rộng tự nhiên là kết hợp huấn luyện đa miền (mixed-domain) với suy luận trên ảnh gốc. Các tâm tán cây được phát hiện có thể được georeferencing bằng chính những phép biến đổi đã áp dụng khi tạo orthomosaic, cho phép lập bản đồ không gian mà không cần dựng toàn bộ ảnh ghép. Điều này tạo thuận lợi cho việc giám sát ngay tại hiện trường và gần thời gian thực, điều mà các pipeline truyền thống dựa trên orthomosaic không đạt được.",
+   "y_nghia": "Họ mới NÊU Ý TƯỞNG chiếu điểm phát hiện trên frame ra toạ độ mà không cần dựng ortho, chưa làm và chưa đo sai số định vị — đúng chỗ dự án đã làm và có số.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "09",
+   "bai": "Løfstad-Lie 2025, IEEE J. Photovolt. 15(5)",
+   "chu_de": "roi-bo-ortho",
+   "trang": "tr. 9",
+   "trich_en": "As the PV power plant sizes increase globally, storing images of the entire plant for postprocessing will become impractical. A more viable approach involves imaging only real-time detected defects for documentation. Inspection pipelines compatible with real-time detection are therefore a critical focus for future developments, alongside aligning fault definitions with detection methods.",
+   "dich_vi": "Khi quy mô các nhà máy điện mặt trời tăng lên trên toàn cầu, việc lưu trữ ảnh của toàn bộ nhà máy để hậu xử lý sẽ trở nên bất khả thi trên thực tế. Một cách tiếp cận khả thi hơn là chỉ chụp ảnh những khiếm khuyết được phát hiện thời gian thực để lưu hồ sơ. Do đó, các pipeline kiểm tra tương thích với phát hiện thời gian thực là một trọng tâm then chốt cho những phát triển trong tương lai, song song với việc đồng bộ các định nghĩa lỗi với phương pháp phát hiện.",
+   "y_nghia": "Lập luận chống ortho-first theo hướng quy mô lưu trữ, trích lại được nguyên câu vào phần biện hộ kiến trúc frame-level của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "chua-so-hai-phe",
+   "trang": "tr. 9",
+   "trich_en": "The improvement in tree species classification performance that multiview reasoning yielded in our experiments may result from a combination of several factors, including elimination of artifacts from the orthomosaicing process, increased number and diversity of training examples, improved robustness due to prediction ensembling, and added information from the side views of objects. Further research may help to understand the contributions of each of these mechanisms.",
+   "dich_vi": "Mức cải thiện về hiệu năng phân loại loài cây mà suy luận đa góc nhìn (multiview) mang lại trong các thí nghiệm của chúng tôi có thể bắt nguồn từ sự kết hợp của nhiều yếu tố, bao gồm việc loại bỏ các artefact sinh ra từ quá trình ghép orthomosaic, số lượng và độ đa dạng của mẫu huấn luyện tăng lên, độ bền vững được cải thiện nhờ gộp tổ hợp (ensembling) các dự đoán, và thông tin bổ sung từ các góc nhìn ngang của vật thể. Nghiên cứu tiếp theo có thể giúp hiểu rõ phần đóng góp của từng cơ chế trong số này.",
+   "y_nghia": "Tác giả tự nhận không tách được phần đóng góp của từng cơ chế — đúng cái ablation frame vs ortho mà dự án đã chạy và tách được (mất 47% là do HƯỚNG CẢNH xoay 90°, xoay lại thì 53%→83%).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "17",
+   "bai": "Zhu 2025, arXiv 2509.12400",
+   "chu_de": "chua-so-hai-phe",
+   "trang": "tr. 5",
+   "trich_en": "Conversely, raw-trained models degrade when applied to orthomosaics, in part due to their reliance on high-fidelity training signals, but also because the raw dataset is smaller in size, further limiting transferability. Since our focus is on raw imagery deployment, this limitation is less critical.",
+   "dich_vi": "Ngược lại, các mô hình huấn luyện trên ảnh gốc bị suy giảm khi áp dụng lên orthomosaic, một phần do chúng phụ thuộc vào tín hiệu huấn luyện có độ trung thực cao, nhưng cũng vì bộ dữ liệu ảnh gốc có kích thước nhỏ hơn, càng làm hạn chế khả năng chuyển giao. Vì trọng tâm của chúng tôi là triển khai trên ảnh gốc nên hạn chế này ít nghiêm trọng hơn.",
+   "y_nghia": "Tác giả tự thừa nhận phép so hai phe của họ chưa cân (bộ raw nhỏ hơn bộ ortho) nên con số chênh lệch chưa phải kết luận sạch — chỗ cho một ablation cùng dữ liệu cùng model của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "34",
+   "bai": "de Oliveira 2022 (review), Energies",
+   "chu_de": "chua-so-hai-phe",
+   "trang": "tr. 16",
+   "trich_en": "Besides the different result types, the different evaluation metrics (or the lack of them), dataset sizes and image resolutions of the inputs also make the comparison between studies difficult. However, in general, the algorithms with the highest metrics are the ones dedicated to detecting and classifying a few types of faults compared to those that carry out the classification of many classes of faults. This proves that detection and classification of multiple faults is a complex task and further investigation is required.",
+   "dich_vi": "Bên cạnh sự khác nhau về kiểu kết quả, các chỉ số đánh giá khác nhau (hoặc việc thiếu chúng), cỡ tập dữ liệu và độ phân giải ảnh đầu vào cũng làm cho việc so sánh giữa các nghiên cứu trở nên khó khăn. Tuy nhiên, nhìn chung, những thuật toán có chỉ số cao nhất là những thuật toán chỉ chuyên phát hiện và phân loại một vài kiểu lỗi, so với những thuật toán thực hiện phân loại nhiều lớp lỗi. Điều này chứng tỏ rằng phát hiện và phân loại nhiều loại lỗi là một nhiệm vụ phức tạp và cần được nghiên cứu thêm.",
+   "y_nghia": "Review thừa nhận không so chéo được giữa các bài — giá trị của một ablation nội bộ có kiểm soát (cùng dữ liệu, cùng model, chỉ đổi frame vs ortho) chính nằm ở đây, và giải thích vì sao model 8 lớp của dự án recall thấp hơn model 4 lớp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "chua-so-hai-phe",
+   "trang": "tr. 9",
+   "trich_en": "The workflow we present is applicable to land cover mapping tasks and to classification of existing polygons, but it cannot be naively applied to object detection tasks. Future work will extend this framework to multiview object detection.",
+   "dich_vi": "Quy trình mà chúng tôi trình bày áp dụng được cho các bài toán lập bản đồ lớp phủ mặt đất và cho việc phân loại các polygon có sẵn, nhưng không thể áp dụng một cách ngây thơ cho các bài toán phát hiện vật thể. Công việc tương lai sẽ mở rộng khung này sang phát hiện vật thể đa góc nhìn.",
+   "y_nghia": "Framework chiếu-qua-mesh của họ chỉ PHÂN LOẠI polygon có sẵn, chưa PHÁT HIỆN vật thể — dự án chính là multiview object detection, nên câu này là cách ngắn nhất để định vị đóng góp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "da-goc-nhin-gop-bang-chung",
+   "trang": "tr. 3",
+   "trich_en": "Although some tree species classification work has leveraged imagery of the same trees from multiple time points and multiple sensors [2, 37], no work to our knowledge has used multiple views of the same trees from different angles.",
+   "dich_vi": "Mặc dù một số công trình phân loại loài cây đã tận dụng ảnh của cùng những cây đó ở nhiều thời điểm và từ nhiều cảm biến [2, 37], theo hiểu biết của chúng tôi chưa có công trình nào sử dụng nhiều góc nhìn của cùng những cây đó từ các góc khác nhau.",
+   "y_nghia": "Tuyên bố chưa ai khai thác nhiều GÓC NHÌN của cùng một vật thể — dự án có sẵn thống kê số ảnh nhìn thấy (n≥3 cho P 0,968; 64% FP chỉ hiện một ảnh), đúng loại bằng chứng câu này gọi tên.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "da-goc-nhin-gop-bang-chung",
+   "trang": "tr. 2",
+   "trich_en": "This approach is validated on indoor and street-scale scenes, but to our knowledge, no prior work uses semantic meshes and un-rectified multiview image-based predictions for large-scale aerial mapping tasks.",
+   "dich_vi": "Cách tiếp cận này được kiểm chứng trên các cảnh trong nhà và ở quy mô đường phố, nhưng theo hiểu biết của chúng tôi, chưa có công trình nào trước đây dùng mesh ngữ nghĩa cùng các dự đoán dựa trên ảnh đa góc nhìn chưa nắn chỉnh cho các bài toán lập bản đồ hàng không quy mô lớn.",
+   "y_nghia": "Lá cờ đã cắm cho mesh ngữ nghĩa + ảnh chưa nắn ở quy mô hàng không — đừng viết lại câu này, nhưng với ảnh NHIỆT thì khoảng trống vẫn mở.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "da-goc-nhin-gop-bang-chung",
+   "trang": "tr. 3",
+   "trich_en": "Rather than using orthomosaics, Santos et al. [32] applied CNNs to un-rectified drone imagery to detect specific tree species of concern among urban trees. However, these experiments were only conducted at the image-level and predictions were not mapped into geospatial coordinates, which is critical for many management applications.",
+   "dich_vi": "Thay vì dùng orthomosaic, Santos et al. [32] áp dụng CNN lên ảnh drone chưa nắn chỉnh để phát hiện những loài cây cần quan tâm trong số cây đô thị. Tuy nhiên, các thí nghiệm này chỉ được tiến hành ở mức ảnh và các dự đoán không được ánh xạ về toạ độ địa không gian, vốn là điều then chốt với nhiều ứng dụng quản lý.",
+   "y_nghia": "Chỉ đúng điểm yếu của phe detect-trên-frame: detect được nhưng dừng ở mức ảnh, không ra toạ độ — dự án có khâu chiếu ra toạ độ + gộp đa ảnh nên không trùng với Santos.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "01",
+   "bai": "Bommes 2022, Prog. Photovolt.",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 8 (câu kết thúc sang tr. 9)",
+   "trich_en": "One possible future improvement of our method is the use of centimeter-accurate RTK-GPS instead of standard GPS, which could reduce the RMSE of module geocoordinates and stabilize the SfM procedure.",
+   "dich_vi": "Một cải tiến khả dĩ trong tương lai cho phương pháp của chúng tôi là dùng RTK-GPS có độ chính xác cỡ centimet thay cho GPS thường, điều này có thể làm giảm RMSE của toạ độ địa lý các tấm pin và làm ổn định quy trình SfM.",
+   "y_nghia": "Chính tác giả nêu RTK-GPS là bước cải tiến CHƯA LÀM — dữ liệu RTK fix 598/598 không GCP của dự án rơi đúng vào ô trống này (câu neo mạnh nhất cho K1).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "08",
+   "bai": "Barraz 2025, Cleaner Eng. Technol.",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 10",
+   "trich_en": "The inspection and mapping missions were conducted using the absolute positioning mode, which can cause metric errors while localizing the UAV in the mission. This, in turn, accounts for the average error of 2 m. The accuracy can be enhanced using RTK-GPS positioning during the mission to achieve centimeter-level error (Bommes et al., 2022). Whereas, in (Maes, 2025), it was also indicated that positioning accuracy can be further enhanced using Ground Control Points (GCPs) combined with RTK or PPK.",
+   "dich_vi": "Các nhiệm vụ kiểm tra và lập bản đồ được thực hiện bằng chế độ định vị tuyệt đối, chế độ này có thể gây ra sai số cỡ mét khi định vị UAV trong nhiệm vụ. Điều này, đến lượt nó, giải thích cho sai số trung bình 2 m. Độ chính xác có thể được cải thiện bằng cách dùng định vị RTK-GPS trong nhiệm vụ để đạt sai số ở mức centimet (Bommes et al., 2022). Trong khi đó, ở (Maes, 2025), cũng đã chỉ ra rằng độ chính xác định vị có thể được nâng cao hơn nữa bằng cách dùng Ground Control Points (GCPs) kết hợp với RTK hoặc PPK.",
+   "y_nghia": "Hai nhóm khác nhau cách nhau ba năm cùng đề xuất RTK và cùng không làm — dự án bay RTK fix có sẵn số so sánh trực tiếp với 2,51 m của họ.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "09",
+   "bai": "Løfstad-Lie 2025, IEEE J. Photovolt. 15(5)",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 7",
+   "trich_en": "The georeferencing error varies across the PV power plant. Because of variations in terrain elevation, detections in areas with uneven terrain are more prone to localization offsets. This occurs because the UAV measures its own altitude, not the terrain elevation at the location of the detection. To account for terrain variations, a digital elevation model correction could be used, with ray tracing to determine the altitude at the detections. However, this will require more a priori data for each specific park to be imaged.",
+   "dich_vi": "Sai số georeferencing thay đổi trên khắp nhà máy điện mặt trời. Do độ cao địa hình biến thiên, các detection ở những khu vực địa hình gồ ghề dễ bị lệch vị trí hơn. Điều này xảy ra vì UAV đo độ cao của chính nó, chứ không phải độ cao địa hình tại vị trí của detection. Để tính đến biến thiên địa hình, có thể dùng hiệu chỉnh bằng mô hình số độ cao, kết hợp cắt tia (ray tracing) để xác định độ cao tại các detection. Tuy nhiên, điều này sẽ đòi hỏi thêm dữ liệu tiên nghiệm cho từng nhà máy cụ thể cần chụp ảnh.",
+   "y_nghia": "Gap ăn khớp nhất với dự án: họ nêu đúng cách sửa (cắt tia qua DSM thay mặt phẳng) nhưng KHÔNG làm vì ngại chi phí dữ liệu tiên nghiệm, trong khi chuỗi Metashape của dự án đã sinh sẵn DSM.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "07",
+   "bai": "Kozak 2025, Int. J. Eng. Geosci.",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 5",
+   "trich_en": "The accuracy of the raw 3D reconstruction model is limited. The raw model exhibits spatial discrepancies that are generally moderate but can occasionally exceed 0.6 meters. When the discrepancies exceed half the size of a PV module, the estimated positions cannot be confidently assigned to a specific module, which makes direct merging based on their estimated 3D positions impossible.",
+   "dich_vi": "Độ chính xác của mô hình tái dựng 3D thô là hạn chế. Mô hình thô bộc lộ những sai lệch không gian nhìn chung ở mức vừa phải nhưng đôi khi có thể vượt quá 0.6 meters. Khi các sai lệch vượt quá một nửa kích thước của một tấm pin PV, các vị trí ước lượng không thể được gán một cách chắc chắn cho một tấm cụ thể, điều này khiến việc gộp trực tiếp dựa trên các vị trí 3D ước lượng của chúng trở thành bất khả thi.",
+   "y_nghia": "Tác giả thừa nhận sản phẩm trắc lượng sai đến mức không gán nổi một detection cho đúng tấm pin — đúng lỗ hổng mà sai số 2,56 cm của dự án lấp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "07",
+   "bai": "Kozak 2025, Int. J. Eng. Geosci.",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 9",
+   "trich_en": "The margin of error in the reference model is estimated to be around 0.5 meters.",
+   "dich_vi": "Biên sai số trong mô hình đối chiếu được ước tính vào khoảng 0.5 meters.",
+   "y_nghia": "Mọi con số độ chính xác tuyệt đối của họ bị chặn trên bởi mô hình đối chiếu tự dựng tay sai ~0,5 m — dự án muốn hơn hẳn thì phải mở rộng kiểm chứng tuyệt đối (hiện chỉ có 11 điểm trên một ảnh).",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "21",
+   "bai": "Cui 2025 (PRISM), Proc. IJCAI 2025",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 12",
+   "trich_en": "However, its elevated Pred2GT shift (1.10m) suggests overfitting to site-specific features, yielding \"precise but misplaced\" predictions.",
+   "dich_vi": "Tuy nhiên, độ dịch Pred2GT tăng cao của nó (1.10m) gợi ý có sự quá khớp với các đặc trưng riêng của khu vực, tạo ra những dự đoán \"chính xác nhưng đặt sai chỗ\".",
+   "y_nghia": "Tự thừa nhận kiểu lỗi đúng vật nhưng sai chỗ — cảnh báo rằng recall/precision không nói gì về sai số định vị, nên dự án phải báo cả hai loại số.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "13",
+   "bai": "Zefri 2018, Drones 2(4):41",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 21",
+   "trich_en": "However, the use of GCP still cannot be as cost effective as the use of RTK surveys that directly provide the required precise geo-localization.",
+   "dich_vi": "Tuy nhiên, việc sử dụng GCP vẫn không thể tiết kiệm chi phí bằng việc sử dụng đo đạc RTK, vốn trực tiếp cung cấp phép định vị địa lý chính xác cần thiết.",
+   "y_nghia": "Câu bênh trực tiếp cho thiết kế RTK-không-GCP của dự án, trích thẳng vào phần biện hộ phương pháp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "20",
+   "bai": "Sangjan 2026 (MatchPlant), Smart Agric. Technol.",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 22",
+   "trich_en": "Orthorectification accuracy in ODM, as with any photogrammetric solution, is also influenced by the quantity and spatial distribution of GCPs. Especially in complex terrain, suboptimal GCP placement can lead to spatial misalignments that propagate through the projection, trait extraction, and phenotyping analysis steps (Mora-Félix et al., 2024; Pugh et al., 2021).",
+   "dich_vi": "Độ chính xác orthorectification trong ODM, cũng như với bất kỳ giải pháp trắc quang (photogrammetric) nào, cũng chịu ảnh hưởng bởi số lượng và phân bố không gian của các GCP. Đặc biệt ở địa hình phức tạp, việc bố trí GCP chưa tối ưu có thể dẫn tới những sai lệch vị trí không gian lan truyền qua các bước chiếu, trích xuất tính trạng và phân tích kiểu hình (Mora-Félix et al., 2024; Pugh et al., 2021).",
+   "y_nghia": "Sai số hình học khâu ghép/nắn truyền thẳng xuống toạ độ cuối và phụ thuộc số lượng cùng phân bố GCP — dự án bay RTK 0 GCP đo được đúng sai số này là lấp trực tiếp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "34",
+   "bai": "de Oliveira 2022 (review), Energies",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 13",
+   "trich_en": "Some of the challenges for the development of a robust automatic classification of faults include the reflections and shadows from surroundings and the lack of a standardized image database (with standard flight directions and weather conditions). When using DL, the computation requirements, the need for a large dataset with annotated data and the processing time must also be overcome.",
+   "dich_vi": "Một số thách thức đối với việc phát triển một phương pháp phân loại lỗi tự động bền vững bao gồm phản xạ và bóng đổ từ môi trường xung quanh cùng với việc thiếu một cơ sở dữ liệu ảnh chuẩn hoá (với hướng bay và điều kiện thời tiết chuẩn). Khi dùng DL, còn phải vượt qua cả các yêu cầu về tính toán, nhu cầu có một tập dữ liệu lớn đã được gán nhãn và thời gian xử lý.",
+   "y_nghia": "Nêu đích danh HƯỚNG BAY chuẩn là thứ ngành đang thiếu — móc nối trực tiếp vào phát hiện của dự án rằng mất 47% recall là do hướng cảnh xoay 90° chứ không phải do ghép làm nhoè.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "22",
+   "bai": "Morando 2022, Drones",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 2",
+   "trich_en": "However, this approach has two limitations. Firstly, it requires covering the whole zone including \"empty\" areas between PV module rows: depending on how PV module rows have been arranged in the PV plant, there may be large areas without PV panels to be inspected. Secondly, flying high above the ground limits the impact of positioning errors, which is good, but also the resolution of the images to be later inspected. … One could imagine a solution that does not build an orthomosaic of the whole plant. The UAV can be instructed to move along PV module rows at a lower height, Figure 1, so that the panel almost completely occupies the camera's field of view and ignores the areas where there are no PV modules to be inspected. This process will produce \"strips\" of higher resolution images (one strip per PV module row) instead of a \"mosaic.\"",
+   "dich_vi": "Tuy nhiên, cách tiếp cận này có hai hạn chế. Thứ nhất, nó đòi hỏi phải phủ toàn bộ khu vực, bao gồm cả những vùng \"trống\" giữa các hàng module PV: tuỳ theo cách các hàng module PV được bố trí trong nhà máy PV, có thể có những vùng rộng lớn không có tấm pin PV nào cần kiểm tra. Thứ hai, bay cao trên mặt đất làm hạn chế ảnh hưởng của sai số định vị, đó là điều tốt, nhưng cũng hạn chế luôn độ phân giải của những bức ảnh sẽ được kiểm tra về sau. … Có thể hình dung một giải pháp không dựng orthomosaic của toàn bộ nhà máy. UAV có thể được lệnh di chuyển dọc theo các hàng module PV ở độ cao thấp hơn, Figure 1, sao cho tấm pin chiếm gần trọn trường nhìn của camera và bỏ qua những vùng không có module PV cần kiểm tra. Quá trình này sẽ tạo ra các \"dải\" ảnh độ phân giải cao hơn (mỗi hàng module PV một dải) thay vì một \"mosaic.\"",
+   "y_nghia": "Phát biểu gọn nhất về cái giá vận hành của việc phải phủ kín để ghép được — hai cái giá đúng bằng thứ dự án tránh khi detect trên frame.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "18",
+   "bai": "Russell 2024, arXiv 2405.09544",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 9",
+   "trich_en": "Although forest stand structure may be best reconstructed from high-altitude (e.g., 120 m above ground level) drone imagery [39], our work suggests that to obtain optimal species classification results, an additional imaging mission to collect lower-altitude, oblique imagery should be performed. However, when performing a second mission is infeasible, the multiview approach applied to the same high-altitude nadir images used for structure estimation can still enable increased accuracy relative to an orthomosaic-based approach.",
+   "dich_vi": "Mặc dù cấu trúc lâm phần có thể được tái dựng tốt nhất từ ảnh drone bay cao (ví dụ 120 m so với mặt đất) [39], công trình của chúng tôi cho thấy rằng để có được kết quả phân loại loài tối ưu thì nên thực hiện thêm một chuyến bay chụp ảnh nữa nhằm thu ảnh nghiêng ở độ cao thấp hơn. Tuy nhiên, khi việc thực hiện chuyến bay thứ hai là bất khả thi, cách tiếp cận đa góc nhìn áp dụng lên chính những ảnh nadir bay cao đã dùng để ước lượng cấu trúc vẫn có thể cho độ chính xác cao hơn so với cách tiếp cận dựa trên orthomosaic.",
+   "y_nghia": "Câu bảo chứng cho dự án: chỉ có 1 sortie nhiệt, không bay thêm được, nhưng chuyển sang xử lý đa-ảnh trên chính bộ ảnh cũ vẫn hơn ortho.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "20",
+   "bai": "Sangjan 2026 (MatchPlant), Smart Agric. Technol.",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 24",
+   "trich_en": "Evaluation across object sizes revealed strong performance for medium and large objects but lower accuracy for very small instances (< 32 × 32 pixels). Although the dataset focused on early-stage plants to reduce occlusion, its limited pixel footprint in UAV images affected detection reliability. Future improvements may include increasing image resolution via lower flight altitude, using higher-resolution sensors, or image enhancement techniques before training (Varol Malkocoglu & Samli, 2025; Zhou et al., 2025).",
+   "dich_vi": "Đánh giá theo kích thước vật thể cho thấy hiệu năng mạnh với vật thể trung bình và lớn nhưng độ chính xác thấp hơn với các thực thể rất nhỏ (< 32 × 32 pixels). Mặc dù tập dữ liệu tập trung vào cây ở giai đoạn đầu để giảm che khuất, dấu chân pixel hạn chế của chúng trong ảnh UAV đã ảnh hưởng tới độ tin cậy của việc phát hiện. Các cải tiến trong tương lai có thể bao gồm tăng độ phân giải ảnh bằng cách hạ độ cao bay, dùng cảm biến độ phân giải cao hơn, hoặc các kỹ thuật tăng cường ảnh trước khi huấn luyện (Varol Malkocoglu & Samli, 2025; Zhou et al., 2025).",
+   "y_nghia": "Vật thể dưới 32×32 px là điểm gãy — đúng cỡ một vết nóng trên ảnh nhiệt 640×512, nên đây là chỗ để lập luận vì sao bài toán nhiệt còn khó hơn.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "04",
+   "bai": "Zefri 2022 (layer-3), Int. J. Appl. Earth Obs. Geoinf.",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 12",
+   "trich_en": "Flying at lower altitudes enables to take more fine-grained images; on the flip side, it increases the cost and material resources needed to perform flights. […] In parallel, one important question still arises: how can we improve the classifier performance without needing to fly at lower altitudes? One solution is the parallel acquisition of RGB imagery. Several UAV models can be loaded with two cameras.",
+   "dich_vi": "Bay ở độ cao thấp hơn cho phép chụp được ảnh chi tiết hơn; mặt khác, nó làm tăng chi phí và nguồn lực vật chất cần thiết để thực hiện các chuyến bay. […] Song song đó, vẫn nảy sinh một câu hỏi quan trọng: làm thế nào để cải thiện hiệu năng của bộ phân loại mà không cần phải bay ở độ cao thấp hơn? Một giải pháp là thu thập song song ảnh RGB. Nhiều mẫu UAV có thể mang được hai camera.",
+   "y_nghia": "Tác giả đặt câu hỏi mở và chỉ mới ĐỀ XUẤT dùng RGB song song chứ chưa làm — đúng khoảng trống cho hướng hợp nhất nhiệt-RGB bằng ma trận H trên ZH20T của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "47",
+   "bai": "Corley 2025 (Zeitview), arXiv:2503.02128",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 8",
+   "trich_en": "In comparison to the visible spectrum, infrared scans experience significant variance in the recorded temperature values based on several factors such as acquisition time of day, seasonality, and weather. Furthermore, unique soil types and their temperatures vary across the U.S. When these temperatures are similar to the temperatures of solar panels or anomalies, distinguishing the defects of interest can become difficult to distinguish from the background. These variables make selecting global optimal statistics for normalization of temperatures infeasible.",
+   "dich_vi": "So với dải phổ nhìn thấy, các lượt quét hồng ngoại chịu biến động đáng kể ở các giá trị nhiệt độ ghi nhận được, do nhiều yếu tố như thời điểm thu thập trong ngày, tính mùa vụ và thời tiết. Hơn nữa, các loại đất đặc thù cùng nhiệt độ của chúng thay đổi khắp nước Mỹ. Khi những nhiệt độ này tương đồng với nhiệt độ của tấm pin mặt trời hoặc của các dị thường, việc phân biệt các khuyết tật cần quan tâm có thể trở nên khó phân biệt với nền. Những biến số đó khiến việc chọn ra bộ thống kê tối ưu toàn cục để chuẩn hoá nhiệt độ là bất khả thi.",
+   "y_nghia": "Chuẩn hoá nhiệt toàn cục là bất khả thi — hệ quả trực tiếp của việc gộp nhiều khung có dải nhiệt khác nhau vào một tấm ortho, thứ mà pipeline giữ từng khung riêng của dự án tránh được.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "47",
+   "bai": "Corley 2025 (Zeitview), arXiv:2503.02128",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 6",
+   "trich_en": "However, challenges remain in differentiating between environmental factors (such as soil temperature and shading effects) and true panel defects. The integration of temperature normalization techniques helped mitigate these issues, but further refinement may improve performance in varied geographic and seasonal conditions.",
+   "dich_vi": "Tuy nhiên, vẫn còn những thách thức trong việc phân biệt giữa các yếu tố môi trường (chẳng hạn nhiệt độ đất và hiệu ứng bóng râm) với khuyết tật thật sự của tấm pin. Việc tích hợp các kỹ thuật chuẩn hoá nhiệt độ đã giúp giảm nhẹ những vấn đề này, nhưng tinh chỉnh thêm nữa có thể cải thiện hiệu năng trong các điều kiện địa lý và mùa vụ khác nhau.",
+   "y_nghia": "Nền đất và bóng râm vẫn lẫn với lỗi thật — chỗ trống cho phương pháp dùng ΔT tuyệt đối từ dữ liệu 16-bit hoặc dùng số ảnh nhìn thấy để lọc, cả hai dự án đều có sẵn nguyên liệu.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "09",
+   "bai": "Løfstad-Lie 2025, IEEE J. Photovolt. 15(5)",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 9",
+   "trich_en": "Machine learning algorithms commonly used for fault detection in PV power plants identify patterns in images without relying on absolute temperature values, making it difficult to differentiate between ΔT values slightly above or below the threshold. These algorithms are also trained on images with varying temperature spans, which affects the contrast between defective and nondefective areas. Since ΔT depends on solar irradiance, correcting for irradiance is necessary to determine if a hotspot meets the defect criteria. While this correction can be performed in post-processing, as most PV power plants have weather stations to measure solar irradiance, it complicates real-time detection.",
+   "dich_vi": "Các thuật toán học máy thường được dùng để phát hiện lỗi ở nhà máy điện mặt trời nhận diện hoa văn trong ảnh mà không dựa vào các giá trị nhiệt độ tuyệt đối, khiến việc phân biệt giữa những giá trị ΔT hơi trên hoặc hơi dưới ngưỡng trở nên khó khăn. Các thuật toán này cũng được huấn luyện trên những ảnh có dải nhiệt độ khác nhau, điều này ảnh hưởng đến độ tương phản giữa vùng lỗi và vùng không lỗi. Vì ΔT phụ thuộc vào bức xạ mặt trời, việc hiệu chỉnh theo bức xạ là cần thiết để xác định một hotspot có đạt tiêu chí lỗi hay không. Dù việc hiệu chỉnh này có thể thực hiện trong hậu xử lý, do phần lớn nhà máy điện mặt trời đều có trạm khí tượng đo bức xạ mặt trời, nó vẫn làm phức tạp việc phát hiện thời gian thực.",
+   "y_nghia": "Model chỉ nhìn hoa văn chứ không dùng nhiệt độ tuyệt đối nên không tách được hotspot ngay trên/dưới ngưỡng ΔT — mở đường cho việc khai thác dữ liệu 16-bit trong APP3 mà pipeline dự án đang bỏ phí.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "29",
+   "bai": "Conte 2018, ISPRS J. Photogramm.",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 11",
+   "trich_en": "The described procedures relate only to the geometrical aspects of thermal image correction. In order to derive accurate surface temperature estimates, also radiometric calibration is to be performed. As stated in the introduction, a discussion about the methods for radiometric calibration is beyond the scopes of the present paper.",
+   "dich_vi": "Các quy trình được mô tả chỉ liên quan tới khía cạnh hình học của việc hiệu chỉnh ảnh nhiệt. Để suy ra được ước lượng nhiệt độ bề mặt chính xác, còn phải thực hiện cả hiệu chuẩn bức xạ. Như đã nêu ở phần mở đầu, việc bàn luận về các phương pháp hiệu chuẩn bức xạ nằm ngoài phạm vi của bài báo này.",
+   "y_nghia": "Giới hạn phạm vi phát biểu của dự án: chưa hiệu chỉnh bức xạ thì chỉ được nói dị thường, không được nói nhiệt độ tuyệt đối — có tiền lệ để khai báo đúng như vậy.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "29",
+   "bai": "Conte 2018, ISPRS J. Photogramm.",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "tr. 12",
+   "trich_en": "As a final remark, some authors (Lin et al., 2017; Meißner et al., 2017) hypothesized an influence of radiometric alterations – such as non-uniformity, vignetting and thermal drift (even if they are partially handled by the internal firmware of many devices) – over the geometric correction process, especially the feature matching algorithm used by SfM; further experiments are required to investigate and quantify these impacts.",
+   "dich_vi": "Như một nhận xét cuối cùng, một số tác giả (Lin et al., 2017; Meißner et al., 2017) đã đưa ra giả thuyết về ảnh hưởng của các biến đổi bức xạ – như non-uniformity, vignetting và trôi nhiệt (ngay cả khi chúng đã được firmware bên trong của nhiều thiết bị xử lý một phần) – lên quá trình hiệu chỉnh hình học, đặc biệt là thuật toán khớp đặc trưng mà SfM sử dụng; cần thêm các thí nghiệm để khảo sát và định lượng những tác động này.",
+   "y_nghia": "Chưa ai định lượng được việc non-uniformity, vignetting và trôi nhiệt của microbolometer làm hỏng khâu khớp đặc trưng SfM đến mức nào — dự án có bằng chứng phía triệu chứng (ortho nhiệt Metashape lệch 2,68 m) nhưng phải chạy thêm mới quy được nguyên nhân.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "08",
+   "bai": "Barraz 2025, Cleaner Eng. Technol. — tuyên bố \"to the best of our knowledge\"",
+   "chu_de": "khac",
+   "trang": "tr. 2",
+   "trich_en": "To the best of our knowledge, this is the first study to propose automatic PV annotation and to combine solar module segmentation and geolocation from raw thermal imagery in a fully automated workflow tailored for large-scale PV inspections.",
+   "dich_vi": "Theo hiểu biết tốt nhất của chúng tôi, đây là nghiên cứu đầu tiên đề xuất gán nhãn PV tự động và kết hợp phân đoạn tấm pin mặt trời với định vị địa lý từ ảnh nhiệt thô trong một quy trình hoàn toàn tự động, được thiết kế riêng cho việc kiểm tra PV quy mô lớn.",
+   "y_nghia": "Lá cờ đã cắm cho gán nhãn + định vị tấm pin từ ảnh nhiệt thô — dự án không được viết lại câu này, chỉ được viết phần họ để lại là sai số cấp centimet bằng RTK không GCP.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "45",
+   "bai": "Kozák 2025, arXiv 2501.14587 — tuyên bố \"to the best of our knowledge\"",
+   "chu_de": "khac",
+   "trang": "tr. 9",
+   "trich_en": "To the best of our knowledge, the method proposed in our paper is the first to directly utilize PV module detections for UAV localization at the level of individual modules and to provide 6-DoF position estimation.",
+   "dich_vi": "Theo hiểu biết tốt nhất của chúng tôi, phương pháp được đề xuất trong bài báo của chúng tôi là phương pháp đầu tiên trực tiếp sử dụng các phát hiện tấm pin PV để định vị UAV ở mức từng tấm riêng lẻ và đưa ra ước lượng vị trí 6-DoF.",
+   "y_nghia": "Lá cờ đã cắm cho dùng phát hiện tấm pin để định vị drone, nhưng đầu ra của họ là tư thế camera chứ không phải toạ độ mặt đất của dị thường, và chỉ dùng kênh RGB.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "15",
+   "bai": "López-Fernández 2017, Remote Sens.",
+   "chu_de": "khac",
+   "trang": "tr. 16",
+   "trich_en": "Trying to compare the proposed methodology against other similar techniques, no similar strategies for the evaluation of large-scale PV power stations were found.",
+   "dich_vi": "Khi thử so sánh phương pháp đề xuất với các kỹ thuật tương tự khác, không tìm thấy chiến lược tương tự nào cho việc đánh giá các nhà máy điện PV quy mô lớn.",
+   "y_nghia": "Kiểu gap chưa ai làm ở đời 2017: không có baseline nào để so ở quy mô nhà máy lớn — nhắc rằng benchmark cho bài toán này vẫn chưa được thiết lập.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "28",
+   "bai": "Yang & Lee 2019 (FTM), Remote Sensing 11(1365)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 9",
+   "trich_en": "This error depends on the moving direction and speed of the UAV, and in theory can be corrected for each swath and flight level. But such a swath-by-swath procedure is labor intensive. The better way of correction is to remove the error for the whole orthomosaic.",
+   "dich_vi": "Sai số này phụ thuộc vào hướng và tốc độ di chuyển của UAV, và về lý thuyết có thể hiệu chỉnh cho từng dải bay và từng mức độ cao. Nhưng một quy trình làm theo từng dải như vậy thì tốn nhiều công sức. Cách hiệu chỉnh tốt hơn là khử sai số cho toàn bộ tấm orthomosaic.",
+   "y_nghia": "CHỖ XOÁY MẠNH NHẤT: họ nói việc bù theo từng dải là cần nhưng bỏ vì tốn công, chỉ dịch MỘT vector cho cả tấm ortho; dự án bù theo TỪNG ẢNH, tự động, đủ 598 ảnh, kéo sai số đặt chỗ 14,1 → 4,3 cm.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "28",
+   "bai": "Yang & Lee 2019 (FTM), Remote Sensing 11(1365)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 13",
+   "trich_en": "The overall performance is essentially limited by the resolution of the thermal lens: features smaller than one original thermal pixel are not identifiable in the thermal orthomosaic.",
+   "dich_vi": "Hiệu năng tổng thể về cơ bản bị giới hạn bởi độ phân giải của ống kính nhiệt: các đối tượng nhỏ hơn một pixel nhiệt gốc thì không nhận diện được trên orthomosaic nhiệt.",
+   "y_nghia": "Giới hạn vật lý không xoáy được, nhưng trích để biện minh vì sao dự án bay 31 m thay vì 85 m như họ.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "28",
+   "bai": "Yang & Lee 2019 (FTM), Remote Sensing 11(1365)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 13",
+   "trich_en": "Because cropping will decrease image size, feature matching may not be as precise as using the uncropped RGB images.",
+   "dich_vi": "Vì việc cắt ảnh làm giảm kích thước ảnh, phép khớp đặc trưng có thể không chính xác bằng khi dùng ảnh RGB chưa cắt.",
+   "y_nghia": "Họ tự nhận mà không đo; với ZH20T thì tệ hơn nhiều vì đường hợp nhất ở mức khung phải vứt tới 82% diện tích RGB — lý do riêng để dự án loại đường đó.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "13",
+   "bai": "Zefri 2018, Drones 2(4):41",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 17",
+   "trich_en": "this last and the RGB orthomosaic were not perfectly superimposed despite the fact that their images have been captured simultaneously and geotagged exactly two by two like each other with the same trajectory file.",
+   "dich_vi": "Tấm ortho nhiệt này và orthomosaic RGB đã không chồng khít hoàn toàn lên nhau, bất chấp việc ảnh của chúng được chụp đồng thời và được gắn thẻ địa lý đúng theo từng đôi một như nhau, với cùng một file quỹ đạo bay.",
+   "y_nghia": "Câu vàng: bằng chứng độc lập rằng cùng gimbal + cùng lúc + cùng quỹ đạo KHÔNG đủ để hai kênh khớp — chính là lý do dự án phải có ma trận H và phải chấm tay 31 cặp điểm.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "Bảng 6, tr. 22",
+   "trich_en": "Current approaches often project thermal data onto 2D products even when view angle anisotropy, facet occlusion, and mixed visibility are central to the thermal signal.",
+   "dich_vi": "Các cách tiếp cận hiện nay thường chiếu dữ liệu nhiệt lên các sản phẩm 2D, kể cả khi tính bất đẳng hướng theo góc nhìn, hiện tượng che khuất mặt, và khả kiến hỗn hợp lại chính là trung tâm của tín hiệu nhiệt.",
+   "y_nghia": "ĐÂY LÀ LỖ CỦA DỰ ÁN chứ không phải gap: ghep_ortho_nhiet.py không có z-buffer khử che khuất, phải vá hoặc khai báo trước khi trích câu này.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 10",
+   "trich_en": "the most defensible practice is to report the calibration environment, synchronization assumptions, residual pixel misregistration, and whether boresight parameters were re-used or re-estimated for each campaign.",
+   "dich_vi": "Thực hành đáng bảo vệ nhất là công bố môi trường hiệu chuẩn, các giả định về đồng bộ, phần dư lệch đăng ký tính bằng pixel, và việc các tham số boresight được dùng lại hay được ước lượng lại cho từng chiến dịch bay.",
+   "y_nghia": "Chưa ai công bố đủ bốn thứ; dự án có sẵn cả bốn (31 cặp điểm chấm tay, RMSE 4,38 px, H dùng lại cho mọi chuyến của cùng model drone), chỉ việc viết ra đúng khuôn họ đòi.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 12",
+   "trich_en": "scene-specific checkpoints are needed to expose projection errors that may remain invisible in global bundle statistics",
+   "dich_vi": "Cần có các điểm kiểm tra riêng theo từng cảnh để phơi bày những sai số chiếu vốn có thể vẫn tàng hình trong các thống kê bundle adjustment toàn cục.",
+   "y_nghia": "Nối thẳng vào chỗ dự án còn yếu: kiểm chứng tuyệt đối hiện chỉ có 11 điểm trên MỘT ảnh, phải mở rộng mới đáp ứng được khuyến nghị này.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 11",
+   "trich_en": "co-registration accuracy should be evaluated relative to thermal pixel size, not only in meters.",
+   "dich_vi": "độ chính xác đăng ký chồng khớp nên được đánh giá tương đối so với kích thước pixel nhiệt, chứ không chỉ tính bằng mét.",
+   "y_nghia": "Bẫy số học: theo thước tương đối [28] Yang 2019 trông TỐT HƠN dự án (0,68 px so với ~1,0–1,7 px) dù theo thước tuyệt đối dự án hơn 9–15 lần, nên phải báo cả hai thước.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 10",
+   "trich_en": "automatic matches can fail silently when modality differences are large",
+   "dich_vi": "các phép khớp tự động có thể thất bại một cách âm thầm khi khác biệt giữa hai phương thức ảnh là lớn.",
+   "y_nghia": "Y văn chống lưng cho việc dự án chấm tay ma trận H sau khi hai hướng khớp tự động đều hỏng (tương quan pha cho giá trị âm tại đúng vị trí dịch đúng; YOLO-OBB nhận 300 tấm trên RGB nhưng chỉ 4–10 tấm trên nhiệt).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "35",
+   "bai": "Lee & Lee 2026 (review RGB–TIR)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 10",
+   "trich_en": "A widely adopted solution is RGB–TIR integration, where RGB imagery provides robust geometry and camera poses and thermal frames are projected onto RGB-derived surfaces and orthophotos [60].",
+   "dich_vi": "Một giải pháp được áp dụng rộng rãi là hợp nhất RGB–TIR, trong đó ảnh RGB cung cấp hình học và tư thế camera một cách bền vững, còn các khung ảnh nhiệt được chiếu lên các bề mặt và ảnh trực giao dẫn xuất từ RGB [60].",
+   "y_nghia": "Cảnh báo tính mới: đừng viết \"lần đầu dùng RGB làm hình học cho nhiệt\" — review gọi thẳng đường đó là widely adopted.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "14",
+   "bai": "Cardoso 2024, Applied Energy 367:123242",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 6",
+   "trich_en": "finding image features is not appropriate for such an alignment process",
+   "dich_vi": "việc tìm đặc trưng ảnh là không phù hợp cho một quy trình căn chỉnh như vậy.",
+   "y_nghia": "Tiền lệ thứ hai bảo vệ lựa chọn chấm tay H của dự án thay vì khớp đặc trưng tự động.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "39",
+   "bai": "VisIRNet (đăng ký nhiệt–khả kiến bằng học sâu)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 2",
+   "trich_en": "typically enough (dùng một ma trận H duy nhất cho hai camera đặt gần nhau trên UAV — họ dẫn sách giáo khoa hình học đa nhìn, không dẫn một phép đo nào)",
+   "dich_vi": "\"thường là đủ\" — cho camera đặt gần nhau trên UAV, nhưng dẫn sách giáo khoa hình học đa nhìn, không dẫn một phép đo nào.",
+   "y_nghia": "Đây là giả định chưa ai kiểm chứng và nó đúng là giả định của dự án; đo được sai số của H theo độ sâu thì lấp được chỗ trống này.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "40",
+   "bai": "XPoint (khớp đặc trưng + hồi quy homography)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 12",
+   "trich_en": "In the future, we will focus on enhancing computational efficiency through lighter encoders, refining decoder designs for more accurate keypoint analysis, and improving the homography regression head.",
+   "dich_vi": "Trong tương lai, chúng tôi sẽ tập trung nâng hiệu quả tính toán bằng các encoder nhẹ hơn, tinh chỉnh thiết kế decoder để phân tích điểm đặc trưng chính xác hơn, và cải thiện đầu hồi quy đơn ứng (homography).",
+   "y_nghia": "Future work của họ không có một chữ nào về độ sâu, mặt phẳng hay baseline — cùng hướng bỏ ngỏ với [39], xác nhận giả định một-H chưa ai đụng tới.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "41",
+   "bai": "Bài đăng ký ảnh viễn thám (nhóm phê phán biến đổi tuyến tính)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "không rõ trang",
+   "trich_en": "assuming linear transformations between images conflicts with the complex aberrations present in remote sensing images",
+   "dich_vi": "việc giả định các phép biến đổi tuyến tính giữa các ảnh xung đột với những sai lệch phức tạp hiện diện trong ảnh viễn thám.",
+   "y_nghia": "Lời phê phán tường minh nhất trong kho đối với việc dùng một biến đổi toàn cục — chưa ai định lượng phần dư phi tuyến, dự án đo được phần dư đó theo từng ảnh.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "42",
+   "bai": "Bộ dữ liệu đăng ký nhiệt–RGB quy mô lớn (40.644 cặp ảnh)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "không rõ trang",
+   "trich_en": "publicly available datasets are either in relative small quantity scales or have limited pose annotations due to the expensive cost of data acquisition and annotation",
+   "dich_vi": "các bộ dữ liệu công khai hoặc là có quy mô số lượng tương đối nhỏ, hoặc là có chú thích tư thế hạn chế, do chi phí đắt đỏ của việc thu thập và gán nhãn dữ liệu.",
+   "y_nghia": "Tiền lệ bảo vệ lựa chọn chấm tay của dự án: để có chân lý nền cho 40.644 cặp ảnh chính họ cũng phải chấm tay, nên chấm tay không phải điểm yếu phải giấu.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "64",
+   "bai": "Bài đo độ trễ kích chụp cảm biến FLIR nhiệt vs RGB",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 28",
+   "trich_en": "the time delay estimates from the thermal sensor on the FLIR compared to the RGB sensor showed approximately 60–90 ms difference. This difference shows that the RGB and thermal sensor triggering were not simultaneous, and therefore would need independent calibration adjustments to estimate each sensor's time delay.",
+   "dich_vi": "Các ước lượng độ trễ thời gian của cảm biến nhiệt trên máy FLIR so với cảm biến RGB cho thấy chênh lệch khoảng 60–90 ms. Chênh lệch này cho thấy việc kích chụp của cảm biến RGB và cảm biến nhiệt là không đồng thời, và do đó cần các phép hiệu chỉnh hiệu chuẩn độc lập để ước lượng độ trễ của từng cảm biến.",
+   "y_nghia": "Bằng chứng vật lý cho việc PHẢI bù theo từng ảnh, đúng cấu hình ZH20T nơi nhiệt và RGB nằm cùng một vỏ mà vẫn không kích chụp đồng thời.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "43",
+   "bai": "SunMap 2023 (true orthophoto PV có z-buffer)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 19",
+   "trich_en": "Drone photogrammetry supported by SfM and MVS is autonomous and saves time and cost; however, real-time processing is not possible, requiring post-processing of the multimodal dataset acquired.",
+   "dich_vi": "Quang trắc bằng drone có SfM và MVS hỗ trợ thì tự chủ và tiết kiệm thời gian lẫn chi phí; tuy nhiên, xử lý thời gian thực là bất khả thi, buộc phải hậu xử lý bộ dữ liệu đa phương thức đã thu được.",
+   "y_nghia": "Bài rất ít tự phê và đã dùng đúng inverse method + z-buffer qua DSM, nên đây là chỗ CHẶN: đừng viết \"lần đầu tra ngược qua DSM\".",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "43",
+   "bai": "SunMap 2023 (true orthophoto PV có z-buffer)",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "không rõ trang",
+   "trich_en": "the inverse method [36] is used. In this case, an image with known internal and external orientation is needed, as well as the DSM of the PV plant.",
+   "dich_vi": "Phương pháp nghịch đảo [36] được sử dụng. Trong trường hợp này, cần có một ảnh đã biết định hướng trong và định hướng ngoài, cũng như DSM của nhà máy PV.",
+   "y_nghia": "Cơ chế tra ngược qua DSM đã có người mô tả tường minh và kèm z-buffer — cờ đã cắm, dự án chỉ được nhận phần bù phần dư theo từng ảnh là mới.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "29",
+   "bai": "Conte 2018, ISPRS J. Photogramm.",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "tr. 331",
+   "trich_en": "the Structure from Motion approach proved to be effective in reconstructing the 3D model and producing thermal orthomosaics with a planimetric accuracy lower than four pixels (2 m with a 0.5 m GSD)... although it is still worse than the accuracy achievable with images in the visible band (up to one pixel or slightly lower).",
+   "dich_vi": "Cách tiếp cận Structure from Motion tỏ ra hiệu quả trong việc tái dựng mô hình 3D và tạo ra các orthomosaic nhiệt với độ chính xác mặt bằng dưới bốn pixel (2 m ở GSD 0,5 m)… mặc dù nó vẫn kém hơn độ chính xác đạt được với ảnh ở dải khả kiến (tới một pixel hoặc thấp hơn chút ít).",
+   "y_nghia": "Số đo cho thấy đường chạy SfM thẳng trên ảnh nhiệt kém hẳn dải khả kiến — biện minh cho việc dự án bỏ đường đó và dùng RGB làm hình học.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "23",
+   "bai": "Xiuyu Wu, Xinhao Wang, Xiubin Zhu, Lan Yang, Jiyuan Liu, Xingchen Hu (Xidian Univ. + NUDT), 2025, ICCV 2025 (CVF Open Access, tr. 7329–7338) — \"Measuring the Impact of Rotation Equivariance on Aerial Object Detection\"",
+   "chu_de": "khac",
+   "trang": "tr. 7329 (trang 1 PDF, phần Abstract)",
+   "trich_en": "Whether strict rotation equivariance is necessary for aerial image object detection remains an open question.",
+   "dich_vi": "Liệu tính đồng biến xoay (rotation equivariance) nghiêm ngặt có thật sự cần thiết cho phát hiện đối tượng trên ảnh hàng không hay không vẫn là một câu hỏi bỏ ngỏ.",
+   "y_nghia": "Cho phép dự án đặt câu hỏi xoay như một khoảng trống được chính giới CV thừa nhận, thay vì tự phát biểu — nền để dẫn vào ablation 90° của mình.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "23",
+   "bai": "Xiuyu Wu và c.s., 2025, ICCV 2025",
+   "chu_de": "khac",
+   "trang": "tr. 7330 (trang 2 PDF, phần Introduction)",
+   "trich_en": "Previous research on RE-Nets in aerial object detection has not explored how strict rotation equivariance impacts model performance.",
+   "dich_vi": "Nghiên cứu trước đây về RE-Net (mạng đồng biến xoay) trong phát hiện đối tượng hàng không chưa khảo sát xem tính đồng biến xoay nghiêm ngặt tác động thế nào đến hiệu năng mô hình.",
+   "y_nghia": "Câu \"chưa ai làm\" đúng nghĩa về bất biến/đồng biến xoay trong ảnh hàng không, dùng làm neo cho lập luận rằng hướng cảnh là biến chưa được kiểm soát trong pipeline ortho.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "23",
+   "bai": "Xiuyu Wu và c.s., 2025, ICCV 2025",
+   "chu_de": "khac",
+   "trang": "tr. 7336 (trang 8 PDF, mục 5.4 Analysis — \"Robustness to Rotational Variations\")",
+   "trich_en": "As can be seen, even when RTMDet is rotated by multiples of 90° with no information loss, its performance decreases due to a lack of robustness to rotational variations, whereas MessDet exhibits greater robustness to such variations.",
+   "dich_vi": "Như có thể thấy, ngay cả khi RTMDet được xoay theo bội số của 90° mà không hề mất thông tin nào, hiệu năng của nó vẫn suy giảm do thiếu tính bền vững trước biến đổi xoay, trong khi MessDet thể hiện độ bền vững cao hơn trước các biến đổi đó.",
+   "y_nghia": "Đây là chỗ neo mạnh nhất trong cả nhóm N3 cho phát hiện của dự án: mất 47% khi dò trên ortho là do HƯỚNG CẢNH xoay 90°, không phải do ghép làm nhoè — tác giả ICCV xác nhận xoay 90° không mất thông tin mà vẫn tụt hiệu năng.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "57",
+   "bai": "Krish Kabra, Alexander Xiong, Wenbin Li và c.s. (Rice University + Houston Audubon + American Bird Conservancy), 2022, arXiv:2210.04868v2 [cs.CV] — \"Deep object detection for waterbird monitoring using aerial imagery\"",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "tr. 6 (trang PDF; bản arXiv không đánh số trang in) — mục VI. Discussion, đoạn \"For future work\"",
+   "trich_en": "Finally, an analysis of the trade-off between detection precision and image resolution is necessary to understand what camera specifications and flight mission altitudes are required to monitor waterbirds adequately.",
+   "dich_vi": "Cuối cùng, cần có một phân tích về sự đánh đổi giữa độ chính xác phát hiện (detection precision) và độ phân giải ảnh, để hiểu cần thông số camera nào và độ cao bay nhiệm vụ nào mới đủ để giám sát chim nước một cách thoả đáng.",
+   "y_nghia": "Gap điều kiện vận hành gần như trùng khít với dự án: mới bay đúng một độ cao 31 m, chưa có đường cong độ chính xác theo GSD/độ cao — và Drive còn 13 sortie nhiệt ở 31M/35M/42M đang chờ tải để dựng đúng đường cong đó.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "57",
+   "bai": "Krish Kabra và c.s., 2022, arXiv:2210.04868v2",
+   "chu_de": "khac",
+   "trang": "tr. 6 (trang PDF) — mục VI. Discussion",
+   "trich_en": "For future work, the object detector's relatively poor performance on minority waterbirds present in the dataset must be solved. This is a problem characteristic to learning from long-tailed data distributions and is still an active area of research [32], [33].",
+   "dich_vi": "Về hướng nghiên cứu tiếp theo, phải giải quyết được hiệu năng khá kém của bộ phát hiện đối với các loài chim nước thuộc lớp thiểu số trong bộ dữ liệu. Đây là vấn đề đặc trưng của việc học từ phân bố dữ liệu đuôi dài (long-tailed) và vẫn còn là một hướng nghiên cứu đang hoạt động.",
+   "y_nghia": "Neo cho vấn đề mất cân bằng lớp của model 8 lớp (recall 45,7%): lớp lỗi hiếm bị bỏ sót là hạn chế đã được tự nêu trong tài liệu UAV, không phải lỗi riêng của dự án.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "57",
+   "bai": "Krish Kabra và c.s., 2022, arXiv:2210.04868v2",
+   "chu_de": "khac",
+   "trang": "tr. 3 (trang PDF) — mục III. Dataset",
+   "trich_en": "This was done due to human annotation difficulties in identifying the different species consistently in a large-scale manner.",
+   "dich_vi": "Điều này được làm là do khó khăn của người gán nhãn trong việc nhận dạng các loài khác nhau một cách nhất quán ở quy mô lớn.",
+   "y_nghia": "Tác giả tự thừa nhận nhãn tay không nhất quán ở quy mô lớn nên phải gộp lớp — neo trực tiếp cho 511 nhãn tay của dự án và cho chuyện nhãn tay bị mỏ neo bởi gợi ý model.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "58",
+   "bai": "Fatih Cagatay Akyon, Sinan Onur Altinuc, Alptekin Temizel (OBSS AI + METU), 2022, IEEE ICIP 2022 / arXiv:2202.06934v5 — \"Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection\" (SAHI)",
+   "chu_de": "khac",
+   "trang": "tr. 3 (trang PDF; bản arXiv không đánh số trang in) — mục 3, \"Slicing Aided Fine-tuning (SF)\"",
+   "trich_en": "It has to be noted that, as the patch sizes decrease, larger objects may not fit within a slice and the intersecting areas, and this may lead to poor detection performance for larger objects.",
+   "dich_vi": "Cần lưu ý rằng khi kích thước ô cắt (patch) giảm xuống, các đối tượng lớn hơn có thể không lọt vừa trong một ô và trong các vùng giao nhau, và điều này có thể dẫn tới hiệu năng phát hiện kém đối với các đối tượng lớn.",
+   "y_nghia": "Tác giả SAHI — chính bài mà mọi pipeline cắt ô đều trích — tự nêu rằng cắt ô nhỏ làm hỏng vật thể lớn; dự án cắt ô trên ortho có tấm pin và vết lỗi trải dài, đây là hạn chế đã được đặt tên sẵn.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "58",
+   "bai": "Fatih Cagatay Akyon và c.s., 2022, IEEE ICIP 2022 / arXiv:2202.06934v5",
+   "chu_de": "khac",
+   "trang": "tr. 4 (trang PDF) — mục 5. CONCLUSION, câu cuối",
+   "trich_en": "In the future, instance segmentation models will be benchmarked utilizing the proposed slicing approach and different post-processing techniques will be evaluated.",
+   "dich_vi": "Trong tương lai, các mô hình phân đoạn thể hiện (instance segmentation) sẽ được đánh giá chuẩn (benchmark) bằng phương pháp cắt ô đề xuất, và các kỹ thuật hậu xử lý khác nhau sẽ được đánh giá.",
+   "y_nghia": "SAHI tự thừa nhận phần hậu xử lý (gộp kết quả giữa các ô) CHƯA được đánh giá — đúng chỗ dự án đã có kết quả thay thế: lọc theo số ảnh nhìn thấy n≥3 cho P 0,968 so với ngưỡng conf 0,64 cho 0,951 ở cùng recall.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "58",
+   "bai": "Fatih Cagatay Akyon và c.s., 2022, IEEE ICIP 2022 / arXiv:2202.06934v5",
+   "chu_de": "khac",
+   "trang": "tr. 4 (trang PDF) — mục 4. RESULTS",
+   "trich_en": "Integration of FI increases large object AP by up to 3.3% but results in slightly decreased small/medium object AP, which is expected as some of the larger objects may not be detected from smaller slices.",
+   "dich_vi": "Việc tích hợp FI (suy luận trên toàn ảnh) làm tăng AP của đối tượng lớn tới 3,3% nhưng lại làm giảm nhẹ AP của đối tượng nhỏ/vừa, điều này là dự đoán được vì một số đối tượng lớn hơn có thể không được phát hiện từ các ô cắt nhỏ hơn.",
+   "y_nghia": "Xác nhận rằng gộp kết quả toàn ảnh với kết quả từng ô là một đánh đổi chưa được giải quyết — song song với đánh đổi frame-vs-ortho mà dự án đo được.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "59",
+   "bai": "Lei Ge, Lei Dou (Nanjing University of Science and Technology), 2024, IEEE Access, vol. 12, tr. 149999–150007 — \"Non-Maximum Suppression for Rotated Object Detection During Merging Slices of High-Resolution Images\" (RODM-NMS)",
+   "chu_de": "khac",
+   "trang": "tr. 149999 (trang 1 PDF, phần Abstract)",
+   "trich_en": "However, redundant boxes from splitting are different from those generated by detection on a single image. Some special cases cannot be effectively solved by NMS.",
+   "dich_vi": "Tuy nhiên, các hộp thừa sinh ra do cắt ảnh khác với các hộp thừa sinh ra khi phát hiện trên một ảnh đơn. Một số trường hợp đặc biệt không thể được xử lý hiệu quả bằng NMS.",
+   "y_nghia": "Câu tự nêu gốc rễ nhất cho toàn bộ nhánh \"gộp ô trên ortho\" của dự án: NMS chuẩn không phải công cụ đúng để gộp kết quả giữa các ô cắt.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "59",
+   "bai": "Lei Ge, Lei Dou, 2024, IEEE Access, vol. 12",
+   "chu_de": "khac",
+   "trang": "tr. 150001 (trang 3 PDF, mục III. PROBLEM ANALYSIS)",
+   "trich_en": "However, NMS is designed for object detection on a single image and does not consider special cases during the process of image merging. [...] In NMS provided by DOTA_devkit, TIoU is set to 0.1. This significantly reduces the number of FPs. However, it is difficult to completely eliminate these two cases.",
+   "dich_vi": "Tuy nhiên, NMS được thiết kế cho phát hiện đối tượng trên một ảnh đơn và không xét tới các trường hợp đặc biệt trong quá trình ghép ảnh. [...] Trong NMS do DOTA_devkit cung cấp, TIoU được đặt bằng 0,1. Điều này làm giảm đáng kể số lượng FP (dương tính giả). Tuy nhiên, rất khó loại bỏ hoàn toàn hai trường hợp này. (Hai câu cùng nằm trên tr. 150001, nối bằng [...])",
+   "y_nghia": "Chứng cứ để dự án bảo vệ lựa chọn dò trên KHUNG ẢNH rồi gộp ở toạ độ thế giới thay vì cắt ô ortho + NMS: tác giả nói thẳng chỉnh ngưỡng IoU không cứu được.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "59",
+   "bai": "Lei Ge, Lei Dou, 2024, IEEE Access, vol. 12",
+   "chu_de": "do-phu",
+   "trang": "tr. 150004 (trang 6 PDF, mục V-D. OVERLAP RATE)",
+   "trich_en": "A higher overlap rate theoretically benefits detection performance. However, more objects will be split which is not favorable for NMS.",
+   "dich_vi": "Về lý thuyết, tỉ lệ chồng phủ (overlap rate) cao hơn thì có lợi cho hiệu năng phát hiện. Tuy nhiên, sẽ có nhiều đối tượng bị cắt đôi hơn, điều này lại bất lợi cho NMS.",
+   "y_nghia": "Nghịch lý độ phủ được tác giả tự nêu: phủ nhiều thì thấy nhiều nhưng cắt nát nhiều — trực tiếp áp được vào phân bố số ảnh nhìn thấy mỗi tấm pin của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "60",
+   "bai": "Yunzhong Hou, Liang Zheng, Stephen Gould (Australian National University), 2020, ECCV 2020 / arXiv:2007.07247v2 — \"Multiview Detection with Feature Perspective Transformation\" (MVDet)",
+   "chu_de": "roi-bo-ortho",
+   "trang": "tr. 12 (trang PDF/trang in trùng nhau, mục 4.4 — \"Comparison between different projection choices\")",
+   "trich_en": "Projecting the RGB images breaks the spatial relationship between pixels, and a single RGB pixel represents little information. As a result, in Table 3, we find \"MVDet (project images)\" leads to largely inferior performance on both datasets (26.8% and 19.5% MODA).",
+   "dich_vi": "Việc chiếu các ảnh RGB làm phá vỡ quan hệ không gian giữa các điểm ảnh, và một điểm ảnh RGB đơn lẻ mang rất ít thông tin. Kết quả là, ở Bảng 3, chúng tôi thấy \"MVDet (chiếu ảnh)\" cho hiệu năng kém hơn hẳn trên cả hai bộ dữ liệu (26,8% và 19,5% MODA).",
+   "y_nghia": "Bằng chứng độc lập, đo được bằng số, rằng dò trên ảnh ĐÃ CHIẾU kém hơn hẳn dò trên khung rồi mới chiếu — đúng kết luận ablation frame-vs-ortho của dự án, nhưng ở lĩnh vực khác nên trích được mà không tự tham chiếu.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "60",
+   "bai": "Yunzhong Hou, Liang Zheng, Stephen Gould, 2020, ECCV 2020 / arXiv:2007.07247v2",
+   "chu_de": "do-phu",
+   "trang": "tr. 13 (trang PDF, mục 4.4 — \"Effectiveness of spatial aggregation via large kernel convolution\")",
+   "trich_en": "Each location is covered by 4.41 cameras (field-of-view) on average for MultiviewX dataset, as opposed to 3.74 in Wildtrack. More camera coverage usually introduces more information and reduces the ambiguities, which also limits the performance increase from addressing ambiguities via spatial aggregation.",
+   "dich_vi": "Mỗi vị trí được phủ bởi trung bình 4,41 camera (trường nhìn) đối với bộ MultiviewX, so với 3,74 ở Wildtrack. Độ phủ camera nhiều hơn thường đưa vào nhiều thông tin hơn và giảm sự nhập nhằng, điều này đồng thời cũng giới hạn mức tăng hiệu năng thu được từ việc xử lý nhập nhằng bằng gộp không gian.",
+   "y_nghia": "Tác giả đo hiệu năng theo SỐ CAMERA PHỦ MỖI VỊ TRÍ (3,74 vs 4,41) — đúng đại lượng dự án đang dùng (số ảnh nhìn thấy n≥3) và đúng chỗ dự án có lỗ hổng: 1066/6473 tấm chưa từng được nhiệt quét.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "60",
+   "bai": "Yunzhong Hou, Liang Zheng, Stephen Gould, 2020, ECCV 2020 / arXiv:2007.07247v2",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "tr. 5–6 (câu vắt từ cuối tr. 5 sang đầu tr. 6, mục 3.1 — \"Anchor-free representation\")",
+   "trich_en": "As the size and shape of anchor boxes are calculated from assumed 3D human height and width [4,1], these anchor boxes might not be accurate, which potentially limits system performance [49,16,43].",
+   "dich_vi": "Vì kích thước và hình dạng của các hộp neo (anchor box) được tính từ chiều cao và chiều rộng 3D của người được GIẢ ĐỊNH [4,1], các hộp neo này có thể không chính xác, điều đó có khả năng giới hạn hiệu năng của hệ thống [49,16,43].",
+   "y_nghia": "Neo cho vấn đề của dự án: hình học giả định (mặt phẳng qua ma trận H, kích thước tấm cố định) không khớp thực địa thì hộp bao lệch — đúng cơ chế làm IoU tụt 0,726→0,478 vì bậc DSM 1,33 m ở mép tấm.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "74",
+   "bai": "Jue Zhang, Xiuping Jia, Jiankun Hu (UNSW Canberra), 2021/2022, IEEE Geoscience and Remote Sensing Letters, vol. 19, Art. no. 6504001 — \"Uncertainty-aware Forward Correction for Weakly Supervised Solar Panel Mapping from High-resolution Aerial Images\"",
+   "chu_de": "khac",
+   "trang": "tr. 1 (trang 1/5, mục I. INTRODUCTION)",
+   "trich_en": "The performance of the methods aforementioned mainly depends on a large number of accurate pixel-wise annotations, which requires expert knowledge and is inevitably time-consuming.",
+   "dich_vi": "Hiệu năng của các phương pháp nói trên chủ yếu phụ thuộc vào một số lượng lớn nhãn chính xác ở mức điểm ảnh (pixel-wise annotation), việc này đòi hỏi kiến thức chuyên gia và không thể tránh khỏi việc tốn nhiều thời gian.",
+   "y_nghia": "Neo trực tiếp cho hạn chế 511/6473 tấm có nhãn tay của dự án: chi phí nhãn thủ công là hạn chế được thừa nhận trong chính ngành lập bản đồ tấm pin.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "74",
+   "bai": "Jue Zhang, Xiuping Jia, Jiankun Hu, 2021/2022, IEEE GRSL, vol. 19",
+   "chu_de": "khac",
+   "trang": "tr. 1 (trang 1/5, mục I. INTRODUCTION)",
+   "trich_en": "Despite the improvement achieved, the self-training scheme has difficulties in giving complete regions with precise edges, which can be attributed to the inherent and noisy nature of PLs.",
+   "dich_vi": "Bất chấp cải thiện đạt được, cơ chế tự huấn luyện (self-training) vẫn gặp khó khăn trong việc cho ra các vùng đầy đủ với biên chính xác, điều này có thể quy về bản chất vốn có và nhiễu của các nhãn giả (PLs — pseudo labels).",
+   "y_nghia": "Neo cho vấn đề nhãn tay của dự án bị mỏ neo bởi gợi ý model (Enter = đồng ý): đó chính là vòng lặp nhãn giả nhiễu mà bài này tự nêu là chưa giải xong.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "74",
+   "bai": "Jue Zhang, Xiuping Jia, Jiankun Hu, 2021/2022, IEEE GRSL, vol. 19",
+   "chu_de": "khac",
+   "trang": "tr. 2 (trang 2/5, mục II-B. Heteroscedastic Uncertainty Estimation)",
+   "trich_en": "Although it is crucial to know when the model is unable to make confident decisions, quantifying uncertainty is not an easy task.",
+   "dich_vi": "Mặc dù việc biết được khi nào mô hình không thể đưa ra quyết định tự tin là điều then chốt, việc lượng hoá độ bất định (uncertainty) không phải là một nhiệm vụ dễ dàng.",
+   "y_nghia": "Mở đúng chỗ dự án có đóng góp: thay vì ngưỡng conf, dự án dùng số ảnh nhìn thấy làm chỉ báo tin cậy — một cách lượng hoá bất định rẻ tiền mà bài này nói là khó.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "77",
+   "bai": "Xiaoyu Tang, Jianping Yue, Ao Shen, Jun Dong, Zhijian He (South China Normal Univ. + Shenzhen Tech. Univ.), 2026, IEEE JSTARS, vol. 19, tr. 9281–9294 — \"MTCS: A Multitask Framework for End-to-End UAV-Based Photovoltaic Panels Damage Assessment\"",
+   "chu_de": "ghep-ortho-hong-hinh-hoc",
+   "trang": "tr. 9281 (trang 1 PDF, mục I. INTRODUCTION)",
+   "trich_en": "Object detection tasks face challenges in precisely delineating the boundaries of PV panels under oblique and distorted perspectives.",
+   "dich_vi": "Các bài toán phát hiện đối tượng (object detection) gặp thách thức trong việc vạch chính xác biên của các tấm pin quang điện (PV) dưới các góc nhìn xiên và biến dạng.",
+   "y_nghia": "Bài PV/UAV mới nhất tự nêu rằng hộp phát hiện không ôm được biên tấm khi phối cảnh xiên/biến dạng — đúng cơ chế làm IoU của dự án tụt 0,726→0,478 do 4 góc OBB rơi hai bên bậc DSM 1,33 m.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "77",
+   "bai": "Xiaoyu Tang và c.s., 2026, IEEE JSTARS, vol. 19",
+   "chu_de": "khac",
+   "trang": "tr. 9292 (trang 12 PDF, mục IV-D. Visualization)",
+   "trich_en": "In all three scenarios, segmentation errors are dominated by false positives, as high-contrast structures (frame edges, shadows, glare) are absorbed into panel masks, whereas counting errors are dominated by false negatives, mainly due to misses under extreme density and occlusion. In addition, both models occasionally misidentify PV-like patterns on the ground as panels, producing positive predictions even in regions not annotated as such in the ground truth.",
+   "dich_vi": "Trong cả ba kịch bản, sai số phân đoạn bị chi phối bởi dương tính giả (false positive), do các cấu trúc tương phản cao (mép khung, bóng đổ, loá sáng) bị hút vào mặt nạ tấm pin, trong khi sai số đếm bị chi phối bởi âm tính giả (false negative), chủ yếu do bỏ sót trong điều kiện mật độ cực cao và che khuất. Ngoài ra, cả hai mô hình thỉnh thoảng nhận nhầm các hoa văn giống tấm PV trên mặt đất thành tấm pin, sinh ra dự đoán dương tính ngay cả ở những vùng không được gán nhãn như vậy trong nhãn chuẩn.",
+   "y_nghia": "Tác giả tự mổ xẻ nguồn FP/FN và tự thừa nhận có dự đoán dương ngoài vùng có nhãn — hai điều dự án cũng gặp (64% FP chỉ hiện ở một ảnh; 1066/6473 tấm ở rìa chưa từng được nhiệt quét làm hỏng mẫu số).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "77",
+   "bai": "Xiaoyu Tang và c.s., 2026, IEEE JSTARS, vol. 19",
+   "chu_de": "khac",
+   "trang": "tr. 9281 (trang 1 PDF, mục I. INTRODUCTION)",
+   "trich_en": "First, the field of remote sensing remains predominantly oriented toward single-task learning paradigms, while MTL approaches remain underexplored--a situation exacerbated by the scarcity of dedicated multitask datasets.",
+   "dich_vi": "Thứ nhất, lĩnh vực viễn thám hiện vẫn chủ yếu định hướng theo mô thức học đơn nhiệm, trong khi các hướng tiếp cận học đa nhiệm (MTL) vẫn còn ít được khai phá — tình trạng này còn trầm trọng hơn bởi sự khan hiếm các bộ dữ liệu đa nhiệm chuyên dụng.",
+   "y_nghia": "Câu \"chưa ai làm\" về đa nhiệm trong viễn thám PV; dự án là đơn nhiệm nên không lấp được, nhưng dùng được để định vị phạm vi và tránh bị hỏi tại sao không làm đa nhiệm.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "10",
+   "bai": "Lofstad-Lie V., Marstein E.S., Simonsen A., Skauli T. (2022), \"Cost-Effective Flight Strategy for Aerial Thermography Inspection of Photovoltaic Power Plants\", IEEE Journal of Photovoltaics, 12(6):1543–1549",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "1544 (trang vật lý PDF 2)",
+   "trich_en": "Accurate georeferencing from a large altitude introduces challenges, as a small deviation between the measured and true camera orientation will propagate to large offsets on the ground. At 80 m, a mismatch of 1 degree will result in a 1.4-m ground offset for a camera pointing directly downwards. […] A direct georeferencing from 80 m would in this case tag the adjacent module, so a more accurate georeferencing is performed from the classification stage.",
+   "dich_vi": "Georeferencing chính xác từ độ cao lớn đặt ra thách thức, vì một sai lệch nhỏ giữa hướng camera đo được và hướng thật sẽ lan truyền thành độ lệch lớn trên mặt đất. Ở 80 m, sai lệch 1 độ sẽ cho độ lệch mặt đất 1,4 m với camera chĩa thẳng xuống. […] Georeferencing trực tiếp từ 80 m trong trường hợp này sẽ gán nhầm sang module kế bên, nên việc georeferencing chính xác hơn được thực hiện từ giai đoạn phân loại.",
+   "y_nghia": "Tác giả tự nhận sai số HƯỚNG camera — chứ không phải sai số GPS — mới là thứ quyết định lỗi bị gán vào đúng tấm hay tấm bên cạnh, đúng chỗ neo cho bài toán gán dị thường vào 6473 tấm của dự án.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "10",
+   "bai": "Lofstad-Lie V. et al. (2022), IEEE Journal of Photovoltaics, 12(6):1543–1549",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "1546 (trang vật lý PDF 4)",
+   "trich_en": "An effect that occurs at large imaging distances and affects defect detection is smearing due to lens imperfections. This blur effect will distribute the area of a hotspot to a larger region, resulting in a reduced ΔT value. […] A cell covers 1.6% of the module area for the imaged 60-cell module, which is correctly achieved at 30 m. At 80 m, however, the area is approximately doubled, with an area of 3.3% within the yellow temperature contour.",
+   "dich_vi": "Một hiệu ứng xảy ra ở khoảng cách chụp lớn và ảnh hưởng tới việc phát hiện lỗi là nhoè (smearing) do khiếm khuyết ống kính. Hiệu ứng nhoè này sẽ trải diện tích của một hotspot ra một vùng rộng hơn, làm giảm giá trị ΔT. […] Một cell chiếm 1,6% diện tích module đối với module 60 cell được chụp, con số này đạt đúng ở 30 m. Tuy nhiên ở 80 m, diện tích tăng gần gấp đôi, tới 3,3% trong đường đồng mức nhiệt màu vàng.",
+   "y_nghia": "Đây là bằng chứng tự nêu rằng độ cao bay làm méo cả HÌNH DẠNG lẫn BIÊN ĐỘ ΔT của vết lỗi — nền để dự án so ba độ cao 31/35/42 m thay vì chỉ khẳng định suông 31 m là đủ.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "10",
+   "bai": "Lofstad-Lie V. et al. (2022), IEEE Journal of Photovoltaics, 12(6):1543–1549",
+   "chu_de": "khac",
+   "trang": "1547 (trang vật lý PDF 5)",
+   "trich_en": "Of the 93 automated detections, 69 were hotspots, 11 hotspots with ΔT just below 10 degrees, and 13 false detections. Sixty-nine of the 81 manually determined cell hotspots in the plant were detected, which makes the detection rate 85%. […] False detections outside the plant area can be avoided with a plant boundary extraction that restricts the detection area.",
+   "dich_vi": "Trong 93 phát hiện tự động, 69 là hotspot, 11 là hotspot với ΔT hơi dưới 10 độ, và 13 là phát hiện sai. 69 trên 81 cell hotspot xác định bằng tay trong nhà máy đã được phát hiện, tức tỷ lệ phát hiện 85%. […] Các phát hiện sai nằm ngoài khu vực nhà máy có thể tránh được bằng cách trích biên nhà máy để giới hạn vùng phát hiện.",
+   "y_nghia": "Bài tự công bố recall 85% đo bằng đối chiếu với nhãn tay và tự nhận FP nằm ngoài ranh giới nhà máy — đúng hai thứ dự án đã đo (recall theo nhãn tay, và 1066/6473 tấm nằm ngoài vùng nhiệt phủ).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "11",
+   "bai": "Kolahi M., Esmailifar S.M., Moradi Sizkouhi A.M., Aghaei M. (2024), \"Digital-PV: A digital twin-based platform for autonomous aerial monitoring of large-scale photovoltaic power plants\", Energy Conversion and Management, 321:118963 (Elsevier)",
+   "chu_de": "khac",
+   "trang": "10 (chú thích Hình 7)",
+   "trich_en": "A clear limitation of this multi-stage model is that each stage (in this case module extraction and fault segmentation) has to be optimized separately under different criteria. The end-to-end approach consists of replacing the aforementioned chain for a single neural network, allowing the use of a single optimization criterion for enhancing the system.",
+   "dich_vi": "Một hạn chế rõ ràng của mô hình nhiều chặng này là mỗi chặng (ở đây là trích module và phân vùng lỗi) phải được tối ưu riêng rẽ theo các tiêu chí khác nhau. Cách tiếp cận đầu-cuối (end-to-end) là thay chuỗi nói trên bằng một mạng nơ-ron duy nhất, cho phép dùng một tiêu chí tối ưu duy nhất để cải thiện hệ thống.",
+   "y_nghia": "Pipeline của dự án đúng là kiểu nhiều chặng (ortho RGB → trích 6473 tấm → detect nhiệt → gán tấm), nên câu này là chỗ neo để tự đo lỗi tích luỹ từng chặng thay vì chỉ báo cáo số cuối.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "11",
+   "bai": "Kolahi M. et al. (2024), Energy Conversion and Management, 321:118963",
+   "chu_de": "khac",
+   "trang": "2",
+   "trich_en": "One of the challenges in utilizing AI techniques is acquiring a significant amount of annotated data. This is because publicly available datasets are quite limited. Additionally, field flight to collect data or testing of autonomous flight by intelligence and automatic models could be costly, as mistakes could lead to the aerial robot or PV panel damage.",
+   "dich_vi": "Một trong những thách thức khi dùng kỹ thuật AI là thu được lượng lớn dữ liệu đã gán nhãn. Lý do là các bộ dữ liệu công khai khá hạn chế. Thêm nữa, bay thực địa để thu dữ liệu hoặc kiểm thử bay tự hành bằng các mô hình thông minh, tự động có thể tốn kém, vì sai sót có thể dẫn tới hỏng robot bay hoặc hỏng tấm pin.",
+   "y_nghia": "Câu này biện minh cho việc dự án phải tự gán 511 nhãn tay, và cũng là lý do một bộ nhãn tay công bố được sẽ có giá trị.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "11",
+   "bai": "Kolahi M. et al. (2024), Energy Conversion and Management, 321:118963",
+   "chu_de": "khac",
+   "trang": "19 (mục 6 Conclusion & Future Work)",
+   "trich_en": "In addition, creating a library of virtual PV plants worldwide and integrating models of various fault types as well as diversifying aerial robots and sensor models (e.g. LIDAR, multi-spectral, and thermal cameras) would be highly beneficial.",
+   "dich_vi": "Ngoài ra, việc xây dựng một thư viện các nhà máy PV ảo trên toàn thế giới và tích hợp các mô hình cho nhiều loại lỗi khác nhau, cũng như đa dạng hoá các robot bay và các mô hình cảm biến (ví dụ LIDAR, đa phổ, và camera nhiệt) sẽ rất có ích.",
+   "y_nghia": "Tác giả tự thừa nhận nền tảng digital twin của họ CHƯA có camera nhiệt — tức toàn bộ nhánh phát hiện dị thường nhiệt vẫn phải làm trên dữ liệu bay thật như dự án đang làm.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "46",
+   "bai": "Millendorf M., Obropta E., Vadhavkar N. (Raptor Maps Inc.) (2020), \"Infrared Solar Module Dataset for Anomaly Detection\", conference paper at ICLR 2020",
+   "chu_de": "khac",
+   "trang": "1 (Abstract)",
+   "trich_en": "Inspecting thermal imagery of solar modules typically requires a trained expert to identify anomalies. However, this data is not widely available to machine learning researchers that have the means to automate these data challenges.",
+   "dich_vi": "Việc soi ảnh nhiệt của các module pin mặt trời thường đòi hỏi một chuyên gia được đào tạo để nhận diện dị thường. Tuy nhiên, dữ liệu này không được phổ biến rộng rãi tới các nhà nghiên cứu học máy — những người có phương tiện để tự động hoá các bài toán dữ liệu đó.",
+   "y_nghia": "Câu tự nêu về khan hiếm dữ liệu IR công khai; là lý do bộ 598 cặp RGB–nhiệt có nhãn tay của dự án có giá trị công bố.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "46",
+   "bai": "Millendorf M. et al. (2020), ICLR 2020",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "2 (mục 3.2 Dataset Discussion)",
+   "trich_en": "It is noteworthy to compare the class proportions of data presented in this paper to the real world. Ewanich's global report on aerial inspections found that 2.2% of all modules have anomalies. […] Figure 2 shows the class percentages compared to the global findings and highlights the class imbalance.",
+   "dich_vi": "Đáng chú ý là cần so sánh tỷ lệ các lớp của dữ liệu trình bày trong bài này với thực tế. Báo cáo toàn cầu của Ewanich về kiểm tra từ trên không cho thấy 2,2% tổng số module có dị thường. […] Hình 2 cho thấy phần trăm các lớp so với kết quả toàn cầu và làm nổi bật sự mất cân bằng lớp (class imbalance).",
+   "y_nghia": "Tác giả tự nêu rằng phân bố lớp trong bộ dữ liệu KHÁC hẳn phân bố thật ngoài đời (2,2% module có lỗi) — đúng cái bẫy khiến các chỉ số đánh giá của dự án (mẫu số 6473 tấm vs 511 nhãn tay) dễ bị đọc sai.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "46",
+   "bai": "Millendorf M. et al. (2020), ICLR 2020",
+   "chu_de": "khac",
+   "trang": "4 (mục 4 MILESTONES)",
+   "trich_en": "The authors propose the following milestones for future work. 1. Bench marking classification results that can be shared broadly with the community. 2. Incorporation of more classes and the ability to recognize anomalies that are outside of the 12 classes of InfraredSolarModules. 3. Algorithm optimization towards real-time classification that can be used by low performance edge-computing devices.",
+   "dich_vi": "Nhóm tác giả đề xuất các mốc sau cho công việc tương lai. 1. Xây dựng benchmark cho kết quả phân loại để chia sẻ rộng rãi với cộng đồng. 2. Bổ sung thêm lớp và khả năng nhận ra các dị thường nằm ngoài 12 lớp của InfraredSolarModules. 3. Tối ưu thuật toán hướng tới phân loại thời gian thực chạy được trên thiết bị điện toán biên hiệu năng thấp.",
+   "y_nghia": "Đây là phần Future Work tường minh duy nhất của bài; đáng chú ý là bộ dữ liệu chỉ gồm ảnh cắt sẵn 24×40 px theo từng module nên KHÔNG có thông tin định vị — mảng mà dự án đang lấp.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "50",
+   "bai": "Aksoy S. (Institute of Computer Science, LMU Munich) (2025), \"Benchmarking Vision Transformers and CNNs for Thermal Photovoltaic Fault Detection with Explainable AI Validation\", bản tiền ấn 2025",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "24 (trang PDF; bài không đánh số trang in)",
+   "trich_en": "The 40×24 pixel resolution with substantial pixelation fundamentally limits fine-grained feature extraction necessary for distinguishing subtle environmental degradation, precisely the fault types where early detection provides maximum economic benefit through preventive intervention.",
+   "dich_vi": "Độ phân giải 40×24 pixel với mức vỡ hạt (pixelation) đáng kể về căn bản đã giới hạn việc trích đặc trưng chi tiết cần thiết để phân biệt các suy giảm do môi trường ở mức tinh vi — đúng những loại lỗi mà phát hiện sớm mang lại lợi ích kinh tế lớn nhất qua can thiệp phòng ngừa.",
+   "y_nghia": "Tác giả tự chốt rằng độ phân giải ảnh nhiệt trên mỗi tấm là trần cứng của độ chính xác — con số mà dự án đo được trực tiếp (GSD nhiệt ở 31 m × kích thước tấm) và có thể so trực diện.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "50",
+   "bai": "Aksoy S. (2025), bản tiền ấn LMU Munich",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "24 (trang PDF)",
+   "trich_en": "These findings suggest that thermal-only monitoring approaches have reached physical detection limits for environmental fault types. Cost-effective solar energy operations may require hybrid sensing strategies combining thermal imaging for electrical fault detection with complementary modalities, such as optical inspection for soiling assessment, electrical impedance measurement for cell degradation monitoring to achieve comprehensive coverage across the fault spectrum affecting photovoltaic installations.",
+   "dich_vi": "Các kết quả này gợi ý rằng những phương pháp giám sát CHỈ dùng ảnh nhiệt đã chạm giới hạn phát hiện vật lý đối với các loại lỗi do môi trường. Vận hành điện mặt trời hiệu quả chi phí có thể đòi hỏi các chiến lược cảm biến lai, kết hợp ảnh nhiệt cho phát hiện lỗi điện với các phương thức bổ trợ, chẳng hạn soi quang học để đánh giá bám bẩn, đo trở kháng điện để theo dõi suy giảm cell, nhằm đạt độ phủ toàn diện trên phổ lỗi ảnh hưởng tới các hệ PV.",
+   "y_nghia": "Đây là câu tự nêu mạnh nhất trong kho cho việc kết hợp RGB + nhiệt: dự án có sẵn hai kênh cùng gimbal ZH20T và ma trận H hiệu chuẩn tay, tức là đúng cấu hình mà bài này gọi là còn thiếu.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "50",
+   "bai": "Aksoy S. (2025), bản tiền ấn LMU Munich",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "26 (trang PDF; mục 5 Conclusion)",
+   "trich_en": "Image quality-related constraints were identified as the primary bottleneck to further improvement, suggesting that development in thermal imaging quality could dramatically expand diagnostic capabilities.",
+   "dich_vi": "Các ràng buộc liên quan tới chất lượng ảnh được xác định là nút thắt chính cản trở cải thiện thêm, cho thấy việc phát triển chất lượng ảnh nhiệt có thể mở rộng đáng kể năng lực chẩn đoán.",
+   "y_nghia": "Bài chạy trên ảnh nhiệt đã bị tô màu/nén; dự án còn nguyên dữ liệu 16-bit trong APP3 chưa dùng, tức có thể kiểm chứng đúng giả thuyết \"chất lượng ảnh là nút thắt\" bằng DN gốc thay vì ảnh đã tô màu.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "52",
+   "bai": "Pierdicca R., Paolanti M., Felicetti A., Piccinini F., Zingaretti P. (2020), \"Automatic Faults Detection of Photovoltaic Farms: solAIr, a Deep Learning-Based System for Thermal Images\", Energies (MDPI), 13(24):6496",
+   "chu_de": "ortho-khong-ra-toa-do",
+   "trang": "14 (mục 5 Conclusions and Future Works)",
+   "trich_en": "The output results of the proposed experiments can be easily integrated within a dedicated geographical information system (GIS) specifically designed for operation and maintenance (O&M) activities in PV Plants. Indeed, having the geolocation for each image, the management of the detected faulty cells can be facilitated.",
+   "dich_vi": "Kết quả đầu ra của các thí nghiệm đề xuất có thể dễ dàng tích hợp vào một hệ thống thông tin địa lý (GIS) chuyên dụng, được thiết kế riêng cho các hoạt động vận hành và bảo trì (O&M) trong nhà máy PV. Thật vậy, khi có toạ độ địa lý cho từng ảnh, việc quản lý các cell lỗi đã phát hiện sẽ được thuận lợi hơn.",
+   "y_nghia": "Đây là chỗ neo trực tiếp nhất: tác giả đặt bước ra toạ độ + tích hợp GIS vào phần TƯƠNG LAI, tức chưa làm — trong khi dự án đã đi tới toạ độ và gán vào từng tấm trong số 6473 tấm.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "52",
+   "bai": "Pierdicca R. et al. (2020), Energies, 13(24):6496",
+   "chu_de": "khac",
+   "trang": "14",
+   "trich_en": "The work also presents some drawbacks: first of all, we only deal with binary segmentation: a pixel can be classified either as a damaged cell or as a background.",
+   "dich_vi": "Công trình cũng có một số nhược điểm: trước hết, chúng tôi chỉ xử lý phân vùng nhị phân: một pixel chỉ có thể được phân loại hoặc là cell hỏng, hoặc là nền.",
+   "y_nghia": "Tác giả tự nhận chỉ làm nhị phân lỗi/không-lỗi; dự án đã chạy model phân nhiều lớp (4 lớp và 8 lớp) nên có thể so trực tiếp mức chi tiết chẩn đoán.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "52",
+   "bai": "Pierdicca R. et al. (2020), Energies, 13(24):6496",
+   "chu_de": "khac",
+   "trang": "14–15 (câu vắt qua hai trang)",
+   "trich_en": "Additionally, the robustness and the reliability of the proposed UAV-based inspection system, along with the deep-learning anomaly cells detection solution, needs to be further validated and improved through extensive field assessments.",
+   "dich_vi": "Thêm nữa, tính bền vững và độ tin cậy của hệ thống kiểm tra dựa trên UAV được đề xuất, cùng với giải pháp phát hiện cell dị thường bằng học sâu, cần được kiểm chứng và cải thiện thêm qua các đánh giá thực địa quy mô rộng.",
+   "y_nghia": "Bài tự nêu là chưa có kiểm chứng thực địa quy mô rộng; dự án có 511 tấm nhãn tay hiện trường trên một nhà máy thật là đúng loại bằng chứng họ đang thiếu.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "54",
+   "bai": "Meng S., Yue Y., Xu T. (2025), \"Enhanced YOLOv11 Framework for Accurate Multi-Fault Detection in UAV Photovoltaic Inspection\", Sensors (MDPI), 25(17):5311",
+   "chu_de": "khac",
+   "trang": "22 (mục 5 Conclusions and Future Work)",
+   "trich_en": "It is worth noting that, although the YOLOv11-MO framework has achieved remarkable progress in improving detection accuracy, the issue of false positives remains a challenge that requires attention. In complex photovoltaic scenarios, such as those involving shadows, reflections, or partial occlusions, the model may generate false positives.",
+   "dich_vi": "Đáng lưu ý rằng, mặc dù khung YOLOv11-MO đã đạt tiến bộ đáng kể trong việc cải thiện độ chính xác phát hiện, vấn đề phát hiện sai (false positive) vẫn là một thách thức cần được quan tâm. Trong các bối cảnh điện mặt trời phức tạp, chẳng hạn có bóng đổ, phản xạ, hoặc che khuất một phần, mô hình có thể sinh ra các phát hiện sai.",
+   "y_nghia": "Tác giả để ngỏ bài toán FP do bóng/phản xạ và chỉ đề xuất chữa bằng dữ liệu và kiến trúc; dự án đã đo được cách chữa khác — lọc theo số ảnh nhìn thấy (n≥3 cho P 0,968, 64% FP chỉ hiện một ảnh).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "54",
+   "bai": "Meng S. et al. (2025), Sensors, 25(17):5311",
+   "chu_de": "khac",
+   "trang": "1 (Abstract)",
+   "trich_en": "Existing detectors typically sacrifice accuracy for speed, and none simultaneously classify all three fault types.",
+   "dich_vi": "Các bộ phát hiện hiện có thường hy sinh độ chính xác để đổi lấy tốc độ, và không bộ nào phân loại đồng thời cả ba loại lỗi.",
+   "y_nghia": "Câu \"chưa ai làm\" tường minh về phát hiện đa loại lỗi trên cùng một khung — hữu ích khi dự án lập luận cho model 8 lớp, dù ba loại lỗi ở đây (vết bẩn, khuyết tật, tuyết) không trùng bộ lớp của dự án.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "54",
+   "bai": "Meng S. et al. (2025), Sensors, 25(17):5311",
+   "chu_de": "khac",
+   "trang": "20",
+   "trich_en": "The small dataset size of thin-film modules may particularly limit the model's training efficacy and generalizability. […] Future work should focus on expanding the dataset sizes for thin-film and bifacial modules to gain a more comprehensive understanding of the model's performance.",
+   "dich_vi": "Kích thước bộ dữ liệu nhỏ của các module màng mỏng (thin-film) có thể đặc biệt hạn chế hiệu quả huấn luyện và khả năng tổng quát hoá của mô hình. […] Công việc tương lai nên tập trung vào việc mở rộng kích thước bộ dữ liệu cho module màng mỏng và module hai mặt (bifacial) để hiểu toàn diện hơn về hiệu năng của mô hình.",
+   "y_nghia": "Tác giả tự nêu mô hình chưa tổng quát sang loại tấm khác (203 và 182 ảnh cho thin-film và bifacial) — giới hạn mà dự án cũng gặp vì chỉ có một nhà máy, một loại tấm.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "55",
+   "bai": "Bommes L., Hoffmann M., Buerhop-Lutz C., Pickel T., Hauch J., Brabec C., Maier A., Peters I.M. (2021/2022), \"Anomaly Detection in IR Images of PV Modules using Supervised Contrastive Learning\", HI ERN / FAU Erlangen, bản tiền ấn arXiv:2112.02922v1 (6/12/2021)",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "1 (Abstract; trang PDF, bài không đánh số trang in)",
+   "trich_en": "However, related works typically sample train and test data from the same distribution ignoring the presence of domain shift between data of different PV plants.",
+   "dich_vi": "Tuy nhiên, các công trình liên quan thường lấy mẫu dữ liệu huấn luyện và dữ liệu kiểm thử từ CÙNG một phân phối, bỏ qua sự tồn tại của dịch chuyển miền (domain shift) giữa dữ liệu của các nhà máy PV khác nhau.",
+   "y_nghia": "Đây là chỗ neo mạnh nhất trong cả kho cho phần đánh giá của dự án — đúng cái bẫy đã làm mAP 0,965 bị đo trên chính dữ liệu train (81% \"tập test\" nằm trong train).",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "55",
+   "bai": "Bommes L. et al. (2021/2022), arXiv:2112.02922",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "9 (mục VI.2 Practical Relevance; trang PDF)",
+   "trich_en": "One problem of existing fault detection methods is that they do not explicitly consider domain shift between different PV plants. This means a fault detector must be fine-tuned on labelled training images of each new PV plant that is inspected. This is not only labor-intensive, but also time-consuming, as training a neural network takes several hours.",
+   "dich_vi": "Một vấn đề của các phương pháp phát hiện lỗi hiện có là chúng không xét đến dịch chuyển miền (domain shift) giữa các nhà máy PV khác nhau một cách tường minh. Điều này có nghĩa là bộ phát hiện lỗi phải được tinh chỉnh (fine-tune) trên các ảnh huấn luyện có nhãn của MỖI nhà máy PV mới được kiểm tra. Việc này không chỉ tốn công mà còn tốn thời gian, vì huấn luyện một mạng nơ-ron mất vài giờ.",
+   "y_nghia": "Câu này định giá đúng phạm vi kết quả của dự án: mọi con số recall/precision hiện có chỉ nói về Thuận Nam 19, chưa nói được gì về nhà máy khác — cần ghi rõ trong phần hạn chế.",
+   "du_an_lap_duoc": "khong_lap_duoc"
+  },
+  {
+   "so_hieu": "55",
+   "bai": "Bommes L. et al. (2021/2022), arXiv:2112.02922",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "6 (trang PDF)",
+   "trich_en": "For homogeneously overheated modules (Mh), we observe a high error rate. This is caused by the image-wise normalization applied during preprocessing and may be addressed in future works.",
+   "dich_vi": "Đối với các module bị quá nhiệt đồng đều (Mh), chúng tôi quan sát thấy tỷ lệ lỗi cao. Nguyên nhân là do việc chuẩn hoá theo từng ảnh (image-wise normalization) áp dụng trong tiền xử lý, và điều này có thể được xử lý trong các công trình tương lai.",
+   "y_nghia": "Tác giả tự chỉ ra chuẩn hoá theo từng khung ảnh làm mù loại lỗi \"nóng đều cả tấm\" — dự án có DN 16-bit và ortho nhiệt winner-take-all nên có thể chuẩn hoá theo toàn nhà máy, đúng hướng mà họ để ngỏ.",
+   "du_an_lap_duoc": "chan_tinh_moi"
+  },
+  {
+   "so_hieu": "56",
+   "bai": "Lysyi A., Sachenko A., Radiuk P., Lysyi M., Melnychenko O., Zahorodnia D. (2025), \"Method of UAV Inspection of Photovoltaic Modules Using Thermal and RGB Data Fusion\", bản tiền ấn (CC BY 4.0), 2025",
+   "chu_de": "da-goc-nhin-gop-bang-chung",
+   "trang": "3–4 (mục 1.2 và 1.3 Research Gaps; trang PDF)",
+   "trich_en": "Yet the consolidation of redundant detections caused by image overlap is often treated with simple heuristics or neglected altogether, leading to inflated defect counts and noisy maintenance logs. […] Third, geo-spatial consolidation of detections is frequently performed as a post-hoc heuristic in image space, rather than through principled clustering in geographic coordinates that reflects the true physical proximity of faults.",
+   "dich_vi": "Thế nhưng việc gộp các phát hiện trùng lặp do chồng phủ ảnh gây ra thường chỉ được xử lý bằng các thủ thuật heuristic đơn giản, hoặc bị bỏ qua hoàn toàn, dẫn tới số lượng lỗi bị thổi phồng và nhật ký bảo trì nhiễu. […] Thứ ba, việc gộp theo không gian địa lý các phát hiện thường được thực hiện như một heuristic hậu kỳ TRONG KHÔNG GIAN ẢNH, thay vì qua phân cụm có cơ sở trong toạ độ địa lý phản ánh đúng khoảng cách vật lý thật giữa các lỗi.",
+   "y_nghia": "Đây là phát biểu gap tường minh (đặt trong mục có tiêu đề \"Research Gaps\") đúng với việc dự án gộp phát hiện trong toạ độ thế giới thực rồi gán vào đa giác tấm, thay vì gộp trong không gian ảnh.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "56",
+   "bai": "Lysyi A. et al. (2025), bản tiền ấn",
+   "chu_de": "danh-gia-ro-ri-du-lieu",
+   "trang": "17 (mục 4.2; trang PDF)",
+   "trich_en": "While academic research often focuses on per-frame metrics like mAP, O&M teams in the field are concerned with a simple question: \"How many unique, actionable problems are there on my site, and where are they?\"",
+   "dich_vi": "Trong khi nghiên cứu hàn lâm thường tập trung vào các chỉ số theo từng khung ảnh như mAP, các đội O&M ngoài hiện trường lại quan tâm một câu hỏi đơn giản: \"Có bao nhiêu vấn đề duy nhất, xử lý được, trên khu vực của tôi, và chúng ở đâu?\"",
+   "y_nghia": "Câu này hợp thức hoá đúng bước dự án đã làm — bỏ mAP theo khung, chuyển sang đánh giá theo TỪNG TẤM bằng nhãn tay và đếm lỗi duy nhất sau khi gộp.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "56",
+   "bai": "Lysyi A. et al. (2025), bản tiền ấn",
+   "chu_de": "sai-so-dinh-vi",
+   "trang": "17 (mục 4.3 Limitations, Challenges, and Mitigation Strategies; trang PDF)",
+   "trich_en": "The accuracy of our geo-projection and de-duplication is critically dependent on high-quality UAV pose metadata, ideally from an RTK-enabled GPS. In environments where GPS signals are degraded, projection errors could lead to incorrect clustering.",
+   "dich_vi": "Độ chính xác của phép chiếu địa lý (geo-projection) và khử trùng lặp của chúng tôi phụ thuộc một cách then chốt vào siêu dữ liệu tư thế (pose) chất lượng cao của UAV, lý tưởng là từ GPS có RTK. Ở những môi trường tín hiệu GPS bị suy giảm, sai số chiếu có thể dẫn tới phân cụm sai.",
+   "y_nghia": "Dự án đúng là ca kiểm chứng mà bài này mong có: 598/598 ảnh RtkFlag=50, std ngang 0,83 cm — tức có thể trả lời được câu hỏi họ để ngỏ là với RTK fix thì sai số chiếu còn bao nhiêu.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  },
+  {
+   "so_hieu": "71",
+   "bai": "Tanda G., Migliazzi M. (2023/2024), \"Infrared thermography monitoring of solar photovoltaic systems: A comparison between UAV and aircraft remote sensing platforms\", Thermal Science and Engineering Progress (Elsevier), 48:102379",
+   "chu_de": "nhiet-chuan-hoa-buc-xa",
+   "trang": "3",
+   "trich_en": "Although no general consensus exists in the technical literature regarding the temperature difference thresholds that identify a thermal anomaly and its degree of severity, temperature difference ranges of 2–7 K, 7–10 K, and more than 10 K were assumed in this study, choices consistent with recommendations reported in Annex C of ref. [17]. Specifically, a temperature difference below 2 K was not considered a thermal anomaly, as it falls within the uncertainty of the measurement.",
+   "dich_vi": "Mặc dù trong tài liệu kỹ thuật KHÔNG tồn tại một đồng thuận chung nào về các ngưỡng chênh lệch nhiệt độ để nhận diện một dị thường nhiệt và mức độ nghiêm trọng của nó, nghiên cứu này giả định các khoảng chênh lệch nhiệt độ 2–7 K, 7–10 K, và trên 10 K, những lựa chọn nhất quán với khuyến nghị trong Phụ lục C của tài liệu [17]. Cụ thể, chênh lệch nhiệt độ dưới 2 K không được coi là dị thường nhiệt, vì nó nằm trong sai số của phép đo.",
+   "y_nghia": "Tác giả tự nêu ngành CHƯA có đồng thuận về ngưỡng ΔT — chỗ neo để dự án khai thác dữ liệu 16-bit trong APP3 (hiện đang bỏ phí) mà tính ΔT thật thay vì chỉ dựa vào ngưỡng conf của model.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "71",
+   "bai": "Tanda G., Migliazzi M. (2023/2024), Thermal Science and Engineering Progress, 48:102379",
+   "chu_de": "dieu-kien-van-hanh",
+   "trang": "8",
+   "trich_en": "In contrast, the comparison is less favourable when referring to the 110 modules with single and multiple hotspots identified by UAV, as only 96 (i.e., the 87.3 %) containing type-A and B faults observed by UAV surveys were also confirmed by the inspections carried out with the airplane. A better agreement is expected to be attained in the near future with the advent of fast (cooled) thermal cameras having a larger resolution, allowing the resolution at the ground of UAV and airplane surveys to be comparable.",
+   "dich_vi": "Ngược lại, sự so sánh kém thuận lợi hơn khi nói tới 110 module có hotspot đơn và đa hotspot được UAV xác định, vì chỉ có 96 (tức 87,3%) module chứa lỗi loại A và B mà khảo sát UAV quan sát được cũng được xác nhận bởi các đợt kiểm tra bằng máy bay. Một mức đồng thuận tốt hơn được kỳ vọng đạt được trong tương lai gần nhờ sự xuất hiện của các camera nhiệt nhanh (làm lạnh) có độ phân giải lớn hơn, cho phép độ phân giải trên mặt đất của khảo sát bằng UAV và bằng máy bay trở nên tương đương.",
+   "y_nghia": "Tác giả tự nhận 12,7% hotspot bị mất khi độ phân giải mặt đất kém đi, và để ngỏ việc kiểm chứng bằng camera phân giải cao hơn — dự án có thể tái lập bằng ba độ cao 31/35/42 m thay vì hai loại máy bay.",
+   "du_an_lap_duoc": "lap_duoc_neu_chay_them"
+  },
+  {
+   "so_hieu": "71",
+   "bai": "Tanda G., Migliazzi M. (2023/2024), Thermal Science and Engineering Progress, 48:102379",
+   "chu_de": "dang-ky-nhiet-rgb",
+   "trang": "2",
+   "trich_en": "Visual inspection of the PV plant, complementing thermal imagery, is also recommended. This is because the presence of soiling, bird droppings, dust, etc., may be misinterpreted as a \"false\" hotspot, possibly due, for instance, to local variations in emissivity induced by these external impurities rather than to a real overheating of the inspected surface.",
+   "dich_vi": "Việc soi ảnh khả kiến của nhà máy PV, bổ trợ cho ảnh nhiệt, cũng được khuyến nghị. Lý do là sự hiện diện của bám bẩn, phân chim, bụi v.v. có thể bị hiểu nhầm thành hotspot \"giả\", chẳng hạn do các biến thiên cục bộ của độ phát xạ (emissivity) gây ra bởi những tạp chất bên ngoài này, chứ không phải do bề mặt được kiểm tra thực sự quá nhiệt.",
+   "y_nghia": "Đây là lý do vật lý (biến thiên emissivity) khiến ảnh nhiệt một mình sinh FP, và là lập luận trực tiếp cho việc dự án chồng nhiệt lên RGB qua ma trận H để loại các hotspot giả.",
+   "du_an_lap_duoc": "lap_duoc_ngay"
+  }
+ ]
+}

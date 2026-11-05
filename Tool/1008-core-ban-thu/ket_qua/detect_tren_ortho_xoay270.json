@@ -1,0 +1,22 @@
+{
+ "_cau_hoi": "cùng một model fault_obb_4class.pt, đổi mỗi đầu vào: mất bao nhiêu?",
+ "_moc_A": "603 lỗi trong loi_4lop_cuoi.json ĐỀU do chính model này bắt được trên ảnh lẻ ironbow gốc, nên điều kiện A = 100% theo định nghĩa. A không phải phép đo độc lập, nó là mốc.",
+ "conf": 0.25,
+ "hit_m": 1.0,
+ "gsd_cm_per_px": 2.871,
+ "so_loi_moc": 603,
+ "C_ortho_inferno": null,
+ "D_quet_truot_toan_ortho": {
+  "_mo_ta": "quét trượt cả ortho, gộp trùng 0.60 m, đối chiếu 603 lỗi nhánh frame",
+  "_canh_bao": "603 lỗi KHÔNG phải chân lý đầy đủ — chúng là đầu ra nhánh frame. Nên 'lạ' = không khớp nhánh frame, CẬN TRÊN của báo động giả, không phải FP đã kiểm. Muốn FP thật phải soi tay từng cái.",
+  "o_quet": 103,
+  "o_bo_vi_trong": 73,
+  "phat_hien_tho": 758,
+  "sau_gop_trung": 463,
+  "khop_moc_frame": 430,
+  "recall_so_voi_603": 0.7131,
+  "khong_khop_nhanh_frame": 25,
+  "ty_le_khop": 0.9287,
+  "giay": 40.9
+ }
+}

@@ -1,0 +1,51 @@
+# Repo này chỉ giữ MÃ NGUỒN + TÀI LIỆU + KẾT QUẢ NHỎ (~100 MB).
+# Ảnh gốc, sản phẩm Metashape, model và ortho nằm ngoài — 23 GB, không đẩy lên GitHub.
+
+# --- ảnh gốc + sản phẩm Metashape (23 GB) -----------------------------------
+# Chỉ loại 4 thư mục ảnh. manifest_anh.csv, exif_bay.json, anh_rung.json,
+# anh_tre_chup*.json trong du_lieu/ là danh sách nhỏ — VẪN theo dõi.
+/du_lieu/Data_Khánh_làm/
+/du_lieu/data_Thermel_2_31M/
+/du_lieu/data_aligned/
+/du_lieu/Thermal2_31M_full_export/
+
+# --- file chết đã gom lại, dựng lại bằng `python ma/dong_goi.py --hoan-tac` --
+/luu_tru/
+
+# --- ảnh nền của công cụ xem, dựng lại bằng ma/lam_gan_nhan_tam.py và
+#     ma/xuat_nen_net.py. Thiếu chúng thì cong_cu/gan_nhan_tam.html mở ra là
+#     trang trắng — chạy lại script để có.
+/cong_cu/nhan/
+/cong_cu/net/
+
+# --- model (lấy từ repo khác, xem mục "Nguồn gốc code" trong README) ---------
+*.pt
+
+# --- ortho nhị phân, dựng lại bằng ma/ghep_ortho_nhiet.py --------------------
+*.tif
+*.tiff
+
+# --- viewer nặng + dữ liệu kèm theo (36 MB / 15 MB) -------------------------
+/cong_cu/so_sanh_model.html
+/cong_cu/soi_tay_100_loi.html
+/cong_cu/_the_soi_tay.json
+
+# --- PDF, dựng lại bằng ma/xuat_pdf.py --------------------------------------
+*.pdf
+
+# --- bản trung gian của ma/xuat_pdf.py --------------------------------------
+/tai_lieu/_bao_cao.css
+/tai_lieu/_bao_cao.html
+
+# --- rác -------------------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+Thumbs.db
+desktop.ini
+
+# --- nhat ky hoan tac cua lan tai cau truc (gan 1 MB, chi dung tai cho) ------
+/_da_tai_cau_truc.json
+
+# --- file sao luu do sua_duong_manifest.py de lai ---------------------------
+*.bak

@@ -1,0 +1,347 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Căn tay lệch nhiệt ↔ RGB</title>
+<style>
+:root{
+  --nen:#0f1116; --the:#171a21; --the2:#1e222b; --vien:#2b313c;
+  --chu:#e7eaf0; --mo:#96a0b0; --nhat:#6b7686;
+  --xanh:#3fb96b; --do:#e0575b; --cam:#e08a3a; --duong:#4d8fd6; --vang:#ffd54a;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--nen);color:var(--chu);overflow:hidden;
+     display:flex;flex-direction:column;
+     font:14.5px/1.5 "Segoe UI",system-ui,sans-serif}
+button{background:#232833;color:var(--chu);border:1px solid var(--vien);
+       border-radius:7px;padding:6px 12px;cursor:pointer;font:inherit;font-size:13.5px}
+button:hover{background:#2c323f}
+kbd{background:#232833;border:1px solid var(--vien);border-radius:4px;
+    padding:0 5px;font:inherit;font-size:11.5px;color:var(--mo)}
+
+header{display:flex;align-items:center;gap:15px;flex-wrap:wrap;flex:none;
+       background:#12151b;border-bottom:1px solid var(--vien);padding:9px 16px}
+h1{font-size:15px;margin:0;font-weight:600;white-space:nowrap}
+.thanh{flex:1;min-width:120px;height:7px;background:#252a35;border-radius:4px;overflow:hidden}
+.thanh i{display:block;height:100%;background:var(--xanh);width:0;transition:.2s}
+.dem{font-variant-numeric:tabular-nums;color:var(--mo);font-size:12.5px;white-space:nowrap}
+
+.khung{display:grid;grid-template-columns:minmax(0,1fr) 330px;flex:1;min-height:0}
+.anh{position:relative;background:#000;overflow:hidden;cursor:grab}
+.anh.keo{cursor:grabbing}
+#cv{position:absolute;inset:0}
+.gocTren{position:absolute;left:12px;top:12px;display:flex;gap:8px;align-items:center;
+  background:rgba(15,17,22,.86);border:1px solid var(--vien);border-radius:9px;
+  padding:6px 10px;backdrop-filter:blur(6px)}
+.seg{display:flex;border:1px solid var(--vien);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:4px 10px;font-size:12px;background:transparent}
+.seg button[aria-pressed=true]{background:var(--duong);color:#fff}
+
+.ben{background:var(--the);border-left:1px solid var(--vien);
+     display:flex;flex-direction:column;overflow:hidden}
+.ben h2{margin:0;padding:10px 14px;font-size:11.5px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--nhat);border-bottom:1px solid var(--vien);
+  background:var(--the2);display:flex;align-items:center;gap:9px}
+.ben h2 b{color:var(--chu);font-size:15px;letter-spacing:0;text-transform:none;
+          font-family:ui-monospace,Consolas,monospace}
+.than{flex:1;overflow-y:auto;padding:13px 14px 20px}
+
+.so{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13.5px;
+    background:var(--the2);border:1px solid var(--vien);border-radius:9px;padding:11px 13px}
+.so span{color:var(--mo)}
+.so b{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.canh{margin-top:11px;padding:9px 11px;border-radius:8px;font-size:12.5px}
+.canh.kho{background:#2a2118;border:1px solid #5c452a;color:#e8cba6}
+.canh.ok{background:#17251c;border:1px solid #2f4a37;color:#b8dcc4}
+.muc{margin-top:15px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
+     color:var(--nhat);margin-bottom:7px}
+.doc{display:grid;gap:6px}
+.doc button{width:100%;text-align:left;display:flex;align-items:center;gap:9px}
+.doc button em{margin-left:auto;font-style:normal;color:var(--nhat);font-size:11px}
+.di{display:flex;gap:7px;margin-top:12px}
+.di button{flex:1}
+.phim{margin-top:14px;font-size:11.5px;color:var(--nhat);line-height:1.95}
+.bao{margin-top:12px;padding:9px 11px;border-radius:8px;font-size:12.5px;
+     background:#1d2530;border:1px solid #2f3b4a;display:none}
+.bao.hien{display:block}
+</style>
+
+<header>
+  <h1>Căn tay lệch nhiệt ↔ RGB</h1>
+  <div class="thanh"><i id="thanh"></i></div>
+  <div class="dem" id="dem"></div>
+  <button onclick="tai()">Tải kết quả</button>
+  <button onclick="nap.click()">Nạp lại</button>
+  <input type="file" id="nap" accept=".json" hidden>
+</header>
+
+<div class="khung">
+  <div class="anh" id="anh">
+    <canvas id="cv"></canvas>
+    <div class="gocTren">
+      <div class="seg" id="segZoom">
+        <button data-z="1">1×</button>
+        <button data-z="2" aria-pressed="true">2×</button>
+        <button data-z="4">4×</button>
+      </div>
+      <button id="btVien" onclick="chopVien()">Chớp viền <kbd>V</kbd></button>
+    </div>
+  </div>
+
+  <aside class="ben">
+    <h2>Ảnh <b id="tenAnh">—</b> <span id="viTri" style="margin-left:auto"></span></h2>
+    <div class="than">
+      <div class="so">
+        <span>dịch X</span><b id="sDx">0,00 px</b>
+        <span>dịch Y</span><b id="sDy">0,00 px</b>
+        <span>độ dài</span><b id="sLen">0,0 px · 0 cm</b>
+      </div>
+      <div class="canh" id="canh"></div>
+
+      <div class="muc">Kết luận cho ảnh này</div>
+      <div class="doc">
+        <button onclick="chot()">✓ Căn xong, lưu &amp; sang ảnh sau<em>Enter</em></button>
+        <button onclick="datLai()">↺ Về vị trí xuất phát<em>R</em></button>
+        <button onclick="boAnh()">✕ Ảnh này không căn được, bỏ<em>X</em></button>
+      </div>
+
+      <div class="di">
+        <button onclick="di(-1)">← Trước</button>
+        <button onclick="di(1)">Sau →</button>
+      </div>
+
+      <div class="bao" id="bao"></div>
+
+      <div class="phim">
+        <b>Cách căn:</b> kéo chuột cho lưới viền vàng trùng khít lưới tấm pin trên
+        ảnh nhiệt. Bấm <kbd>V</kbd> để chớp tắt viền, dễ thấy lệch hơn.<br>
+        <kbd>←↑↓→</kbd> nhích 1 px · <kbd>Shift</kbd>+ nhích 0,2 px ·
+        <kbd>Enter</kbd> xong · <kbd>R</kbd> đặt lại · <kbd>X</kbd> bỏ ảnh ·
+        <kbd>V</kbd> chớp viền
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const KHOA = "can_tay_v1";
+const TT = DATA.thu_tu;
+let kq = JSON.parse(localStorage.getItem(KHOA) || "{}");   // seq -> {dx,dy,bo}
+let vt = 0, dx = 0, dy = 0, hienVien = true;
+let z = 2, ox = 0, oy = 0;
+
+const anh = document.getElementById("anh");
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const anhCache = new Map();
+
+function seq() { return TT[vt]; }
+function layAnh(s) {
+  if (!anhCache.has(s)) {
+    const im = new Image();
+    im.onload = () => ve();
+    anhCache.set(s, im);
+    im.src = DATA.thu_muc + s + ".jpg";
+  }
+  return anhCache.get(s);
+}
+
+function canhGiua() {
+  ox = (anh.clientWidth - DATA.w * z) / 2;
+  oy = (anh.clientHeight - DATA.h * z) / 2;
+}
+function chinhCanvas() {
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = Math.round(anh.clientWidth * dpr);
+  cv.height = Math.round(anh.clientHeight * dpr);
+  cv.style.width = anh.clientWidth + "px";
+  cv.style.height = anh.clientHeight + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function ve() {
+  const w = anh.clientWidth, h = anh.clientHeight;
+  ctx.clearRect(0, 0, w, h);
+  const im = layAnh(seq());
+  if (im.naturalWidth) {
+    ctx.imageSmoothingEnabled = z < 3;
+    ctx.drawImage(im, ox, oy, DATA.w * z, DATA.h * z);
+  }
+  if (!hienVien) return;
+
+  // Viền tấm pin CHIẾU QUA H, dịch đi (dx,dy). Trùng khít lưới nhiệt là căn đúng.
+  const q = DATA.anh[seq()].quad;
+  ctx.lineWidth = Math.max(1, z * 0.55);
+  ctx.strokeStyle = "#ffd54a";
+  ctx.beginPath();
+  for (const p of q) {
+    ctx.moveTo((p[0] + dx) * z + ox, (p[1] + dy) * z + oy);
+    for (let k = 2; k < 8; k += 2)
+      ctx.lineTo((p[k] + dx) * z + ox, (p[k + 1] + dy) * z + oy);
+    ctx.closePath();
+  }
+  ctx.stroke();
+
+  // khung ảnh nhiệt, để biết mép ở đâu khi kéo ra ngoài
+  ctx.strokeStyle = "#4d8fd6"; ctx.lineWidth = 1;
+  ctx.strokeRect(ox, oy, DATA.w * z, DATA.h * z);
+}
+
+// ------------------------------------------------------------------ kéo
+let keo = null;
+anh.addEventListener("pointerdown", e => {
+  if (e.target.closest(".gocTren")) return;
+  keo = {x: e.clientX, y: e.clientY, dx, dy};
+  anh.setPointerCapture(e.pointerId); anh.classList.add("keo");
+});
+anh.addEventListener("pointermove", e => {
+  if (!keo) return;
+  dx = keo.dx + (e.clientX - keo.x) / z;
+  dy = keo.dy + (e.clientY - keo.y) / z;
+  ve(); veSo();
+});
+anh.addEventListener("pointerup", e => { keo = null; anh.classList.remove("keo"); });
+anh.addEventListener("wheel", e => {
+  if (e.target.closest(".gocTren")) return;
+  e.preventDefault();
+  datZoom(e.deltaY < 0 ? Math.min(8, z * 1.25) : Math.max(0.5, z / 1.25));
+}, {passive: false});
+
+function datZoom(v) {
+  z = v; canhGiua();
+  document.querySelectorAll("#segZoom button").forEach(b =>
+    b.setAttribute("aria-pressed", String(+b.dataset.z === Math.round(z))));
+  ve();
+}
+document.querySelectorAll("#segZoom button").forEach(b =>
+  b.onclick = () => datZoom(+b.dataset.z));
+addEventListener("resize", () => { chinhCanvas(); canhGiua(); ve(); });
+
+function chopVien() { hienVien = !hienVien; ve(); }
+
+// ------------------------------------------------------------------ bên
+function veSo() {
+  const a = DATA.anh[seq()];
+  const len = Math.hypot(dx, dy);
+  document.getElementById("sDx").textContent = dx.toFixed(2).replace(".", ",") + " px";
+  document.getElementById("sDy").textContent = dy.toFixed(2).replace(".", ",") + " px";
+  document.getElementById("sLen").textContent =
+    len.toFixed(1).replace(".", ",") + " px · " + Math.round(len * DATA.cm_px) + " cm";
+
+  const c = document.getElementById("canh");
+  const r = kq[seq()];
+  if (a.kho === "cham_mep") {
+    c.className = "canh kho";
+    c.innerHTML = `<b>Phép đo tự động bó tay ở ảnh này.</b> Lệch thật lớn hơn bán ` +
+      `kính trượt ${DATA.ban_kinh} px nên nó chỉ biết “≥ ${DATA.ban_kinh} px”, ` +
+      `không biết bao nhiêu. Số máy ghi (${a.lech_cm} cm) là số kẹp, đừng tin. ` +
+      `Căn tay từ đầu.`;
+  } else if (a.kho === "net_thap") {
+    c.className = "canh kho";
+    c.innerHTML = `<b>Phép đo tự động không tin được.</b> Độ nét đỉnh khớp chỉ ` +
+      `${a.do_net} — ảnh không đủ cấu trúc để máy trượt tìm. Căn tay từ đầu.`;
+  } else {
+    c.className = "canh ok";
+    c.innerHTML = `Máy đo được <b>${a.lech_cm} cm</b> (độ nét ${a.do_net}), ` +
+      `đã nạp sẵn làm vị trí xuất phát. Xem viền có khít không, khít thì bấm ` +
+      `<b>Căn xong</b> luôn.`;
+  }
+
+  const xong = Object.values(kq).filter(x => x.dx !== undefined || x.bo).length;
+  document.getElementById("thanh").style.width = (100 * xong / TT.length) + "%";
+  document.getElementById("dem").textContent = xong + "/" + TT.length + " ảnh đã xong";
+  document.getElementById("tenAnh").textContent = seq();
+  document.getElementById("viTri").textContent =
+    (vt + 1) + "/" + TT.length + (r ? (r.bo ? " · đã bỏ" : " · đã căn") : "");
+}
+
+function mo(i) {
+  vt = Math.max(0, Math.min(TT.length - 1, i));
+  const a = DATA.anh[seq()], r = kq[seq()];
+  dx = r && r.dx !== undefined ? r.dx : a.dx0;
+  dy = r && r.dy !== undefined ? r.dy : a.dy0;
+  layAnh(seq());
+  // nạp trước ảnh kế tiếp cho khỏi phải chờ
+  if (TT[vt + 1]) layAnh(TT[vt + 1]);
+  canhGiua(); ve(); veSo();
+}
+function di(b) { mo(vt + b); }
+function datLai() { const a = DATA.anh[seq()]; dx = a.dx0; dy = a.dy0; ve(); veSo(); }
+function luu() { localStorage.setItem(KHOA, JSON.stringify(kq)); }
+function chot() {
+  kq[seq()] = {dx: +dx.toFixed(3), dy: +dy.toFixed(3)};
+  luu();
+  if (vt < TT.length - 1) mo(vt + 1); else { veSo(); bao("Xong ảnh cuối. Bấm <b>Tải kết quả</b>."); }
+}
+function boAnh() {
+  kq[seq()] = {bo: true};
+  luu();
+  if (vt < TT.length - 1) mo(vt + 1); else veSo();
+}
+function bao(s) {
+  const e = document.getElementById("bao");
+  e.innerHTML = s; e.classList.add("hien");
+  clearTimeout(bao._t); bao._t = setTimeout(() => e.classList.remove("hien"), 6000);
+}
+
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  const b = e.shiftKey ? 0.2 : 1;
+  const k = e.key.toLowerCase();
+  if (e.key === "ArrowLeft")       { dx -= b; ve(); veSo(); }
+  else if (e.key === "ArrowRight") { dx += b; ve(); veSo(); }
+  else if (e.key === "ArrowUp")    { dy -= b; ve(); veSo(); }
+  else if (e.key === "ArrowDown")  { dy += b; ve(); veSo(); }
+  else if (e.key === "Enter")      { chot(); }
+  else if (k === "r")              { datLai(); }
+  else if (k === "x")              { boAnh(); }
+  else if (k === "v")              { chopVien(); }
+  else return;
+  e.preventDefault();
+});
+
+// ------------------------------------------------------------------ xuất
+function tai() {
+  const ra = {}, bo = [];
+  for (const s of TT) {
+    const r = kq[s];
+    if (!r) continue;
+    if (r.bo) bo.push(s); else ra[s] = [r.dx, r.dy];
+  }
+  const o = {
+    ghi_chu: "Lệch nhiệt↔RGB căn TAY, đơn vị pixel ảnh nhiệt. Cùng quy ước dấu " +
+             "với dx,dy của loc_anh_tre.py: viền DỰ ĐOÁN dịch đi (dx,dy) thì khớp " +
+             "viền THẬT. Đưa vào ghep_ortho_nhiet.py qua --lech-tay.",
+    cm_tren_px: DATA.cm_px,
+    so_anh_can: Object.keys(ra).length,
+    bu: ra,
+    anh_nen_loai: bo,
+  };
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(o, null, 1)],
+                                        {type: "application/json"}));
+  a.download = "can_tay.json"; a.click();
+}
+document.getElementById("nap").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const d = JSON.parse(fr.result);
+      let n = 0;
+      for (const [s, v] of Object.entries(d.bu || {})) { kq[s] = {dx: v[0], dy: v[1]}; n++; }
+      for (const s of (d.anh_nen_loai || [])) { kq[s] = {bo: true}; n++; }
+      luu(); mo(vt); bao("Đã nạp " + n + " ảnh từ " + f.name + ".");
+    } catch (_) { bao("File không đọc được — cần <b>can_tay.json</b> tải ra từ chính công cụ này."); }
+  };
+  fr.readAsText(f);
+  e.target.value = "";
+});
+
+chinhCanvas();
+// mở ở ảnh chưa làm đầu tiên, để đóng nhầm tab là mở lại làm tiếp được ngay
+let dau = TT.findIndex(s => !kq[s]);
+mo(dau < 0 ? 0 : dau);
+datZoom(2);
+</script>
