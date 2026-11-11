@@ -1,0 +1,140 @@
+{
+ "bien_the": "mask",
+ "ckpt": "/content/drive/MyDrive/colab_A/ket_qua/A1v2_0/best_model.pt",
+ "healthy_index": 3,
+ "class_names": [
+  "Debris cover",
+  "bottom dirt",
+  "break",
+  "healthy panel",
+  "hot cell",
+  "junction box heat",
+  "shadow",
+  "short circuit panel",
+  "string short circuit",
+  "substring open circuit"
+ ],
+ "so_anh": 3090,
+ "so_tam": 614,
+ "tam_loi": 437,
+ "tam_lanh": 177,
+ "cap_anh_cat": {
+  "TP": 1164,
+  "FP": 155,
+  "FN": 1014,
+  "TN": 757,
+  "P": 0.8825,
+  "R": 0.5344,
+  "F1": 0.6657
+ },
+ "cap_tam": {
+  "any": {
+   "TP": 342,
+   "FP": 78,
+   "FN": 95,
+   "TN": 99,
+   "P": 0.8143,
+   "R": 0.7826,
+   "F1": 0.7981,
+   "ktc95": {
+    "P": [
+     0.7762,
+     0.8487
+    ],
+    "R": [
+     0.7437,
+     0.822
+    ],
+    "F1": [
+     0.7679,
+     0.8271
+    ]
+   }
+  },
+  "major": {
+   "TP": 251,
+   "FP": 30,
+   "FN": 186,
+   "TN": 147,
+   "P": 0.8932,
+   "R": 0.5744,
+   "F1": 0.6992,
+   "ktc95": {
+    "P": [
+     0.8551,
+     0.9278
+    ],
+    "R": [
+     0.5267,
+     0.6235
+    ],
+    "F1": [
+     0.659,
+     0.7376
+    ]
+   }
+  },
+  "best": {
+   "TP": 239,
+   "FP": 31,
+   "FN": 198,
+   "TN": 146,
+   "P": 0.8852,
+   "R": 0.5469,
+   "F1": 0.6761,
+   "ktc95": {
+    "P": [
+     0.8446,
+     0.9214
+    ],
+    "R": [
+     0.4978,
+     0.5942
+    ],
+    "F1": [
+     0.6328,
+     0.7145
+    ]
+   }
+  }
+ },
+ "nhan_minh_sang_lop_ho": {
+  "SingleHotSpot": {
+   "hot cell": 65,
+   "bottom dirt": 93,
+   "Debris cover": 499,
+   "healthy panel": 736,
+   "substring open circuit": 4,
+   "break": 30,
+   "short circuit panel": 13,
+   "shadow": 17,
+   "string short circuit": 1
+  },
+  "MultiHotSpot": {
+   "bottom dirt": 53,
+   "Debris cover": 164,
+   "hot cell": 14,
+   "break": 30,
+   "healthy panel": 263,
+   "short circuit panel": 21,
+   "shadow": 4,
+   "substring open circuit": 5
+  },
+  "tot": {
+   "healthy panel": 757,
+   "short circuit panel": 3,
+   "substring open circuit": 6,
+   "Debris cover": 124,
+   "shadow": 8,
+   "bottom dirt": 14
+  },
+  "Bypass": {
+   "substring open circuit": 137,
+   "healthy panel": 15,
+   "bottom dirt": 3,
+   "Debris cover": 4,
+   "shadow": 3,
+   "short circuit panel": 4
+  }
+ }
+}

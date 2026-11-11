@@ -1,0 +1,22 @@
+{
+ "phien_ban": "v2",
+ "batch": 32,
+ "accum": 4,
+ "batch_hieu_dung": 128,
+ "color_jitter": 0.5,
+ "patience": 20,
+ "gpu": "Tesla T4",
+ "seeds": "0",
+ "epochs_dat": 100,
+ "epochs_chay": 53,
+ "best_epoch": 33,
+ "runs": [
+  {
+   "run": "A1v2_0",
+   "f1_10lop": 0.9135438547591835,
+   "acc_10lop": 0.9368231046931408,
+   "f1_nhi_phan": 0.9741697416974169,
+   "acc_nhi_phan": 0.9620938628158845
+  }
+ ]
+}
