@@ -1,0 +1,54 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Model weights (large files)
+*.pt
+*.pth
+*.onnx
+*.engine
+*.bin
+
+# Training runs & logs
+runs/
+wandb/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Data (lives in the dataset, not in this repo)
+*.tif
+*.tiff
+*.gpkg
+*.zip
+*.JPG
+*.jpg
+drive_download/
+
+# throwaway one-off scripts/outputs
+_tmp/
+scratch/
+.local/
+*.aux
+*.fdb_latexmk
+*.fls
+
+# Dataset is released separately (Zenodo), never in this repo
+dataset/
+
+# upload helper that reads a Zenodo token from the Colab secrets; never publish
+tools/release/colab_supervisor.py
