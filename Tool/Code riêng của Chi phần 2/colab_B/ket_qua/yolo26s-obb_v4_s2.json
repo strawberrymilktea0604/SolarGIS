@@ -1,0 +1,72 @@
+{
+ "kien_truc": "yolo26s-obb",
+ "yaml": "yolo26s-obb.yaml",
+ "kieu_hop": "obb",
+ "vong": 4,
+ "hat": 2,
+ "tham_so_M": 10.52,
+ "epoch_chay": 135,
+ "phut": 29.6,
+ "test": {
+  "mAP50": 0.8959,
+  "mAP50_95": 0.8852,
+  "AP50_theo_lop": [
+   0.9431,
+   0.7508,
+   0.9938,
+   null
+  ],
+  "lop": [
+   "SingleHotSpot",
+   "MultiHotSpot",
+   "Bypass",
+   "ModuleOpenCircuit"
+  ]
+ },
+ "conf_0_25": {
+  "P_theo_lop": [
+   0.852,
+   0.7475,
+   0.9813,
+   null
+  ],
+  "R_theo_lop": [
+   0.8712,
+   0.6447,
+   0.9808,
+   null
+  ],
+  "mAP50": 0.8508
+ },
+ "conf_0_5": {
+  "P_theo_lop": [
+   0.8454,
+   0.7447,
+   0.982,
+   null
+  ],
+  "R_theo_lop": [
+   0.8801,
+   0.6484,
+   0.9808,
+   null
+  ],
+  "mAP50": 0.8167
+ },
+ "cau_hinh": {
+  "epochs": 150,
+  "patience": 20,
+  "batch": 16,
+  "imgsz": 640,
+  "lr0": 0.005,
+  "degrees": 15,
+  "flipud": 0.5,
+  "fliplr": 0.5,
+  "mosaic": 1.0,
+  "close_mosaic": 15,
+  "optimizer": "auto",
+  "workers": 4,
+  "plots": false,
+  "verbose": false
+ }
+}

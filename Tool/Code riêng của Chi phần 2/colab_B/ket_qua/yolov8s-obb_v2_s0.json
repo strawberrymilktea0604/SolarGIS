@@ -1,0 +1,72 @@
+{
+ "kien_truc": "yolov8s-obb",
+ "yaml": "yolov8s-obb.yaml",
+ "kieu_hop": "obb",
+ "vong": 2,
+ "hat": 0,
+ "tham_so_M": 11.42,
+ "epoch_chay": 150,
+ "phut": 141.8,
+ "test": {
+  "mAP50": 0.9402,
+  "mAP50_95": 0.9271,
+  "AP50_theo_lop": [
+   0.9263,
+   0.8671,
+   0.9921,
+   0.9753
+  ],
+  "lop": [
+   "SingleHotSpot",
+   "MultiHotSpot",
+   "Bypass",
+   "ModuleOpenCircuit"
+  ]
+ },
+ "conf_0_25": {
+  "P_theo_lop": [
+   0.8197,
+   0.8314,
+   0.9721,
+   0.9847
+  ],
+  "R_theo_lop": [
+   0.8789,
+   0.758,
+   0.9791,
+   0.9202
+  ],
+  "mAP50": 0.8941
+ },
+ "conf_0_5": {
+  "P_theo_lop": [
+   0.8306,
+   0.8408,
+   0.9757,
+   0.9844
+  ],
+  "R_theo_lop": [
+   0.8683,
+   0.7485,
+   0.9757,
+   0.9
+  ],
+  "mAP50": 0.8546
+ },
+ "cau_hinh": {
+  "epochs": 150,
+  "patience": 50,
+  "batch": 16,
+  "imgsz": 640,
+  "lr0": 0.005,
+  "degrees": 15,
+  "flipud": 0.5,
+  "fliplr": 0.5,
+  "mosaic": 1.0,
+  "close_mosaic": 15,
+  "optimizer": "auto",
+  "workers": 4,
+  "plots": false,
+  "verbose": false
+ }
+}

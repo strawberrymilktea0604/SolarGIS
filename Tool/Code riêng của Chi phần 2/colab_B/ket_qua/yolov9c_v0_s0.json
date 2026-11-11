@@ -1,0 +1,72 @@
+{
+ "kien_truc": "yolov9c",
+ "yaml": "yolov9c.yaml",
+ "kieu_hop": "hbb",
+ "vong": 0,
+ "hat": 0,
+ "tham_so_M": 25.53,
+ "epoch_chay": 69,
+ "phut": 98.8,
+ "test": {
+  "mAP50": 0.6252,
+  "mAP50_95": 0.5666,
+  "AP50_theo_lop": [
+   0.9224,
+   0.6021,
+   0.9762,
+   0.0
+  ],
+  "lop": [
+   "SingleHotSpot",
+   "MultiHotSpot",
+   "Bypass",
+   "ModuleOpenCircuit"
+  ]
+ },
+ "conf_0_25": {
+  "P_theo_lop": [
+   0.8286,
+   0.6095,
+   0.9266,
+   0.0
+  ],
+  "R_theo_lop": [
+   0.8678,
+   0.6052,
+   0.9547,
+   0.0
+  ],
+  "mAP50": 0.5839
+ },
+ "conf_0_5": {
+  "P_theo_lop": [
+   0.8729,
+   0.6859,
+   0.94,
+   0.0
+  ],
+  "R_theo_lop": [
+   0.8168,
+   0.5059,
+   0.9453,
+   0.0
+  ],
+  "mAP50": 0.5387
+ },
+ "cau_hinh": {
+  "epochs": 150,
+  "patience": 20,
+  "batch": 16,
+  "imgsz": 640,
+  "lr0": 0.005,
+  "degrees": 15,
+  "flipud": 0.5,
+  "fliplr": 0.5,
+  "mosaic": 1.0,
+  "close_mosaic": 15,
+  "optimizer": "auto",
+  "workers": 4,
+  "plots": false,
+  "verbose": false
+ }
+}

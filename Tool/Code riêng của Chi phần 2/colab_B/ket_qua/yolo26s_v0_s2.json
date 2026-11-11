@@ -1,0 +1,72 @@
+{
+ "kien_truc": "yolo26s",
+ "yaml": "yolo26s.yaml",
+ "kieu_hop": "hbb",
+ "vong": 0,
+ "hat": 2,
+ "tham_so_M": 9.95,
+ "epoch_chay": 143,
+ "phut": 97.4,
+ "test": {
+  "mAP50": 0.6443,
+  "mAP50_95": 0.5916,
+  "AP50_theo_lop": [
+   0.9253,
+   0.659,
+   0.9914,
+   0.0014
+  ],
+  "lop": [
+   "SingleHotSpot",
+   "MultiHotSpot",
+   "Bypass",
+   "ModuleOpenCircuit"
+  ]
+ },
+ "conf_0_25": {
+  "P_theo_lop": [
+   0.7673,
+   0.6367,
+   0.9636,
+   0.0
+  ],
+  "R_theo_lop": [
+   0.9095,
+   0.6548,
+   0.9736,
+   0.0
+  ],
+  "mAP50": 0.6094
+ },
+ "conf_0_5": {
+  "P_theo_lop": [
+   0.8155,
+   0.6868,
+   0.9733,
+   0.0
+  ],
+  "R_theo_lop": [
+   0.8826,
+   0.565,
+   0.9642,
+   0.0
+  ],
+  "mAP50": 0.5717
+ },
+ "cau_hinh": {
+  "epochs": 150,
+  "patience": 20,
+  "batch": 16,
+  "imgsz": 640,
+  "lr0": 0.005,
+  "degrees": 15,
+  "flipud": 0.5,
+  "fliplr": 0.5,
+  "mosaic": 1.0,
+  "close_mosaic": 15,
+  "optimizer": "auto",
+  "workers": 4,
+  "plots": false,
+  "verbose": false
+ }
+}
